@@ -1,0 +1,32 @@
+{
+  "common": {
+    "welcome": "Bienvenue sur Swiss Live Event",
+    "tagline": "Plateforme professionnelle d'événements virtuels pour entreprises",
+    "getStarted": "Commencer",
+    "signIn": "Se connecter",
+    "signOut": "Se déconnecter"
+  },
+  "features": {
+    "multipleRooms": {
+      "title": "Salles Multiples",
+      "description": "Organisez plusieurs sessions simultanées avec des salles virtuelles dédiées"
+    },
+    "streaming": {
+      "title": "Streaming ABR",
+      "description": "Streaming haute qualité à débit adaptatif avec support multilingue"
+    },
+    "interactive": {
+      "title": "Fonctionnalités Interactives",
+      "description": "Chat en temps réel, sondages et sessions de Q&R"
+    },
+    "roles": {
+      "title": "Gestion des Rôles",
+      "description": "Contrôle d'accès complet basé sur les rôles"
+    }
+  },
+  "theme": {
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système"
+  }
+}

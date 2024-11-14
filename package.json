@@ -1,0 +1,12 @@
+{
+      "name": "votre-saas",
+      "version": "0.0.1",
+      "description": "Votre SaaS en développement",
+      "main": "index.js",
+      "scripts": {
+        "dev": "node index.js"
+      },
+      "dependencies": {
+        <!-- Vos dépendances ici -->
+      }
+    }
