@@ -1,12 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+
 @layer base {
   :root {
-    --background: 0 0% 98%;
+    --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
+    --card: 0 0% 98%;
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
@@ -55,86 +55,61 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
+    background-image: 
+      linear-gradient(to bottom right, hsl(var(--primary) / 0.05), transparent),
+      repeating-linear-gradient(to right, transparent, transparent 50px, hsl(var(--primary) / 0.02) 50px, hsl(var(--primary) / 0.02) 51px),
+      repeating-linear-gradient(to bottom, transparent, transparent 50px, hsl(var(--primary) / 0.02) 50px, hsl(var(--primary) / 0.02) 51px);
   }
 }
 
-.glass-effect {
-  @apply bg-background/80 backdrop-blur-md border-border/50;
+@layer utilities {
+  .glass {
+    @apply bg-background/40 backdrop-blur-md border border-border/40 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] dark:border-white/10;
+  }
+  
+  .glass-hover {
+    @apply transition-all duration-300 hover:bg-background/60 hover:border-primary/20;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-primary to-primary/50;
+  }
+
+  .grid-pattern {
+    background-size: 30px 30px;
+    background-image: 
+      linear-gradient(to right, hsl(var(--primary) / 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--primary) / 0.05) 1px, transparent 1px);
+  }
+
+  .clip-diagonal {
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+  }
+
+  .responsive-container {
+    @apply container mx-auto px-4 max-w-7xl;
+  }
 }
 
-.responsive-container {
-  @apply container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl;
+.glass-card {
+  @apply relative overflow-hidden rounded-lg;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--card) / 0.5) 0%,
+    hsl(var(--card) / 0.2) 100%
+  );
+  backdrop-filter: blur(10px);
+  border: 1px solid hsl(var(--border) / 0.2);
 }
 
-/* React Grid Layout styles */
-.react-grid-item.react-grid-placeholder {
-  @apply bg-primary/20 border-2 border-primary border-dashed rounded-lg !important;
-}
-
-.react-grid-item > .react-resizable-handle {
-  @apply border-none after:border-primary/50 after:border-r-2 after:border-b-2 !important;
-}
-
-.react-grid-item.resizing {
-  @apply z-20;
-}
-
-.react-grid-item.react-draggable-dragging {
-  @apply z-30 shadow-lg cursor-grabbing;
-}
-
-.react-grid-item > * {
-  @apply h-full w-full;
-}
-
-/* Drag handle styles */
-.react-grid-item.react-draggable-dragging::before {
+.glass-card::before {
   content: '';
-  @apply absolute inset-0 bg-primary/5 border-2 border-primary rounded-lg pointer-events-none;
-}
-
-/* Edit mode indicator */
-.layout-edit-mode .react-grid-item:hover::after {
-  content: '';
-  @apply absolute inset-0 bg-primary/5 border-2 border-primary/20 border-dashed rounded-lg pointer-events-none;
-}
-
-/* Presentation area styles */
-.presentation-container {
-  @apply h-full flex flex-col;
-}
-
-.presentation-content {
-  @apply flex-1 relative min-h-0;
-}
-
-.presentation-controls {
-  @apply mt-auto border-t bg-card p-4;
-}
-
-/* Side panel styles */
-.side-panel-content {
-  @apply h-full flex flex-col;
-}
-
-.side-panel-scroll {
-  @apply flex-1 min-h-0 overflow-hidden;
-}
-
-/* Ensure proper nesting of flex containers */
-.react-grid-item {
-  @apply flex;
-}
-
-.react-grid-item > * {
-  @apply flex-1;
-}
-
-/* Card content scroll areas */
-.card-scroll-content {
-  @apply h-full flex flex-col;
-}
-
-.card-scroll-area {
-  @apply flex-1 min-h-0;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 0%,
+    hsl(var(--primary) / 0.05) 100%
+  );
+  z-index: 0;
 }

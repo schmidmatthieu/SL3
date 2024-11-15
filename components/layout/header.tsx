@@ -3,29 +3,27 @@
 import { ModeToggle } from '@/components/theme/mode-toggle';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { Button } from '@/components/ui/button';
-import { CalendarClock, Shield } from 'lucide-react';
+import { Shield } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Logo } from '@/components/layout/logo';
 
 export function Header() {
   const pathname = usePathname();
   const isAdminPage = pathname?.startsWith('/admin');
 
   return (
-    <header className="sticky top-0 z-50 w-full glass-effect">
+    <header className="sticky top-0 z-50 w-full glass border-b border-border/40">
       <nav className="responsive-container mx-auto flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
-          <CalendarClock className="h-6 w-6 text-primary" />
-          <span className="font-bold text-primary">SL3</span>
+          <Logo className="h-8 w-8" />
+          <span className="font-bold text-gradient">SL3</span>
         </Link>
         
         {!isAdminPage && (
           <div className="hidden md:flex items-center space-x-6">
             <Link href="/events" className="text-sm font-medium hover:text-primary transition-colors">
               Events
-            </Link>
-            <Link href="/venues" className="text-sm font-medium hover:text-primary transition-colors">
-              Venues
             </Link>
             <Link href="/about" className="text-sm font-medium hover:text-primary transition-colors">
               About
@@ -48,7 +46,7 @@ export function Header() {
           )}
           <LanguageSwitcher />
           <ModeToggle />
-          <Button asChild>
+          <Button variant="default" asChild>
             <Link href="/login">Sign In</Link>
           </Button>
         </div>
