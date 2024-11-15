@@ -1,17 +1,17 @@
-import './globals.css';
+import '@/styles/globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/providers/theme-provider';
-import { I18nProvider } from '@/components/providers/i18n-provider';
-import { AuthProvider } from '@/lib/auth/auth-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { Header } from '@/components/layout/header';
+import { Footer } from '@/components/layout/footer';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Swiss Live Event (SL3)',
-  description: 'Professional B2B Virtual Event Platform',
+  description: 'Professional event management platform',
+  keywords: ['events', 'switzerland', 'management', 'live events', 'booking'],
 };
 
 export default function RootLayout({
@@ -28,15 +28,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <I18nProvider>
-            <AuthProvider>
-              <div className="min-h-screen bg-background">
-                <Header />
-                <main>{children}</main>
-                <Toaster />
-              </div>
-            </AuthProvider>
-          </I18nProvider>
+          <div className="flex min-h-screen flex-col bg-background">
+            <Header />
+            <main className="flex-1 mx-auto container">{children}</main>
+            <Footer />
+          </div>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

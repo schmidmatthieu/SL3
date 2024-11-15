@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+ 
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 267 100% 65%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 267 100% 65%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 240 10% 4%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 6%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 6%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 267 100% 75%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 4% 12%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 4% 12%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 4% 12%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 4% 16%;
+    --input: 240 4% 16%;
+    --ring: 267 100% 75%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}
+
+.glass-effect {
+  @apply bg-background/80 backdrop-blur-md border-border/50;
+}
+
+.responsive-container {
+  @apply container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl;
+}
+
+/* React Grid Layout styles */
+.react-grid-item.react-grid-placeholder {
+  @apply bg-primary/20 border-2 border-primary border-dashed rounded-lg !important;
+}
+
+.react-grid-item > .react-resizable-handle {
+  @apply border-none after:border-primary/50 after:border-r-2 after:border-b-2 !important;
+}
+
+.react-grid-item.resizing {
+  @apply z-20;
+}
+
+.react-grid-item.react-draggable-dragging {
+  @apply z-30 shadow-lg cursor-grabbing;
+}
+
+.react-grid-item > * {
+  @apply h-full w-full;
+}
+
+/* Drag handle styles */
+.react-grid-item.react-draggable-dragging::before {
+  content: '';
+  @apply absolute inset-0 bg-primary/5 border-2 border-primary rounded-lg pointer-events-none;
+}
+
+/* Edit mode indicator */
+.layout-edit-mode .react-grid-item:hover::after {
+  content: '';
+  @apply absolute inset-0 bg-primary/5 border-2 border-primary/20 border-dashed rounded-lg pointer-events-none;
+}
+
+/* Presentation area styles */
+.presentation-container {
+  @apply h-full flex flex-col;
+}
+
+.presentation-content {
+  @apply flex-1 relative min-h-0;
+}
+
+.presentation-controls {
+  @apply mt-auto border-t bg-card p-4;
+}
+
+/* Side panel styles */
+.side-panel-content {
+  @apply h-full flex flex-col;
+}
+
+.side-panel-scroll {
+  @apply flex-1 min-h-0 overflow-hidden;
+}
+
+/* Ensure proper nesting of flex containers */
+.react-grid-item {
+  @apply flex;
+}
+
+.react-grid-item > * {
+  @apply flex-1;
+}
+
+/* Card content scroll areas */
+.card-scroll-content {
+  @apply h-full flex flex-col;
+}
+
+.card-scroll-area {
+  @apply flex-1 min-h-0;
+}
