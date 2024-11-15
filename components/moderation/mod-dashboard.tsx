@@ -9,8 +9,9 @@ import { StreamStats } from '@/components/moderation/stream-stats';
 import { ActivityLog } from '@/components/moderation/activity-log';
 import { QuickActions } from '@/components/moderation/quick-actions';
 import { ModTabs } from '@/components/moderation/mod-tabs';
+import { StreamSettings } from '@/components/moderation/stream-settings';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Edit, Save, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Edit, Save, AlertCircle, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { Responsive, WidthProvider } from 'react-grid-layout';
 import {
@@ -23,6 +24,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
@@ -35,13 +44,12 @@ interface ModDashboardProps {
 
 type LayoutItem = { i: string; x: number; y: number; w: number; h: number; minW?: number; minH?: number };
 
-// Optimized layouts for better space utilization
 const defaultLayouts = {
   lg: [
-    { i: 'stream', x: 0, y: 0, w: 8, h: 8, minW: 6, minH: 6 },  // Réduit la hauteur
+    { i: 'stream', x: 0, y: 0, w: 8, h: 8, minW: 6, minH: 6 },
     { i: 'controls', x: 8, y: 0, w: 4, h: 1, minW: 3, minH: 1 },
-    { i: 'stats', x: 8, y: 2, w: 4, h: 7, minW: 3, minH: 7 },   // Réduit la hauteur
-    { i: 'content', x: 0, y: 4, w: 8, h: 12, minW: 6, minH: 8 }, // Augmente la hauteur
+    { i: 'stats', x: 8, y: 2, w: 4, h: 7, minW: 3, minH: 7 },
+    { i: 'content', x: 0, y: 4, w: 8, h: 12, minW: 6, minH: 8 },
     { i: 'activity', x: 8, y: 4, w: 4, h: 6, minW: 3, minH: 4 },
     { i: 'actions', x: 8, y: 8, w: 4, h: 6, minW: 3, minH: 6 },
   ],
@@ -122,6 +130,25 @@ export function ModDashboard({ event, room }: ModDashboardProps) {
                   Unsaved changes
                 </span>
               )}
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline">
+                    <Settings className="h-4 w-4 mr-2" />
+                    Stream Settings
+                  </Button>
+                </SheetTrigger>
+                <SheetContent className="w-[600px] sm:w-[600px]" side="right">
+                  <SheetHeader>
+                    <SheetTitle>Stream Settings</SheetTitle>
+                    <SheetDescription>
+                      Configure stream settings for this room
+                    </SheetDescription>
+                  </SheetHeader>
+                  <div className="py-6">
+                    <StreamSettings roomId={room.id} />
+                  </div>
+                </SheetContent>
+              </Sheet>
               <Button
                 variant="outline"
                 onClick={() => setShowResetDialog(true)}

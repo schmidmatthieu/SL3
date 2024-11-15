@@ -6,8 +6,9 @@ import { SystemOverview } from '@/components/admin/system-overview';
 import { EventsMonitoring } from '@/components/admin/events-monitoring';
 import { IncidentLogs } from '@/components/admin/incident-logs';
 import { GlobalSettings } from '@/components/admin/global-settings';
+import { StyleManagement } from '@/components/admin/style-management';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Activity, Shield, AlertTriangle, Settings, Paintbrush } from 'lucide-react';
 import Link from 'next/link';
 
 export function AdminDashboard() {
@@ -43,10 +44,26 @@ export function AdminDashboard() {
         >
           <div className="flex items-center justify-between">
             <TabsList>
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="events">Events</TabsTrigger>
-              <TabsTrigger value="incidents">Incidents</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
+              <TabsTrigger value="overview">
+                <Activity className="h-4 w-4 mr-2" />
+                Overview
+              </TabsTrigger>
+              <TabsTrigger value="events">
+                <Shield className="h-4 w-4 mr-2" />
+                Events
+              </TabsTrigger>
+              <TabsTrigger value="incidents">
+                <AlertTriangle className="h-4 w-4 mr-2" />
+                Incidents
+              </TabsTrigger>
+              <TabsTrigger value="settings">
+                <Settings className="h-4 w-4 mr-2" />
+                Settings
+              </TabsTrigger>
+              <TabsTrigger value="style">
+                <Paintbrush className="h-4 w-4 mr-2" />
+                Style
+              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -64,6 +81,10 @@ export function AdminDashboard() {
 
           <TabsContent value="settings" className="space-y-6">
             <GlobalSettings />
+          </TabsContent>
+
+          <TabsContent value="style" className="space-y-6">
+            <StyleManagement />
           </TabsContent>
         </Tabs>
       </div>
