@@ -1,19 +1,19 @@
-import { redirect } from 'next/navigation';
+'use client'
 
-// This is a placeholder for actual auth check
-const isAuthenticated = () => {
-  // Implement your authentication logic here
-  return true;
-};
+import { ProtectedRoute } from '@/components/auth/protected-route'
+import { UserRole } from '@/types/auth'
 
 export default function AdminLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  if (!isAuthenticated()) {
-    redirect('/login');
-  }
-
-  return <>{children}</>;
+  return (
+    <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+      <div className="container mx-auto py-8">
+        <h1 className="mb-8 text-3xl font-bold">Admin Dashboard</h1>
+        {children}
+      </div>
+    </ProtectedRoute>
+  )
 }

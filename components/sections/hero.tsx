@@ -8,26 +8,26 @@ export function HeroSection() {
     <section className="relative border-b bg-card clip-diagonal overflow-hidden">
       <div className="absolute inset-0 grid-pattern opacity-20" />
       
-      <div className="responsive-container relative py-24 sm:py-32">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 glass glass-hover rounded-full">
+      <div className="relative py-fluid-12">
+        <div className="grid lg:grid-cols-2 gap-fluid-8 items-center">
+          <div className="space-y-fluid-6">
+            <div className="inline-flex items-center gap-fluid-2 px-fluid-4 py-fluid-2 glass glass-hover rounded-full">
               <CalendarClock className="h-4 w-4 text-primary" />
-              <span className="text-sm">The Future of Event Management</span>
+              <span className="text-fluid-sm">The Future of Event Management</span>
             </div>
 
-            <div className="space-y-4">
-              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
+            <div className="space-y-fluid-4">
+              <h1 className="text-fluid-5xl font-bold tracking-tighter">
                 Transform Your Events into{' '}
                 <span className="text-gradient">Digital Experiences</span>
               </h1>
-              <p className="text-muted-foreground text-lg sm:text-xl">
+              <p className="text-fluid-lg text-muted-foreground">
                 The most comprehensive event management platform in Switzerland. Plan, organize, and execute
                 world-class events with cutting-edge technology.
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-fluid-3">
               <Button
                 size="lg"
                 variant="default"
@@ -44,18 +44,18 @@ export function HeroSection() {
               </Button>
             </div>
 
-            <div className="grid grid-cols-3 gap-8 pt-8 border-t border-primary/10">
-              <div className="glass-card p-4">
-                <div className="text-3xl font-bold text-gradient">500+</div>
-                <div className="text-sm text-muted-foreground mt-1">Events Managed</div>
+            <div className="grid grid-cols-3 gap-fluid-6 pt-fluid-6 border-t border-primary/10">
+              <div className="glass-card p-fluid-4">
+                <div className="text-fluid-3xl font-bold text-gradient">500+</div>
+                <div className="text-fluid-sm text-muted-foreground mt-fluid-1">Events Managed</div>
               </div>
-              <div className="glass-card p-4">
-                <div className="text-3xl font-bold text-gradient">50k+</div>
-                <div className="text-sm text-muted-foreground mt-1">Active Users</div>
+              <div className="glass-card p-fluid-4">
+                <div className="text-fluid-3xl font-bold text-gradient">50k+</div>
+                <div className="text-fluid-sm text-muted-foreground mt-fluid-1">Active Users</div>
               </div>
-              <div className="glass-card p-4">
-                <div className="text-3xl font-bold text-gradient">99.9%</div>
-                <div className="text-sm text-muted-foreground mt-1">Uptime</div>
+              <div className="glass-card p-fluid-4">
+                <div className="text-fluid-3xl font-bold text-gradient">99.9%</div>
+                <div className="text-fluid-sm text-muted-foreground mt-fluid-1">Uptime</div>
               </div>
             </div>
           </div>

@@ -4,10 +4,12 @@ import { CTASection } from '@/components/sections/cta';
 
 export default function Home() {
   return (
-    <>
-      <HeroSection />
-      <FeaturesSection />
-      <CTASection />
-    </>
+    <main className="relative">
+      <div className="responsive-container">
+        <HeroSection />
+        <FeaturesSection />
+        <CTASection />
+      </div>
+    </main>
   );
 }

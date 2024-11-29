@@ -4,22 +4,22 @@ import Image from 'next/image';
 
 export function CTASection() {
   return (
-    <section className="responsive-container py-24 sm:py-32">
+    <section className="py-fluid-12">
       <div className="relative rounded-2xl overflow-hidden">
         <div className="absolute inset-0 grid-pattern opacity-20" />
         
-        <div className="glass p-8 md:p-12 lg:p-16 relative">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+        <div className="glass p-fluid-8 relative">
+          <div className="grid lg:grid-cols-2 gap-fluid-8 items-center">
+            <div className="space-y-fluid-6">
+              <h2 className="text-fluid-4xl font-bold tracking-tighter">
                 Ready to Create Your{' '}
                 <span className="text-gradient">Next Event?</span>
               </h2>
-              <p className="text-muted-foreground text-lg">
+              <p className="text-fluid-lg text-muted-foreground">
                 Join thousands of event organizers who trust SL3 to deliver exceptional experiences.
                 Start your journey today.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-fluid-3">
                 <Button
                   size="lg"
                   variant="default"

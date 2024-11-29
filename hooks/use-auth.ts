@@ -1,27 +1,62 @@
 'use client'
 
-import { useContext } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { AuthContext } from '@/components/auth/auth-provider'
+import { authService } from '@/lib/services/auth.service'
 
 export function useAuth() {
-  const context = useContext(AuthContext)
+  const [user, setUser] = useState<any>(null)
   const router = useRouter()
 
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider')
+  useEffect(() => {
+    const initAuth = async () => {
+      try {
+        const currentUser = await authService.getCurrentUser()
+        if (currentUser) {
+          setUser(currentUser)
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error)
+      }
+    }
+    initAuth()
+  }, [])
+
+  const login = async (credentials: { email: string; password: string }) => {
+    try {
+      const response = await authService.login(credentials)
+      setUser(response.user)
+      return response
+    } catch (error) {
+      throw error
+    }
   }
 
-  const signOut = async () => {
-    await context.signOut()
-    router.refresh()
-    router.push('/login')
+  const register = async (userData: any) => {
+    try {
+      const response = await authService.register(userData)
+      setUser(response.user)
+      return response
+    } catch (error) {
+      throw error
+    }
+  }
+
+  const logout = async () => {
+    try {
+      await authService.logout()
+      setUser(null)
+      router.push('/login')
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
   }
 
   return {
-    user: context.user,
-    profile: context.profile,
-    loading: context.loading,
-    signOut,
+    user,
+    login,
+    register,
+    logout,
+    isAuthenticated: !!user,
   }
 }
