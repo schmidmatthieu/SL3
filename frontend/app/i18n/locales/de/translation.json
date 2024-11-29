@@ -1,0 +1,16 @@
+{
+  "nav": {
+    "events": "Veranstaltungen",
+    "venues": "Locations",
+    "about": "Über uns",
+    "signIn": "Anmelden"
+  },
+  "hero": {
+    "title": "Verwandeln Sie Ihre Events in unvergessliche Erlebnisse",
+    "subtitle": "Die umfassendste Event-Management-Plattform der Schweiz. Planen, organisieren und führen Sie erstklassige Veranstaltungen mit Leichtigkeit durch.",
+    "cta": {
+      "primary": "Jetzt starten",
+      "secondary": "Demo anfordern"
+    }
+  }
+}
