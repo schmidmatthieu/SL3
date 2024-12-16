@@ -1,74 +1,86 @@
-'use client'
+'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import type { User } from '@supabase/auth-helpers-nextjs'
-import type { Database } from '@/types/supabase'
+import { createContext, useContext, useEffect } from 'react';
+import type { User } from '@/types/auth';
+import type { Profile } from '@/types/profile';
+import { useAuthStore } from '@/store/auth-store';
 
-type Profile = Database['public']['Tables']['profiles']['Row']
 type AuthContextType = {
-  user: User | null
-  profile: Profile | null
-  loading: boolean
-  signOut: () => Promise<void>
-}
+  user: User | null;
+  profile: Profile | null;
+  loading: boolean;
+  signOut: () => Promise<void>;
+};
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined)
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ 
   children,
 }: { 
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const [loading, setLoading] = useState(true)
-  const supabase = createClientComponentClient<Database>()
-
-  const signOut = async () => {
-    await supabase.auth.signOut()
-  }
+  const { user, profile, loading, setUser, setProfile, setLoading, signOut } = useAuthStore();
 
   useEffect(() => {
     const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single()
-        setProfile(profile)
+      try {
+        // Check for stored data first
+        const storedUser = localStorage.getItem('user');
+        const storedProfile = localStorage.getItem('profile');
+        const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+
+        if (!token) {
+          setLoading(false);
+          return;
+        }
+
+        if (storedUser && storedProfile) {
+          setUser(JSON.parse(storedUser));
+          setProfile(JSON.parse(storedProfile));
+          setLoading(false);
+          return;
+        }
+
+        // If no stored data, fetch from API
+        const response = await fetch('http://localhost:3001/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Session expired');
+        }
+
+        const data = await response.json();
+        setUser(data.user);
+        setProfile(data.profile);
+        
+        // Update stored data
+        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('profile', JSON.stringify(data.profile));
+      } catch (error) {
+        console.error('Auth error:', error);
+        document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        localStorage.removeItem('user');
+        localStorage.removeItem('profile');
+        setUser(null);
+        setProfile(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false)
-    }
+    };
 
-    getSession()
+    getSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setUser(session?.user ?? null)
-      if (session?.user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single()
-        setProfile(profile)
-      } else {
-        setProfile(null)
-      }
-      setLoading(false)
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [])
+    // Check session periodically
+    const interval = setInterval(getSession, 5 * 60 * 1000); // Every 5 minutes
+    return () => clearInterval(interval);
+  }, [setUser, setProfile, setLoading]);
 
   return (
     <AuthContext.Provider value={{ user, profile, loading, signOut }}>
       {children}
     </AuthContext.Provider>
-  )
+  );
 }

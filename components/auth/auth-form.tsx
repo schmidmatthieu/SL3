@@ -1,89 +1,117 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import type { Database } from '@/types/supabase'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useToast } from '@/components/ui/use-toast';
+import { useAuthStore } from '@/store/auth-store';
 
 export function AuthForm() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [username, setUsername] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
-  const supabase = createClientComponentClient<Database>()
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { toast } = useToast();
+  const { setUser, setProfile } = useAuthStore.getState();
 
   const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
       
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
+      const response = await fetch('http://localhost:3001/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
 
-      if (error) throw error
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.message || 'Failed to sign in');
+
+      // Store the token in cookie and user data in localStorage
+      document.cookie = `token=${data.token}; path=/; max-age=2592000; SameSite=Lax`; // 30 days
+      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('profile', JSON.stringify(data.profile));
+
+      // Update auth store
+      setUser(data.user);
+      setProfile(data.profile);
       
-      router.refresh()
-      router.push('/events')
-    } catch (error) {
-      setError(error.message)
+      toast({
+        title: "Success",
+        description: "You have been signed in successfully.",
+      });
+
+      router.push('/events');
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
 
-      const { data: { user }, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${location.origin}/auth/callback`,
-          data: {
-            username,
-          },
+      const response = await fetch('http://localhost:3001/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      })
+        body: JSON.stringify({
+          email,
+          password,
+          username,
+        }),
+      });
 
-      if (signUpError) throw signUpError
+      const data = await response.json();
 
-      if (user) {
-        // Create profile
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert([
-            {
-              id: user.id,
-              username,
-              role: 'user',
-            },
-          ])
+      if (!response.ok) throw new Error(data.message || 'Failed to sign up');
 
-        if (profileError) throw profileError
-      }
+      // Store the token in cookie and user data in localStorage
+      document.cookie = `token=${data.token}; path=/; max-age=2592000; SameSite=Lax`; // 30 days
+      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('profile', JSON.stringify(data.profile));
 
-      router.refresh()
-      router.push('/events')
-    } catch (error) {
-      setError(error.message)
+      // Update auth store
+      setUser(data.user);
+      setProfile(data.profile);
+
+      toast({
+        title: "Success",
+        description: "Account created successfully.",
+      });
+
+      router.push('/events');
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <Card className="w-full max-w-md mx-auto">
@@ -96,12 +124,6 @@ export function AuthForm() {
         </CardHeader>
         
         <CardContent>
-          {error && (
-            <Alert variant="destructive" className="mb-4">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-
           <TabsContent value="signin">
             <form onSubmit={handleSignIn} className="space-y-4">
               <div className="space-y-2">
@@ -109,7 +131,7 @@ export function AuthForm() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -140,7 +162,7 @@ export function AuthForm() {
                 <Input
                   id="signup-email"
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -152,7 +174,7 @@ export function AuthForm() {
                 <Input
                   id="username"
                   type="text"
-                  placeholder="johndoe"
+                  placeholder="Enter your desired username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
@@ -178,5 +200,5 @@ export function AuthForm() {
         </CardContent>
       </Tabs>
     </Card>
-  )
+  );
 }

@@ -1,21 +1,30 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 export async function middleware(req: NextRequest) {
-  const res = NextResponse.next()
-  const supabase = createMiddlewareClient({ req, res })
-  const { data: { session } } = await supabase.auth.getSession()
+  const res = NextResponse.next();
+  const token = req.cookies.get('token')?.value;
 
-  // Refresh session if exists
-  if (session) {
-    await supabase.auth.refreshSession()
+  // Protected routes
+  const protectedPaths = ['/admin', '/profile', '/events/manage'];
+  const isProtectedPath = protectedPaths.some(path => 
+    req.nextUrl.pathname.startsWith(path)
+  );
+
+  if (isProtectedPath && !token) {
+    const redirectUrl = new URL('/login', req.url);
+    redirectUrl.searchParams.set('redirectTo', req.nextUrl.pathname);
+    return NextResponse.redirect(redirectUrl);
   }
 
-  return res
+  // Redirect to events if already logged in
+  if (req.nextUrl.pathname === '/login' && token) {
+    return NextResponse.redirect(new URL('/events', req.url));
+  }
+
+  return res;
 }
 
-// Specify which routes to run the middleware on
 export const config = {
   matcher: [
     /*

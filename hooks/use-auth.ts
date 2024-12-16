@@ -1,27 +1,21 @@
 'use client'
 
-import { useContext } from 'react'
 import { useRouter } from 'next/navigation'
-import { AuthContext } from '@/components/auth/auth-provider'
+import { useAuthStore } from '@/store/auth-store'
 
 export function useAuth() {
-  const context = useContext(AuthContext)
+  const { user, profile, loading, signOut: storeSignOut } = useAuthStore()
   const router = useRouter()
 
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider')
-  }
-
   const signOut = async () => {
-    await context.signOut()
-    router.refresh()
+    storeSignOut()
     router.push('/login')
   }
 
   return {
-    user: context.user,
-    profile: context.profile,
-    loading: context.loading,
+    user,
+    profile,
+    loading,
     signOut,
   }
 }

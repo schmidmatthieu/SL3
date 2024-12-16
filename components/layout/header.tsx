@@ -7,7 +7,7 @@ import { Shield, User, LogOut, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/layout/logo';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuthStore } from '@/store/auth-store';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +20,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 export function Header() {
   const pathname = usePathname();
   const isAdminPage = pathname?.startsWith('/admin');
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, signOut } = useAuthStore();
+
+  const userInitials = user?.email ? user.email.charAt(0).toUpperCase() : 'U';
 
   return (
     <header className="sticky top-0 z-50 w-full glass border-b border-border/40">
@@ -42,7 +44,7 @@ export function Header() {
         )}
 
         <div className="flex items-center space-x-3">
-          {!isAdminPage && user?.id && profile?.role === 'admin' && (
+          {!isAdminPage && user && profile?.role === 'admin' && (
             <Button
               variant="ghost"
               size="icon"
@@ -63,48 +65,36 @@ export function Header() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={profile?.avatar_url || undefined} alt={profile?.username || ''} />
-                    <AvatarFallback>{profile?.username?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()}</AvatarFallback>
+                    <AvatarImage src="" alt={user.email} />
+                    <AvatarFallback>{userInitials}</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
-                <div className="flex items-center justify-start gap-2 p-2">
-                  <div className="flex flex-col space-y-1 leading-none">
-                    {profile?.username && (
-                      <p className="font-medium">{profile.username}</p>
-                    )}
-                    <p className="w-[200px] truncate text-sm text-muted-foreground">
-                      {user.email}
-                    </p>
+                <DropdownMenuItem className="flex flex-col items-start">
+                  <div className="text-sm font-medium">{user.email}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {profile?.role || 'User'}
                   </div>
-                </div>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/profile">
-                    <User className="mr-2 h-4 w-4" />
-                    Profile
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/profile/settings">
+                  <Link href="/settings">
                     <Settings className="mr-2 h-4 w-4" />
-                    Settings
+                    <span>Settings</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="text-red-600"
-                  onClick={() => signOut()}
-                >
+                <DropdownMenuItem onClick={() => signOut()}>
                   <LogOut className="mr-2 h-4 w-4" />
-                  Sign out
+                  <span>Log out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button variant="default" asChild>
-              <Link href="/login">Sign In</Link>
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/login">
+                <User className="h-4 w-4" />
+              </Link>
             </Button>
           )}
         </div>

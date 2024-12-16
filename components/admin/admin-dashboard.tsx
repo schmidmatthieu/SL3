@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/store/auth-store';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SystemOverview } from '@/components/admin/system-overview';
 import { EventsMonitoring } from '@/components/admin/events-monitoring';
@@ -13,6 +15,24 @@ import Link from 'next/link';
 
 export function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
+  const { user, profile, loading } = useAuthStore();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && (!user || profile?.role !== 'admin')) {
+      router.push('/login');
+    }
+  }, [loading, user, profile, router]);
+
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">
+      <div className="text-lg">Loading...</div>
+    </div>;
+  }
+
+  if (!user || profile?.role !== 'admin') {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background">
