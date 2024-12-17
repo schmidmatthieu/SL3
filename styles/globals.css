@@ -29,23 +29,139 @@
   .dark {
     --background: 240 10% 4%;
     --foreground: 0 0% 98%;
-    --card: 240 10% 6%;
+    --card: 240 10% 4%;
     --card-foreground: 0 0% 98%;
-    --popover: 240 10% 6%;
+    --popover: 240 10% 4%;
     --popover-foreground: 0 0% 98%;
-    --primary: 267 100% 75%;
+    --primary: 267 100% 65%;
     --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 4% 12%;
+    --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 240 4% 12%;
+    --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
-    --accent: 240 4% 12%;
+    --accent: 240 3.7% 15.9%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 4% 16%;
-    --input: 240 4% 16%;
-    --ring: 267 100% 75%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 267 100% 65%;
+  }
+}
+
+@layer components {
+  .bg-gradient {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: 
+      radial-gradient(
+        circle at 20% 50%,
+        hsl(267, 100%, 65%) 0%,
+        transparent 45%
+      ),
+      radial-gradient(
+        circle at 80% 30%,
+        hsl(267, 100%, 65%) 0%,
+        transparent 45%
+      );
+    opacity: 0.12;
+    filter: blur(80px);
+    animation: subtle-drift 20s ease-in-out infinite alternate;
+    pointer-events: none;
+    mix-blend-mode: color-dodge;
+  }
+
+  .dark .bg-gradient {
+    opacity: 0.15;
+    mix-blend-mode: hard-light;
+  }
+
+  .bg-lines {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: 
+      linear-gradient(to right, hsl(267, 100%, 65%, 0.07) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(267, 100%, 65%, 0.07) 1px, transparent 1px);
+    background-size: 50px 50px;
+    mask-image: radial-gradient(circle at center, black, transparent 90%);
+    animation: subtle-pulse 10s ease-in-out infinite;
+    pointer-events: none;
+    mix-blend-mode: soft-light;
+  }
+
+  .dark .bg-lines {
+    background-image: 
+      linear-gradient(to right, hsl(267, 100%, 65%, 0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(267, 100%, 65%, 0.1) 1px, transparent 1px);
+    mix-blend-mode: overlay;
+  }
+
+  .glass-effect {
+    @apply backdrop-blur-md bg-background/20;
+    border-color: rgba(var(--primary) / 0.1);
+  }
+
+  .header-shadow {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 
+                0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  }
+
+  .dark .header-shadow {
+    box-shadow: none;
+  }
+
+  .header-glow {
+    position: relative;
+  }
+
+  .dark .header-glow::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(267, 100%, 65%, 0.3),
+      hsl(267, 100%, 65%, 0.5),
+      hsl(267, 100%, 65%, 0.3),
+      transparent
+    );
+    animation: glow-pulse 4s ease-in-out infinite;
+  }
+}
+
+@keyframes subtle-drift {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-4%, 2%) scale(1.1);
+  }
+  100% {
+    transform: translate(4%, -2%) scale(0.95);
+  }
+}
+
+@keyframes subtle-pulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
   }
 }
 

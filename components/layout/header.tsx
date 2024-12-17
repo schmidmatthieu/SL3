@@ -3,7 +3,7 @@
 import { ModeToggle } from '@/components/theme/mode-toggle';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { Button } from '@/components/ui/button';
-import { Shield, User, LogOut, Settings } from 'lucide-react';
+import { Shield, User, LogOut, Settings, UserCircle } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/layout/logo';
@@ -25,7 +25,7 @@ export function Header() {
   const userInitials = user?.email ? user.email.charAt(0).toUpperCase() : 'U';
 
   return (
-    <header className="sticky top-0 z-50 w-full glass border-b border-border/40">
+    <header className="sticky top-0 z-40 w-full border-b header-shadow header-glow glass-effect">
       <nav className="responsive-container mx-auto flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
           <Logo className="h-8 w-8" />
@@ -78,6 +78,12 @@ export function Header() {
                   </div>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/profile">
+                    <UserCircle className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/settings">
                     <Settings className="mr-2 h-4 w-4" />

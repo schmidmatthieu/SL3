@@ -1,11 +1,16 @@
-export type EventStatus = 'live' | 'upcoming' | 'ended';
+export type EventStatus = 'active' | 'scheduled' | 'ended';
 
 export interface Event {
   id: string;
+  _id?: string;
   title: string;
-  date: string;
-  rooms: number;
+  description: string;
+  startDateTime: string;
+  endDateTime: string;
+  imageUrl?: string;
   status: EventStatus;
-  imageUrl: string;
-  venue: string;
+  rooms: number;
+  createdBy: string;
+  createdAt?: string;
+  updatedAt?: string;
 }

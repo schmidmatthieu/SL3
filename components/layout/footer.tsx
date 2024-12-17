@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export function Footer() {
   return (
-    <footer className="border-t bg-card">
+    <footer className="border-t glass-effect">
       <div className="responsive-container py-12 md:py-16">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
           <div className="col-span-2 md:col-span-1">
@@ -55,7 +55,7 @@ export function Footer() {
         </div>
         
         <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Swiss Live Event. All rights reserved.
+          {new Date().getFullYear()} Swiss Live Event. All rights reserved.
         </div>
       </div>
     </footer>

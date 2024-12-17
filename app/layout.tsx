@@ -7,6 +7,8 @@ import { AuthProvider } from '@/components/auth/auth-provider'
 import { Toaster } from '@/components/ui/toaster'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { AnimatedBackground } from "@/components/ui/animated-background"
+import cn from 'classnames'
 
 export const metadata: Metadata = {
   title: 'Swiss Live Event (SL3)',
@@ -21,13 +23,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning className={`${GeistSans.variable} ${GeistMono.variable}`}>
-      <body className="min-h-screen bg-background font-sans antialiased">
+      <body className={cn("min-h-screen bg-background font-sans antialiased", GeistSans.variable)}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="system"
           enableSystem
-          disableTransitionOnChange
         >
+          <AnimatedBackground />
           <AuthProvider>
             <div className="relative flex min-h-screen flex-col">
               <Header />

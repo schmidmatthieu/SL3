@@ -6,10 +6,21 @@ export async function middleware(req: NextRequest) {
   const token = req.cookies.get('token')?.value;
 
   // Protected routes
-  const protectedPaths = ['/admin', '/profile', '/events/manage'];
+  const protectedPaths = ['/admin', '/profile'];
   const isProtectedPath = protectedPaths.some(path => 
     req.nextUrl.pathname.startsWith(path)
   );
+
+  // Check if it's an event management page
+  const eventManageMatch = req.nextUrl.pathname.match(/^\/events\/([^\/]+)\/manage$/);
+  if (eventManageMatch) {
+    if (!token) {
+      const redirectUrl = new URL('/login', req.url);
+      redirectUrl.searchParams.set('redirectTo', req.nextUrl.pathname);
+      return NextResponse.redirect(redirectUrl);
+    }
+    return res;
+  }
 
   if (isProtectedPath && !token) {
     const redirectUrl = new URL('/login', req.url);

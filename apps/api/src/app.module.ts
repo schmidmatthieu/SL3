@@ -5,6 +5,8 @@ import configuration from './config/configuration';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { RolesModule } from './modules/roles/roles.module';
+import { ProfilesModule } from './modules/profiles/profiles.module';
+import { EventsModule } from './modules/events/events.module';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 
 @Module({
@@ -23,6 +25,8 @@ import { LoggerMiddleware } from './middleware/logger.middleware';
     AuthModule,
     UsersModule,
     RolesModule,
+    ProfilesModule,
+    EventsModule,
   ],
   controllers: [],
   providers: [],

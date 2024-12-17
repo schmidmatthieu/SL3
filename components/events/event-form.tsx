@@ -1,186 +1,195 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { User } from '@supabase/auth-helpers-nextjs'
-import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Calendar } from '@/components/ui/calendar'
+import React from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/use-auth';
+import { useEventStore } from '@/store/event.store';
+import { EventStatus } from '@/types/event';
+import * as z from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { DateTimePicker } from '@/components/ui/date-time-picker';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import { cn } from '@/lib/utils'
-import { format } from 'date-fns'
-import { Calendar as CalendarIcon } from 'lucide-react'
-import type { Database } from '@/types/supabase'
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 
-interface EventFormProps {
-  user: User
-}
+const formSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().min(1, 'Description is required'),
+  startDateTime: z.date({
+    required_error: 'Start date and time is required',
+  }),
+  endDateTime: z.date({
+    required_error: 'End date and time is required',
+  }),
+  imageUrl: z.string().optional(),
+});
 
-export function EventForm({ user }: EventFormProps) {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [title, setTitle] = useState('')
-  const [venue, setVenue] = useState('')
-  const [date, setDate] = useState<Date>()
-  const [imageUrl, setImageUrl] = useState('')
-  
-  const router = useRouter()
-  const supabase = createClientComponentClient<Database>()
+type FormValues = z.infer<typeof formSchema>;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+export function EventForm({ onComplete }: { onComplete?: () => void }) {
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: '',
+      description: '',
+      startDateTime: now,
+      endDateTime: tomorrow,
+      imageUrl: '',
+    },
+  });
+
+  const router = useRouter();
+  const { user } = useAuth();
+  const createEvent = useEventStore(state => state.createEvent);
+
+  const onSubmit = async (data: FormValues) => {
     try {
-      setLoading(true)
-      setError(null)
-
-      if (!date) {
-        throw new Error('Please select a date')
+      if (!user) {
+        throw new Error('You must be logged in to create an event');
       }
 
-      const { data: event, error: eventError } = await supabase
-        .from('events')
-        .insert([
-          {
-            title,
-            venue,
-            date: format(date, 'yyyy-MM-dd'),
-            image_url: imageUrl,
-            created_by: user.id,
-          },
-        ])
-        .select()
-        .single()
-
-      if (eventError) throw eventError
-
-      router.push(`/events/${event.id}`)
-    } catch (error) {
-      setError(error.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    try {
-      setLoading(true)
-      setError(null)
-
-      if (!e.target.files || e.target.files.length === 0) {
-        throw new Error('You must select an image to upload.')
+      // Determine event status based on dates
+      const now = new Date();
+      let status: EventStatus;
+      
+      if (data.startDateTime > now) {
+        status = 'scheduled';
+      } else if (data.endDateTime < now) {
+        status = 'ended';
+      } else {
+        status = 'active';
       }
 
-      const file = e.target.files[0]
-      const fileExt = file.name.split('.').pop()
-      const filePath = `${user.id}-${Math.random()}.${fileExt}`
+      // Format dates as ISO strings
+      const startDateTime = data.startDateTime.toISOString();
+      const endDateTime = data.endDateTime.toISOString();
 
-      const { error: uploadError } = await supabase.storage
-        .from('events')
-        .upload(filePath, file)
+      const event = await createEvent({
+        title: data.title,
+        description: data.description,
+        startDateTime,
+        endDateTime,
+        imageUrl: data.imageUrl || undefined,
+        status,
+        rooms: 1,
+        createdBy: user.id,
+      });
 
-      if (uploadError) throw uploadError
+      if (onComplete) {
+        onComplete();
+      }
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('events')
-        .getPublicUrl(filePath)
-
-      setImageUrl(publicUrl)
-    } catch (error) {
-      setError(error.message)
-    } finally {
-      setLoading(false)
+      router.push(`/events/${event.id}`);
+    } catch (error: any) {
+      console.error('Failed to create event:', error);
+      form.setError('root', {
+        type: 'server',
+        message: error.message || 'Failed to create event',
+      });
     }
-  }
+  };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Card>
-        <CardContent className="pt-6 space-y-6">
-          {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-
-          <div className="space-y-2">
-            <Label htmlFor="title">Event Title</Label>
-            <Input
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              disabled={loading}
-              required
+    <Card>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Event title" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="venue">Venue</Label>
-            <Input
-              id="venue"
-              value={venue}
-              onChange={(e) => setVenue(e.target.value)}
-              disabled={loading}
-              required
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Event description" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <div className="space-y-2">
-            <Label>Date</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    'w-full justify-start text-left font-normal',
-                    !date && 'text-muted-foreground'
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, 'PPP') : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="image">Event Image</Label>
-            <Input
-              id="image"
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              disabled={loading}
+            <FormField
+              control={form.control}
+              name="startDateTime"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Start Date & Time</FormLabel>
+                  <FormControl>
+                    <DateTimePicker
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {imageUrl && (
-              <img
-                src={imageUrl}
-                alt="Event preview"
-                className="mt-2 rounded-md max-h-48 object-cover"
-              />
-            )}
-          </div>
 
-          <Button type="submit" disabled={loading}>
-            {loading ? 'Creating...' : 'Create Event'}
-          </Button>
-        </CardContent>
-      </Card>
-    </form>
-  )
+            <FormField
+              control={form.control}
+              name="endDateTime"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>End Date & Time</FormLabel>
+                  <FormControl>
+                    <DateTimePicker
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="imageUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Image URL (optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="https://..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" className="w-full">
+              Create Event
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
+  );
 }
