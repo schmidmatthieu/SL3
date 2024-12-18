@@ -25,7 +25,7 @@ export function AuthForm() {
     try {
       setLoading(true);
       
-      const response = await fetch('http://localhost:3001/auth/login', {
+      const response = await fetch('http://localhost:3001/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -34,6 +34,7 @@ export function AuthForm() {
           email,
           password,
         }),
+        credentials: 'include',
       });
 
       const data = await response.json();
@@ -71,7 +72,7 @@ export function AuthForm() {
     try {
       setLoading(true);
 
-      const response = await fetch('http://localhost:3001/auth/signup', {
+      const response = await fetch('http://localhost:3001/api/auth/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -81,6 +82,7 @@ export function AuthForm() {
           password,
           username,
         }),
+        credentials: 'include',
       });
 
       const data = await response.json();

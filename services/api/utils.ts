@@ -3,10 +3,12 @@ export const getAuthHeaders = () => {
   const tokenCookie = cookies.find(cookie => cookie.trim().startsWith('token='));
   const token = tokenCookie ? tokenCookie.split('=')[1] : null;
 
-  return {
-    'Content-Type': 'application/json',
-    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-  };
+  // Don't set Content-Type for FormData, let the browser set it with the boundary
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
 };
 
 class ApiError extends Error {

@@ -17,7 +17,7 @@ import { UpdateEventDto } from './dto/update-event.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Event } from './schemas/event.schema';
 
-@Controller('api/events')
+@Controller('events')
 @UseGuards(JwtAuthGuard)
 export class EventsController {
   private readonly logger = new Logger(EventsController.name);

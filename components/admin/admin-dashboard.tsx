@@ -9,8 +9,9 @@ import { EventsMonitoring } from '@/components/admin/events-monitoring';
 import { IncidentLogs } from '@/components/admin/incident-logs';
 import { GlobalSettings } from '@/components/admin/global-settings';
 import { StyleManagement } from '@/components/admin/style-management';
+import { MediaManagement } from '@/components/admin/media-management';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Activity, Shield, AlertTriangle, Settings, Paintbrush } from 'lucide-react';
+import { ArrowLeft, Activity, Shield, AlertTriangle, Settings, Paintbrush, Image } from 'lucide-react';
 import Link from 'next/link';
 
 export function AdminDashboard() {
@@ -84,6 +85,10 @@ export function AdminDashboard() {
                 <Paintbrush className="h-4 w-4 mr-2" />
                 Style
               </TabsTrigger>
+              <TabsTrigger value="media">
+                <Image className="h-4 w-4 mr-2" />
+                Media
+              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -105,6 +110,10 @@ export function AdminDashboard() {
 
           <TabsContent value="style" className="space-y-6">
             <StyleManagement />
+          </TabsContent>
+
+          <TabsContent value="media" className="space-y-6">
+            <MediaManagement />
           </TabsContent>
         </Tabs>
       </div>

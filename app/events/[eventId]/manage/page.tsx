@@ -11,31 +11,34 @@ import { EventDashboard } from '@/components/management/event-dashboard';
 export default function ManageEventPage() {
   const router = useRouter();
   const params = useParams();
+  const eventId = params.eventId as string;
   const { currentEvent, fetchEvent, isLoading, error } = useEventStore();
   const { user, profile } = useAuthStore();
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
-    console.log('ManageEventPage - Params:', params);
-    if (params.eventId) {
-      console.log('ManageEventPage - Fetching event with ID:', params.eventId);
-      fetchEvent(params.eventId as string).finally(() => {
+    const loadEvent = async () => {
+      if (!eventId) {
+        console.error('ManageEventPage - No event ID provided');
+        router.push('/events');
+        return;
+      }
+
+      try {
+        console.log('ManageEventPage - Fetching event with ID:', eventId);
+        await fetchEvent(eventId);
+      } catch (error) {
+        console.error('ManageEventPage - Error fetching event:', error);
+      } finally {
         setIsInitialLoad(false);
-      });
-    }
-  }, [params.eventId, fetchEvent]);
+      }
+    };
+
+    loadEvent();
+  }, [eventId, fetchEvent, router]);
 
   // Handle authentication and authorization
   useEffect(() => {
-    console.log('ManageEventPage - Auth state:', {
-      isInitialLoad,
-      isLoading,
-      user,
-      profile,
-      currentEvent,
-      error
-    });
-
     if (!isInitialLoad && !isLoading) {
       if (!user) {
         console.log('ManageEventPage - No user, redirecting to login');
@@ -43,22 +46,16 @@ export default function ManageEventPage() {
         return;
       }
 
-      if (!currentEvent && !error?.includes('Management')) {
+      if (!currentEvent) {
         console.log('ManageEventPage - No event found, redirecting to events');
         router.push('/events');
         return;
       }
 
       const isAdmin = profile?.role === 'admin';
-      const isEventCreator = user.id === currentEvent?.createdBy;
-      console.log('ManageEventPage - Authorization check:', {
-        isAdmin,
-        isEventCreator,
-        userId: user.id,
-        createdBy: currentEvent?.createdBy
-      });
+      const isEventCreator = user.id === currentEvent.createdBy;
 
-      if (currentEvent && !isAdmin && !isEventCreator) {
+      if (!isAdmin && !isEventCreator) {
         console.log('ManageEventPage - User not authorized, redirecting to events');
         router.push('/events');
       }
@@ -67,7 +64,6 @@ export default function ManageEventPage() {
 
   // Loading state
   if (isLoading || isInitialLoad) {
-    console.log('ManageEventPage - Showing loading state');
     return (
       <div className="container py-10">
         <Skeleton className="h-8 w-64 mb-6" />
@@ -81,8 +77,7 @@ export default function ManageEventPage() {
   }
 
   // Error state
-  if (error && !error.includes('Management')) {
-    console.log('ManageEventPage - Showing error state:', error);
+  if (error) {
     return (
       <div className="container py-10">
         <Alert variant="destructive">
@@ -94,7 +89,6 @@ export default function ManageEventPage() {
 
   // No event found state
   if (!currentEvent) {
-    console.log('ManageEventPage - No event found');
     return (
       <div className="container py-10">
         <Alert>
@@ -104,6 +98,5 @@ export default function ManageEventPage() {
     );
   }
 
-  console.log('ManageEventPage - Rendering EventDashboard with event:', currentEvent);
-  return <EventDashboard event={currentEvent} />;
+  return <EventDashboard event={currentEvent} eventId={eventId} />;
 }

@@ -3,7 +3,7 @@
 import { ModeToggle } from '@/components/theme/mode-toggle';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { Button } from '@/components/ui/button';
-import { Shield, User, LogOut, Settings, UserCircle } from 'lucide-react';
+import { Shield, LogOut, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/layout/logo';
@@ -21,8 +21,21 @@ export function Header() {
   const pathname = usePathname();
   const isAdminPage = pathname?.startsWith('/admin');
   const { user, profile, signOut } = useAuthStore();
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
-  const userInitials = user?.email ? user.email.charAt(0).toUpperCase() : 'U';
+  const userInitials = profile?.firstName && profile?.lastName
+    ? `${profile.firstName[0]}${profile.lastName[0]}`
+    : user?.email
+      ? user.email[0].toUpperCase()
+      : 'U';
+
+  const getFullImageUrl = (url: string) => {
+    if (!url) return '';
+    return url.startsWith('http') ? url : `${API_URL}${url.startsWith('/') ? '' : '/'}${url}`;
+  };
+
+  console.log('Header - Profile:', profile); // Debug log
+  console.log('Header - Avatar URL:', profile?.imageUrl ? getFullImageUrl(profile.imageUrl) : 'No image'); // Debug log
 
   return (
     <header className="sticky top-0 z-40 w-full border-b header-shadow header-glow glass-effect">
@@ -65,42 +78,51 @@ export function Header() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src="" alt={user.email} />
+                    {profile?.imageUrl && (
+                      <AvatarImage 
+                        src={getFullImageUrl(profile.imageUrl)}
+                        alt={profile?.firstName || user?.email || ''} 
+                        onError={(e) => {
+                          console.error('Error loading avatar:', e);
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                        }}
+                      />
+                    )}
                     <AvatarFallback>{userInitials}</AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuItem className="flex flex-col items-start">
-                  <div className="text-sm font-medium">{user.email}</div>
+                  <div className="text-sm font-medium">
+                    {profile?.firstName ? `${profile.firstName} ${profile.lastName}` : user.email}
+                  </div>
                   <div className="text-xs text-muted-foreground">
                     {profile?.role || 'User'}
                   </div>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/profile">
-                    <UserCircle className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
                   <Link href="/settings">
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => signOut()}>
+                <DropdownMenuItem 
+                  onClick={() => {
+                    signOut();
+                    window.location.href = '/';
+                  }}
+                >
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
+                  <span>Logout</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="/login">
-                <User className="h-4 w-4" />
-              </Link>
+            <Button variant="default" asChild>
+              <Link href="/login">Login</Link>
             </Button>
           )}
         </div>

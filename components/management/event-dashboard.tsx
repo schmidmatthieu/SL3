@@ -34,12 +34,14 @@ import { useEventStore } from '@/store/event.store';
 import { useState } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import { BackButton } from '@/components/ui/back-button';
 
 interface EventDashboardProps {
   event: Event;
+  eventId: string;
 }
 
-export function EventDashboard({ event }: EventDashboardProps) {
+export function EventDashboard({ event, eventId }: EventDashboardProps) {
   console.log('EventDashboard - Component mounted with event:', event);
   const router = useRouter();
   const { updateEventStatus } = useEventStore();
@@ -60,7 +62,7 @@ export function EventDashboard({ event }: EventDashboardProps) {
   const handleStatusChange = async (newStatus: string) => {
     console.log('EventDashboard - Updating status to:', newStatus);
     try {
-      await updateEventStatus(event.id, newStatus as Event['status']);
+      await updateEventStatus(eventId, newStatus as Event['status']);
       console.log('EventDashboard - Status updated successfully');
       router.refresh();
     } catch (error) {
@@ -94,22 +96,34 @@ export function EventDashboard({ event }: EventDashboardProps) {
     }
   };
 
+  const navigateToEventPage = (path: string) => {
+    if (!eventId) {
+      console.error('No event ID available');
+      return;
+    }
+    router.push(`/events/${eventId}${path}`);
+  };
+
   return (
     <div className="container py-8">
-      {/* Header Section */}
+      <BackButton className="mb-6" />
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{event.title}</h1>
           <p className="text-muted-foreground mt-2">{event.description}</p>
         </div>
         <div className="flex gap-4">
-          <Button variant="outline" onClick={() => router.push(`/events/${event.id}`)}>
+          <Button 
+            variant="outline" 
+            className="glass-effect" 
+            onClick={() => navigateToEventPage('')}
+          >
             <Eye className="mr-2 h-4 w-4" />
             View Event
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline">
+              <Button variant="outline" className="glass-effect">
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -130,7 +144,7 @@ export function EventDashboard({ event }: EventDashboardProps) {
 
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-3 mb-8">
-        <Card>
+        <Card className="glass-effect">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Status</CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
@@ -142,7 +156,7 @@ export function EventDashboard({ event }: EventDashboardProps) {
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="glass-effect">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Rooms</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
@@ -154,7 +168,7 @@ export function EventDashboard({ event }: EventDashboardProps) {
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="glass-effect">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Duration</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
@@ -172,27 +186,43 @@ export function EventDashboard({ event }: EventDashboardProps) {
 
       {/* Quick Actions */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-        <Button variant="outline" className="h-20" onClick={() => router.push(`/events/${event.id}/rooms`)}>
+        <Button 
+          variant="outline" 
+          className="h-20 glass-effect" 
+          onClick={() => navigateToEventPage('/rooms')}
+        >
           <Users className="mr-2 h-4 w-4" />
           Manage Rooms
         </Button>
-        <Button variant="outline" className="h-20" onClick={() => router.push(`/events/${event.id}/analytics`)}>
+        <Button 
+          variant="outline" 
+          className="h-20 glass-effect" 
+          onClick={() => navigateToEventPage('/analytics')}
+        >
           <BarChart className="mr-2 h-4 w-4" />
           View Analytics
         </Button>
-        <Button variant="outline" className="h-20" onClick={() => router.push(`/events/${event.id}/settings`)}>
+        <Button 
+          variant="outline" 
+          className="h-20 glass-effect" 
+          onClick={() => navigateToEventPage('/settings')}
+        >
           <Settings className="mr-2 h-4 w-4" />
           Event Settings
         </Button>
-        <Button variant="outline" className="h-20" onClick={() => router.push(`/events/${event.id}/security`)}>
+        <Button 
+          variant="outline" 
+          className="h-20 glass-effect" 
+          onClick={() => navigateToEventPage('/security')}
+        >
           <Shield className="mr-2 h-4 w-4" />
           Security
         </Button>
       </div>
 
-      {/* Search and Timeline */}
+      {/* Timeline and Speakers */}
       <div className="grid gap-4 md:grid-cols-7">
-        <Card className="md:col-span-4">
+        <Card className="md:col-span-4 glass-effect">
           <CardHeader>
             <CardTitle>Event Timeline</CardTitle>
           </CardHeader>
@@ -213,23 +243,19 @@ export function EventDashboard({ event }: EventDashboardProps) {
             </div>
           </CardContent>
         </Card>
-        <Card className="md:col-span-3">
-          <CardHeader>
-            <CardTitle>Quick Search</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex w-full items-center space-x-2">
-              <Input
-                placeholder="Search rooms..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <Button variant="outline">
-                <Search className="h-4 w-4" />
-              </Button>
+        <div className="md:col-span-3">
+          <Button 
+            variant="outline" 
+            className="w-full h-[200px] glass-effect" 
+            onClick={() => navigateToEventPage('/speakers')}
+          >
+            <div className="flex flex-col items-center justify-center space-y-4">
+              <Users className="h-12 w-12" />
+              <div className="text-xl">Manage Speakers</div>
+              <div className="text-sm text-muted-foreground">Add, edit, or remove event speakers</div>
             </div>
-          </CardContent>
-        </Card>
+          </Button>
+        </div>
       </div>
     </div>
   );

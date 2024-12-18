@@ -20,9 +20,21 @@ export const profileService = {
   },
 
   update: async (data: Partial<Profile>): Promise<Profile> => {
+    const cleanedData = Object.fromEntries(
+      Object.entries(data)
+        .filter(([_, value]) => value !== undefined && value !== '')
+    );
+
+    if (Object.keys(cleanedData).length === 0) {
+      throw new Error('No valid data to update');
+    }
+
     return fetchWithAuth(`${API_CONFIG.baseUrl}/api/profiles/me`, {
-      method: 'PATCH',
-      body: JSON.stringify(data),
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(cleanedData),
     });
   },
 
@@ -30,10 +42,6 @@ export const profileService = {
     return fetchWithAuth(`${API_CONFIG.baseUrl}/api/profiles/me/avatar`, {
       method: 'POST',
       body: formData,
-      // Ne pas définir Content-Type ici, il sera automatiquement défini avec le boundary pour FormData
-      headers: {
-        ...getAuthHeaders(),
-      },
     });
   },
 };

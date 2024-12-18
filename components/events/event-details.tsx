@@ -54,7 +54,7 @@ export function EventDetails({ event }: EventDetailsProps) {
         </Button>
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{event.title}</h1>
-          <p className="text-muted-foreground">{event.venue}</p>
+          <p className="text-muted-foreground">{event.description}</p>
         </div>
       </div>
 

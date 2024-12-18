@@ -58,6 +58,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { ImageUpload } from '@/components/ui/image-upload';
 
 interface Room {
   id: string;
@@ -72,7 +73,7 @@ interface SpeakerManagementProps {
 const speakerFormSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
   lastName: z.string().min(2, 'Last name must be at least 2 characters'),
-  imageUrl: z.string().optional().default('https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'),
+  imageUrl: z.string().optional(),
   rooms: z.array(z.string()).optional().default([])
 });
 
@@ -99,7 +100,7 @@ export function SpeakerManagement({ eventId, rooms }: SpeakerManagementProps) {
     defaultValues: {
       firstName: '',
       lastName: '',
-      imageUrl: 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
+      imageUrl: '',
       rooms: [],
     },
   });
@@ -113,7 +114,7 @@ export function SpeakerManagement({ eventId, rooms }: SpeakerManagementProps) {
       form.reset({
         firstName: currentSpeaker.firstName,
         lastName: currentSpeaker.lastName,
-        imageUrl: currentSpeaker.imageUrl || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
+        imageUrl: currentSpeaker.imageUrl || '',
         rooms: currentSpeaker.rooms || [],
       });
     }
@@ -133,7 +134,6 @@ export function SpeakerManagement({ eventId, rooms }: SpeakerManagementProps) {
           ...values,
           eventId,
           rooms: values.rooms || [],
-          imageUrl: values.imageUrl || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y'
         });
         toast({
           title: 'Success',
@@ -274,13 +274,12 @@ export function SpeakerManagement({ eventId, rooms }: SpeakerManagementProps) {
                   name="imageUrl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Profile Image URL</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="https://example.com/image.jpg" />
+                        <ImageUpload
+                          value={field.value}
+                          onChange={field.onChange}
+                        />
                       </FormControl>
-                      <FormDescription>
-                        Enter a URL for the speaker's profile image. Leave empty to use default avatar.
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}

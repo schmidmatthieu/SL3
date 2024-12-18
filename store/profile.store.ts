@@ -1,19 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-
-export interface Profile {
-  id?: string;
-  userId: string;
-  firstName?: string;
-  lastName?: string;
-  avatarUrl?: string;
-  bio?: string;
-  preferredLanguage: string;
-  theme: 'dark' | 'light' | 'system';
-  role: 'user' | 'admin';
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+import { Profile } from '@/types/profile';
+import { profileService } from '@/services/api/profiles';
 
 interface ProfileState {
   profile: Profile | null;
@@ -21,6 +9,7 @@ interface ProfileState {
   error: string | null;
   fetchProfile: () => Promise<void>;
   updateProfile: (data: Partial<Profile>) => Promise<void>;
+  updateAvatar: (formData: FormData) => Promise<void>;
   reset: () => void;
 }
 
@@ -34,41 +23,44 @@ export const useProfileStore = create<ProfileState>()(
       fetchProfile: async () => {
         try {
           set({ isLoading: true, error: null });
-          const response = await fetch('/api/profiles/me');
-          if (!response.ok) {
-            throw new Error('Failed to fetch profile');
-          }
-          const profile = await response.json();
+          const profile = await profileService.getMyProfile();
           set({ profile, isLoading: false });
         } catch (error) {
-          set({ error: (error as Error).message, isLoading: false });
+          console.error('Error fetching profile:', error);
+          set({ error: error.message, isLoading: false });
         }
       },
 
-      updateProfile: async (data) => {
+      updateProfile: async (data: Partial<Profile>) => {
         try {
           set({ isLoading: true, error: null });
-          const response = await fetch('/api/profiles/me', {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to update profile');
-          }
-
-          const updatedProfile = await response.json();
+          const updatedProfile = await profileService.update(data);
           set({ profile: updatedProfile, isLoading: false });
         } catch (error) {
-          set({ error: (error as Error).message, isLoading: false });
+          console.error('Error updating profile:', error);
+          set({ error: error.message, isLoading: false });
+          throw error;
+        }
+      },
+
+      updateAvatar: async (formData: FormData) => {
+        try {
+          set({ isLoading: true, error: null });
+          const updatedProfile = await profileService.updateAvatar(formData);
+          set({ profile: updatedProfile, isLoading: false });
+        } catch (error) {
+          console.error('Error updating avatar:', error);
+          set({ error: error.message, isLoading: false });
+          throw error;
         }
       },
 
       reset: () => {
-        set({ profile: null, isLoading: false, error: null });
+        set({
+          profile: null,
+          isLoading: false,
+          error: null,
+        });
       },
     }),
     {

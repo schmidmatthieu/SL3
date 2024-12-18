@@ -27,7 +27,7 @@ const storage = diskStorage({
   },
 });
 
-@Controller('api/media')
+@Controller('media')
 @UseGuards(JwtAuthGuard)
 export class MediaController {
   constructor(private readonly mediaService: MediaService) {}

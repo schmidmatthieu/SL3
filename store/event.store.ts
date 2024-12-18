@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { useAuthStore } from './auth-store';
 import { Event } from '@/types/event';
+import { eventService } from '@/services/api/events';
 
 interface EventState {
   events: Event[];
@@ -18,17 +18,6 @@ interface EventState {
   reset: () => void;
 }
 
-const getAuthHeaders = () => {
-  const token = document.cookie
-    .split('; ')
-    .find(row => row.startsWith('token='))
-    ?.split('=')[1];
-  return {
-    'Content-Type': 'application/json',
-    'Authorization': token ? `Bearer ${token}` : '',
-  };
-};
-
 export const useEventStore = create<EventState>()(
   devtools(
     (set, get) => ({
@@ -40,16 +29,7 @@ export const useEventStore = create<EventState>()(
       fetchEvents: async () => {
         try {
           set({ isLoading: true, error: null });
-          const response = await fetch('/api/events', {
-            headers: getAuthHeaders(),
-            credentials: 'include',
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to fetch events');
-          }
-
-          const events = await response.json();
+          const events = await eventService.getAll();
           set({ events, isLoading: false });
         } catch (error) {
           console.error('Error fetching events:', error);
@@ -60,16 +40,7 @@ export const useEventStore = create<EventState>()(
       fetchMyEvents: async () => {
         try {
           set({ isLoading: true, error: null });
-          const response = await fetch('/api/events/my', {
-            headers: getAuthHeaders(),
-            credentials: 'include',
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to fetch my events');
-          }
-
-          const events = await response.json();
+          const events = await eventService.getMyEvents();
           set({ events, isLoading: false });
         } catch (error) {
           console.error('Error fetching my events:', error);
@@ -80,31 +51,7 @@ export const useEventStore = create<EventState>()(
       fetchEvent: async (eventId: string) => {
         try {
           set({ isLoading: true, error: null });
-          const response = await fetch(`/api/events/${eventId}`, {
-            headers: getAuthHeaders(),
-            credentials: 'include',
-          });
-
-          if (!response.ok) {
-            const data = await response.json();
-            throw new Error(data.error || 'Failed to fetch event');
-          }
-
-          const data = await response.json();
-          const event: Event = {
-            id: data._id || data.id,
-            title: data.title,
-            description: data.description,
-            startDateTime: data.startDateTime,
-            endDateTime: data.endDateTime,
-            imageUrl: data.imageUrl,
-            status: data.status,
-            rooms: data.rooms || 0,
-            createdBy: data.createdBy,
-            createdAt: data.createdAt,
-            updatedAt: data.updatedAt,
-          };
-
+          const event = await eventService.getById(eventId);
           set({ currentEvent: event, isLoading: false });
         } catch (error) {
           console.error('Error fetching event:', error);
@@ -115,18 +62,7 @@ export const useEventStore = create<EventState>()(
       createEvent: async (data: Partial<Event>) => {
         try {
           set({ isLoading: true, error: null });
-          const response = await fetch('/api/events', {
-            method: 'POST',
-            headers: getAuthHeaders(),
-            credentials: 'include',
-            body: JSON.stringify(data),
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to create event');
-          }
-
-          const event = await response.json();
+          const event = await eventService.create(data);
           const events = [...get().events, event];
           set({ events, isLoading: false });
           return event;
@@ -140,22 +76,15 @@ export const useEventStore = create<EventState>()(
       updateEvent: async (eventId: string, data: Partial<Event>) => {
         try {
           set({ isLoading: true, error: null });
-          const response = await fetch(`/api/events/${eventId}`, {
-            method: 'PATCH',
-            headers: getAuthHeaders(),
-            credentials: 'include',
-            body: JSON.stringify(data),
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to update event');
-          }
-
-          const updatedEvent = await response.json();
+          const updatedEvent = await eventService.update(eventId, data);
           const events = get().events.map(event =>
             event.id === eventId ? updatedEvent : event
           );
-          set({ events, isLoading: false });
+          set({ 
+            events, 
+            currentEvent: updatedEvent,
+            isLoading: false 
+          });
           return updatedEvent;
         } catch (error) {
           console.error('Error updating event:', error);
@@ -167,18 +96,7 @@ export const useEventStore = create<EventState>()(
       updateEventStatus: async (eventId: string, status: Event['status']) => {
         try {
           set({ isLoading: true, error: null });
-          const response = await fetch(`/api/events/${eventId}/status`, {
-            method: 'PATCH',
-            headers: getAuthHeaders(),
-            credentials: 'include',
-            body: JSON.stringify({ status }),
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to update event status');
-          }
-
-          const updatedEvent = await response.json();
+          const updatedEvent = await eventService.updateStatus(eventId, status);
           const events = get().events.map(event =>
             event.id === eventId ? updatedEvent : event
           );
@@ -194,18 +112,9 @@ export const useEventStore = create<EventState>()(
       deleteEvent: async (eventId: string) => {
         try {
           set({ isLoading: true, error: null });
-          const response = await fetch(`/api/events/${eventId}`, {
-            method: 'DELETE',
-            headers: getAuthHeaders(),
-            credentials: 'include',
-          });
-
-          if (!response.ok) {
-            throw new Error('Failed to delete event');
-          }
-
+          await eventService.delete(eventId);
           const events = get().events.filter(event => event.id !== eventId);
-          set({ events, isLoading: false });
+          set({ events, currentEvent: null, isLoading: false });
         } catch (error) {
           console.error('Error deleting event:', error);
           set({ error: error.message, isLoading: false });

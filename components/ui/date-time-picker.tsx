@@ -57,7 +57,7 @@ export function DateTimePicker({ value, onChange, className }: DateTimePickerPro
   };
 
   return (
-    <div className={cn('grid gap-2', className)}>
+    <div className={cn('flex gap-2', className)}>
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -85,7 +85,7 @@ export function DateTimePicker({ value, onChange, className }: DateTimePickerPro
         type="time"
         value={time}
         onChange={handleTimeChange}
-        className="w-[240px]"
+        className="w-fit hover:cursor-pointer"
       />
     </div>
   );

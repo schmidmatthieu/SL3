@@ -5,5 +5,6 @@ export const API_CONFIG = {
     events: '/events',  // Removed /api prefix since it's added in the service
     profiles: '/profiles',  // Removed /api prefix for consistency
     speakers: '/speakers',
+    media: '/media',
   }
 };

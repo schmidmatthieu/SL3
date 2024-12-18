@@ -4,7 +4,7 @@ export interface Profile {
   role: 'user' | 'admin';
   firstName?: string;
   lastName?: string;
-  avatarUrl?: string;
+  imageUrl?: string;
   bio?: string;
   preferredLanguage?: string;
   theme?: 'light' | 'dark' | 'system';

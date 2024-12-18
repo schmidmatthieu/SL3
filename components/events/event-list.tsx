@@ -3,15 +3,15 @@
 import { useEffect } from 'react'
 import { useEvents } from '@/hooks/useEvents'
 import { EventCard } from './event-card'
-import { Skeleton } from '@/components/ui/skeleton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface EventListProps {
   userId?: string
 }
 
 export function EventList({ userId }: EventListProps) {
-  const { events, isLoading, error, fetchEvents, fetchMyEvents } = useEvents(false)
+  const { events, isLoading, error, fetchEvents, fetchMyEvents } = useEvents(true)
 
   useEffect(() => {
     if (userId) {
