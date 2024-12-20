@@ -1,0 +1,1383 @@
+{
+  "nav": {
+    "events": "Événements",
+    "venues": "Lieux",
+    "about": "À propos",
+    "signIn": "S'identifier",
+    "login": "Se connecter",
+    "settings": "Paramètres",
+    "logout": "Se déconnecter",
+    "userRole": {
+      "admin": "Admin",
+      "user": "Utilisateur"
+    }
+  },
+  "admin": {
+    "metadata": {
+      "title": "Tableau de bord Admin | SL3",
+      "description": "Tableau de bord d'administration et de surveillance du système"
+    },
+    "dashboard": {
+      "title": "Administration du système",
+      "subtitle": "Surveiller et gérer la plateforme SL3",
+      "loading": "Chargement...",
+      "tabs": {
+        "overview": "Aperçu",
+        "events": "Événements",
+        "incidents": "Incidents",
+        "settings": "Paramètres",
+        "style": "Style",
+        "media": "Média"
+      }
+    },
+    "overview": {
+      "title": "Santé du système",
+      "exportButton": "Exporter les métriques",
+      "metrics": {
+        "serverLoad": {
+          "title": "Charge du serveur",
+          "subtitle": "Sur toutes les instances"
+        },
+        "memory": {
+          "title": "Utilisation de la mémoire",
+          "subtitle": "RAM disponible"
+        },
+        "database": {
+          "title": "Base de données",
+          "subtitle": "Temps de réponse des requêtes"
+        },
+        "incidents": {
+          "title": "Incidents actifs",
+          "subtitle": "Dernières 24 heures"
+        }
+      },
+      "charts": {
+        "systemMetrics": {
+          "title": "Métriques du système",
+          "subtitle": "Utilisation du CPU, de la mémoire et de la bande passante au fil du temps",
+          "labels": {
+            "cpu": "CPU",
+            "memory": "Mémoire",
+            "bandwidth": "Bande passante"
+          }
+        },
+        "axis": {
+          "time": "Temps",
+          "percentage": "Pourcentage"
+        }
+      }
+    },
+    "events": {
+      "title": "Événements",
+      "subtitle": "Suivre et gérer les événements en cours",
+      "search_placeholder": "Rechercher des événements...",
+      "status": {
+        "upcoming": "À venir",
+        "live": "En direct",
+        "ended": "Terminé",
+        "cancelled": "Annulé"
+      },
+      "high_load": "Charge élevée",
+      "viewers": "{{count}} spectateurs",
+      "moderators": "{{count}} modérateurs",
+      "monitor": "Surveiller",
+      "view_details": "Voir les détails",
+      "manage_moderators": "Gérer les modérateurs",
+      "emergency_stop": "Arrêt d'urgence"
+    },
+    "incidents": {
+      "title": "Journaux d'incidents",
+      "subtitle": "Incidents et résolutions du système",
+      "log": {
+        "title": "Journal des incidents"
+      },
+      "export": "Exporter les journaux",
+      "search": {
+        "placeholder": "Rechercher des incidents..."
+      },
+      "filter": {
+        "placeholder": "Filtrer par type",
+        "all": "Tous les types",
+        "ban": "Bannissements",
+        "warning": "Avertissements",
+        "timeout": "Délai d'attente",
+        "report": "Signalements"
+      },
+      "type": {
+        "ban": "BANNISSEMENT",
+        "warning": "AVERTISSEMENT",
+        "timeout": "DÉLAI D'ATTENTE",
+        "report": "SIGNALEMENT"
+      },
+      "by": "par",
+      "event": "Événement",
+      "room": "Salle"
+    },
+    "settings": {
+      "title": "Configuration de la plateforme",
+      "subtitle": "Configuration à l'échelle du système",
+      "saveChanges": "Enregistrer les modifications",
+      "autoMod": {
+        "title": "Paramètres AutoMod",
+        "blockLinks": "Bloquer les liens",
+        "blockLinksDescription": "Supprimer automatiquement les messages contenant des URL",
+        "spamDetection": "Détection de spam",
+        "spamDetectionDescription": "Filtrer les messages et les schémas répétés",
+        "excessiveCaps": "Majuscules excessives",
+        "excessiveCapsDescription": "Filtrer les messages avec trop de majuscules",
+        "profanityFilter": "Filtre de grossièretés",
+        "profanityFilterDescription": "Bloquer les messages contenant un langage inapproprié"
+      },
+      "systemLimits": {
+        "title": "Limites du système",
+        "maxViewers": "Nombre maximal de spectateurs par salle",
+        "maxRooms": "Nombre maximal de salles par événement",
+        "messageDelay": "Délai des messages de chat (secondes)"
+      },
+      "userManagement": {
+        "title": "Gestion des utilisateurs",
+        "defaultUsernamePattern": "Modèle de nom d'utilisateur par défaut",
+        "usernameMinimumLength": "Longueur minimale du nom d'utilisateur",
+        "maximumConcurrentSessions": "Nombre maximal de sessions simultanées"
+      },
+      "chatConfiguration": {
+        "title": "Configuration du chat",
+        "messageLengthLimit": "Limite de longueur des messages",
+        "emoteLimitPerMessage": "Limite d'émoticônes par message",
+        "chatHistoryDuration": "Durée de l'historique du chat (heures)"
+      },
+      "security": {
+        "accessControl": {
+          "title": "Contrôle d'accès",
+          "description": "Configurer qui peut accéder à votre événement et comment",
+          "requireRegistration": {
+            "label": "Inscription obligatoire",
+            "description": "Les utilisateurs doivent s'inscrire pour accéder aux détails de l'événement"
+          },
+          "emailVerification": {
+            "label": "Vérification de l'adresse e-mail",
+            "description": "Vérifier les adresses e-mail des participants"
+          },
+          "accessCode": {
+            "label": "Code d'accès",
+            "placeholder": "Saisir le code d'accès",
+            "description": "Facultatif : exiger un code d'accès pour s'inscrire"
+          }
+        },
+        "privacy": {
+          "title": "Paramètres de confidentialité",
+          "description": "Contrôler les informations visibles pour les participants",
+          "attendeeList": {
+            "label": "Visibilité de la liste des participants",
+            "description": "Afficher la liste des participants inscrits"
+          },
+          "contactSharing": {
+            "label": "Partage des informations de contact",
+            "description": "Autoriser les participants à voir les informations de contact des autres"
+          },
+          "socialMedia": {
+            "label": "Intégration des médias sociaux",
+            "description": "Autoriser le partage sur les médias sociaux"
+          }
+        },
+        "resetToDefaults": "Réinitialiser aux valeurs par défaut",
+        "saveSecuritySettings": "Enregistrer les paramètres de sécurité"
+      }
+    },
+    "style": {
+      "title": "Personnalisation du thème",
+      "subtitle": "Personnaliser l'apparence de la plateforme",
+      "reset": "Réinitialiser par défaut",
+      "save": "Enregistrer les modifications",
+      "tabs": {
+        "colors": "Couleurs",
+        "typography": "Typographie",
+        "layout": "Mise en page"
+      },
+      "colorsSection": {
+        "title": "Couleurs",
+        "brand": "Couleurs de la marque",
+        "primary": "Couleur primaire",
+        "primaryPlaceholder": "Couleur primaire hexadécimale",
+        "secondary": "Couleur secondaire",
+        "secondaryPlaceholder": "Couleur secondaire hexadécimale",
+        "accent": "Couleur d'accentuation",
+        "accentPlaceholder": "Couleur d'accentuation hexadécimale",
+        "ui": "Couleurs de l'interface utilisateur",
+        "background": "Arrière-plan",
+        "foreground": "Premier plan",
+        "border": "Bordure",
+        "preview": {
+          "title": "Aperçu des couleurs",
+          "light": "Mode clair",
+          "dark": "Mode sombre"
+        }
+      },
+      "typographySection": {
+        "title": "Typographie",
+        "fonts": "Paramètres de police",
+        "primaryFont": "Police principale",
+        "primaryFontPlaceholder": "Sélectionner la famille de polices",
+        "baseFontSize": "Taille de police de base",
+        "fontWeights": "Graisses de police",
+        "headings": "Titres",
+        "headingsPlaceholder": "Sélectionner la graisse des titres",
+        "body": "Corps",
+        "bodyPlaceholder": "Sélectionner la graisse du corps",
+        "light": "Légère (300)",
+        "regular": "Normale (400)",
+        "medium": "Moyenne (500)",
+        "semibold": "Semi-gras (600)",
+        "bold": "Gras (700)",
+        "preview": {
+          "title": "Aperçu de la typographie",
+          "heading1": "Titre 1",
+          "heading2": "Titre 2",
+          "heading3": "Titre 3",
+          "paragraph": "Texte de paragraphe normal",
+          "smallText": "Petits textes et légendes"
+        }
+      },
+      "layoutSection": {
+        "title": "Mise en page",
+        "settings": "Paramètres de mise en page",
+        "borderRadius": "Rayon de la bordure",
+        "containerWidth": "Largeur du conteneur",
+        "containerWidthPlaceholder": "Sélectionner la largeur maximale",
+        "sizes": {
+          "default": "Par défaut (1200 px)",
+          "large": "Grande (1400 px)",
+          "fullWidth": "Pleine largeur",
+          "custom": "Personnalisée"
+        },
+        "spacing": {
+          "title": "Espacement",
+          "compact": "Compact",
+          "comfortable": "Confortable",
+          "spacious": "Aéré"
+        },
+        "glassmorphism": "Activer le glassmorphisme",
+        "transitions": "Transitions fluides",
+        "logo": "Logo et image de marque",
+        "logoLight": "Logo (mode clair)",
+        "logoDark": "Logo (mode sombre)",
+        "uploadLogo": "Télécharger le logo",
+        "preview": {
+          "title": "Aperçu de la mise en page",
+          "desktop": "Vue Bureau",
+          "tablet": "Vue Tablette",
+          "mobile": "Vue Mobile"
+        }
+      },
+      "toast": {
+        "title": "Thème mis à jour",
+        "description": "Vos modifications ont été enregistrées avec succès.",
+        "reset": {
+          "title": "Thème réinitialisé",
+          "description": "Les paramètres du thème ont été réinitialisés aux valeurs par défaut."
+        },
+        "error": {
+          "title": "Erreur",
+          "description": "Échec de l'enregistrement des paramètres du thème. Veuillez réessayer."
+        }
+      }
+    },
+    "media": {
+      "title": "Gestion des médias",
+      "subtitle": "Gérer les fichiers multimédias téléchargés",
+      "upload": {
+        "title": "Télécharger un nouveau média",
+        "label": "Fichier multimédia",
+        "upload": "Télécharger",
+        "uploading": "Téléchargement..."
+      },
+      "copy": "Copier l'URL",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "edit": {
+        "title": "Modifier le média",
+         "title": {
+          "label": "Titre"
+        },
+        "description": {
+          "label": "Description"
+        },
+        "altText": {
+          "label": "Texte alternatif"
+        },
+        "seoTitle": {
+          "label": "Titre SEO"
+        },
+        "seoDescription": {
+          "label": "Description SEO"
+        },
+        "cancel": "Annuler",
+        "save": "Enregistrer les modifications"
+      }
+    },
+    "analytics": {
+      "timeRange": "Période",
+      "today": "Aujourd'hui",
+      "last7Days": "7 derniers jours",
+      "last30Days": "30 derniers jours",
+      "exportData": "Exporter les données",
+      "peakViewers": "Pic de spectateurs",
+      "avgWatchTime": "Durée de visionnage moyenne",
+      "engagementRate": "Taux d'engagement",
+      "chatActivity": "Activité du chat",
+      "fromLastHour": "{{value}} de la dernière heure",
+      "viewerCount": "Nombre de spectateurs",
+      "engagementBreakdown": "Répartition de l'engagement",
+      "metrics": {
+        "ticketsSold": "Billets vendus",
+        "revenue": "Revenus (CHF)",
+        "registrations": "Inscriptions",
+        "waitlist": "Liste d'attente"
+      },
+      "ticketSales": {
+        "title": "Aperçu des ventes de billets",
+        "description": "Ventes de billets quotidiennes de la semaine dernière"
+      }
+    },
+    "eventDashboard": {
+      "status": {
+        "live": "En direct",
+        "ended": "Terminé",
+        "scheduled": "Planifié"
+      },
+      "actions": {
+        "viewEvent": "Voir l'événement",
+        "startEvent": "Démarrer l'événement",
+        "endEvent": "Terminer l'événement",
+        "reopenEvent": "Rouvrir l'événement",
+        "deleteEvent": "Supprimer l'événement",
+        "cancelEvent": "Annuler l'événement",
+        "deleting": "Suppression en cours...",
+        "cancelling": "Annulation en cours..."
+      },
+      "deleteDialog": {
+        "title": "Supprimer l'événement",
+        "description": "Êtes-vous sûr de vouloir supprimer cet événement ? Cette action est irréversible."
+      },
+      "cancelDialog": {
+        "title": "Annuler l'événement",
+        "description": "Êtes-vous sûr de vouloir annuler cet événement ? Les participants seront notifiés.",
+        "keepActive": "Garder actif",
+        "confirmCancel": "Confirmer l'annulation"
+      },
+      "stats": {
+        "status": "Statut",
+        "rooms": "Salles",
+        "activeRooms": "Salles actives",
+        "duration": "Durée",
+        "to": "à"
+      },
+      "quickActions": {
+        "manageRooms": "Gérer les salles",
+        "viewAnalytics": "Voir les analyses",
+        "eventSettings": "Paramètres de l'événement",
+        "security": "Sécurité"
+      },
+      "timeline": {
+        "title": "Chronologie de l'événement",
+        "createdOn": "Créé le {{date}}",
+        "startsOn": "Démarre le {{date}}",
+        "endsOn": "Se termine le {{date}}"
+      },
+      "speakers": {
+        "title": "Gestion des intervenants",
+        "description": "Gérer les intervenants de votre événement",
+        "validation": {
+          "firstNameMin": "Le prénom doit comporter au moins 2 caractères",
+          "lastNameMin": "Le nom de famille doit comporter au moins 2 caractères"
+        },
+        "messages": {
+          "updateSuccess": "Intervenant mis à jour avec succès",
+          "createSuccess": "Intervenant créé avec succès",
+          "saveError": "Échec de l'enregistrement de l'intervenant",
+          "deleteSuccess": "Intervenant supprimé avec succès",
+          "deleteError": "Échec de la suppression de l'intervenant",
+          "loadError": "Échec du chargement des intervenants"
+        },
+        "actions": {
+          "addSpeaker": "Ajouter un intervenant",
+          "edit": "Modifier l'intervenant",
+          "delete": "Supprimer l'intervenant",
+          "update": "Mettre à jour",
+          "add": "Ajouter"
+        },
+        "dialog": {
+          "editTitle": "Modifier l'intervenant",
+          "addTitle": "Ajouter un nouvel intervenant"
+        },
+        "form": {
+          "firstName": "Prénom",
+          "lastName": "Nom de famille",
+          "assignedRooms": "Salles attribuées",
+          "selectRooms": "Sélectionner les salles",
+          "profileImage": "Image de profil",
+          "chooseFile": "Choisir un fichier",
+          "noFileChosen": "Aucun fichier choisi",
+          "uploadImage": "Télécharger l'image"
+        },
+        "list": {
+          "title": "Intervenants",
+          "searchPlaceholder": "Rechercher des intervenants...",
+          "noSpeakers": "Aucun intervenant trouvé",
+          "columns": {
+            "speaker": "Intervenant",
+            "rooms": "Salles",
+            "actions": "Actions"
+          }
+        },
+        "deleteDialog": {
+          "title": "Supprimer l'intervenant",
+          "description": "Êtes-vous sûr de vouloir supprimer cet intervenant ? Cette action est irréversible."
+        }
+      },
+      "moderators": {
+        "title": "Modérateurs",
+        "searchPlaceholder": "Rechercher des modérateurs...",
+        "stats": {
+          "activeModerators": "Modérateurs actifs",
+          "admins": "Admins",
+          "inactive": "Inactifs"
+        },
+        "roles": {
+          "admin": "Admin",
+          "moderator": "Modérateur"
+        },
+        "status": {
+          "inactive": "Inactif"
+        },
+        "actions": {
+          "addModerator": "Ajouter un modérateur",
+          "promoteToAdmin": "Promouvoir en admin",
+          "demoteToModerator": "Rétrograder en modérateur",
+          "removeAccess": "Supprimer l'accès"
+        },
+        "assignedRooms": "Attribué à : {{rooms}}",
+        "noRoomsAssigned": "Aucune salle attribuée"
+      }
+    },
+    "roomOverview": {
+      "stats": {
+        "totalRooms": "Nombre total de salles",
+        "liveNow": "En direct maintenant",
+        "upcoming": "À venir",
+        "issues": "Problèmes"
+      },
+      "roomStatus": "Statut de la salle",
+      "searchPlaceholder": "Rechercher des salles...",
+      "status": {
+        "live": "EN DIRECT",
+        "upcoming": "À VENIR",
+        "ended": "TERMINÉ"
+      },
+      "highLoad": "Charge élevée",
+      "actions": {
+        "manage": "Gérer"
+      }
+    },
+    "rooms": {
+      "manage": {
+        "title": "Gérer les salles",
+        "description": "Ajouter et gérer les salles de votre événement",
+        "roomNamePlaceholder": "Nom de la salle",
+        "capacityPlaceholder": "Capacité",
+        "addRoom": "Ajouter une salle",
+        "capacity": "Capacité",
+        "deleteRoom": "Supprimer la salle"
+      }
+    },   
+    "common": {
+      "success": "Succès",
+      "error": "Erreur",
+      "cancel": "Annuler",
+      "delete": "Supprimer",
+      "saving": "Enregistrement...",
+      "saveChanges": "Enregistrer les modifications"
+    }
+  },
+  "theme": {
+    "toggle": "Changer de thème",
+    "mode": {
+      "light": "Clair",
+      "dark": "Sombre",
+      "system": "Système"
+    }
+  },
+  "auth": {
+    "tabs": {
+      "signin": "S'identifier",
+      "signup": "S'inscrire"
+    },
+    "form": {
+      "email": {
+        "label": "E-mail",
+        "placeholder": "Saisissez votre e-mail"
+      },
+      "password": {
+        "label": "Mot de passe"
+      },
+      "username": {
+        "label": "Nom d'utilisateur",
+        "placeholder": "Saisissez le nom d'utilisateur souhaité"
+      },
+      "buttons": {
+        "signin": "S'identifier",
+        "signingIn": "Identification en cours...",
+        "signup": "S'inscrire",
+        "signingUp": "Inscription en cours..."
+      }
+    },
+    "messages": {
+      "success": {
+        "signin": "Vous avez été identifié avec succès.",
+        "signup": "Compte créé avec succès."
+      }
+    }
+  },
+  "pricing": {
+    "title": "Plans tarifaires",
+    "plans": {
+      "basic": {
+        "name": "Basique",
+        "price": "CHF 99",
+        "description": "Parfait pour les petits événements",
+        "features": [
+          "Jusqu'à 3 événements/mois",
+          "Analytique de base",
+          "Support par e-mail"
+        ]
+      },
+      "professional": {
+        "name": "Professionnel",
+        "price": "CHF 299",
+        "description": "Pour les organisations en croissance",
+        "features": [
+          "Événements illimités",
+          "Analytique avancée",
+          "Support prioritaire"
+        ]
+      },
+      "enterprise": {
+        "name": "Entreprise",
+        "price": "Personnalisé",
+        "description": "Pour les grandes organisations",
+        "features": [
+          "Solutions personnalisées",
+          "Support dédié",
+          "Garantie SLA"
+        ]
+      }
+    },
+    "buttons": {
+      "getStarted": "Commencer"
+    }
+  },
+  "hero": {
+    "badge": "L'avenir de la gestion d'événements",
+    "title": {
+      "main": "Transformez vos événements en",
+      "highlight": "Expériences numériques"
+    },
+    "subtitle": "La plateforme de gestion d'événements la plus complète de Suisse. Planifiez, organisez et exécutez des événements de classe mondiale avec une technologie de pointe.",
+    "cta": {
+      "primary": "Commencer",
+      "secondary": "Demander une démo"
+    },
+    "stats": {
+      "events": {
+        "value": "500+",
+        "label": "Événements gérés"
+      },
+      "venues": {
+        "value": "50+",
+        "label": "Lieux partenaires"
+      },
+      "users": {
+        "value": "10k+",
+        "label": "Utilisateurs actifs"
+      },
+      "uptime": {
+        "value": "99.9%",
+        "label": "Disponibilité de la plateforme"
+      }
+    }
+  },
+  "features": {
+    "title": "Propulsé par",
+    "titleHighlight": "Innovation",
+    "subtitle": "Découvrez la nouvelle génération de gestion d'événements avec nos fonctionnalités de pointe",
+    "list": {
+      "eventPlanning": {
+        "title": "Planification d'événements",
+        "description": "Outils complets pour la planification et l'organisation d'événements de toute envergure"
+      },
+      "attendeeManagement": {
+        "title": "Gestion des participants",
+        "description": "Gérez facilement les inscriptions, les enregistrements et les communications avec les participants"
+      },
+      "venueBooking": {
+        "title": "Réservation de lieux",
+        "description": "Accès aux meilleurs lieux de Suisse avec disponibilité en temps réel"
+      },
+      "realTimeUpdates": {
+        "title": "Mises à jour en temps réel",
+        "description": "Restez informé grâce aux mises à jour instantanées et à la surveillance des événements en direct"
+      },
+      "securePlatform": {
+        "title": "Plateforme sécurisée",
+        "description": "Sécurité de niveau entreprise pour vos événements et les données des participants"
+      },
+      "analytics": {
+        "title": "Analytique",
+        "description": "Informations et rapports complets sur les performances des événements"
+      }
+    }
+  },
+  "cta": {
+    "title": {
+      "main": "Prêt à créer votre",
+      "highlight": "Prochain événement ?"
+    },
+    "description": "Rejoignez des milliers d'organisateurs d'événements qui font confiance à SL3 pour offrir des expériences exceptionnelles. Commencez votre parcours dès aujourd'hui.",
+    "buttons": {
+      "getStarted": "Commencer maintenant",
+      "contactSales": "Contacter le service commercial"
+    }
+  },
+  "about": {
+    "title": "À propos de SL3",
+    "description": "Découvrez notre mission de transformer la gestion d'événements en Suisse."
+  },
+  "careers": {
+    "title": "Carrières chez SL3",
+    "subtitle": "Rejoignez notre équipe et contribuez à façonner l'avenir de la gestion d'événements",
+    "positions": {
+      "developer": {
+        "title": "Développeur Frontend Senior",
+        "location": "Zurich, Suisse",
+        "type": "Temps plein"
+      },
+      "manager": {
+        "title": "Chef de produit",
+        "location": "Genève, Suisse",
+        "type": "Temps plein"
+      },
+      "designer": {
+        "title": "Concepteur UX",
+        "location": "À distance, Suisse",
+        "type": "Temps plein"
+      }
+    },
+    "buttons": {
+      "apply": "Postuler maintenant"
+    }
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "subtitle": "Contactez notre équipe pour toute question",
+    "form": {
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "email": "E-mail",
+      "subject": "Sujet",
+      "message": "Votre message",
+      "submit": "Envoyer le message"
+    }
+  },
+  "demo": {
+    "title": "Demander une démo",
+    "description": "Découvrez comment SL3 peut transformer votre processus de gestion d'événements."
+  },
+  "getStarted": {
+    "title": "Commencer avec SL3",
+    "description": "Commencez votre parcours avec la plateforme suisse de gestion d'événements en direct."
+  },
+  "events": {
+    "title": "Événements",
+    "createButton": "Créer un événement",
+    "createDialog": {
+      "title": "Créer un nouvel événement"
+    },
+    "status": {
+      "live": "En direct",
+      "scheduled": "Planifié",
+      "ended": "Terminé",
+      "draft": "Brouillon",
+      "cancelled": "Annulé",
+      "postponed": "Reporté",
+      "active": "En direct"
+    },
+    "card": {
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "rooms": {
+        "available": "{{count}} salle disponible",
+        "available_plural": "{{count}} salles disponibles"
+      },
+      "manage": "Gérer"
+    },
+    "list": {
+      "empty": {
+        "user": "Vous n'avez pas encore créé d'événements.",
+        "general": "Aucun événement trouvé."
+      },
+      "error": "Une erreur s'est produite lors du chargement des événements."
+    },
+    "actions": {
+      "create": "Créer un événement",
+      "createNew": "Créer un nouvel événement"
+    },
+    "details": {
+      "backToEvents": "Retour aux événements",
+      "noRooms": "Aucune salle disponible pour les critères sélectionnés"
+    },
+    "form": {
+      "fields": {
+        "title": {
+          "label": "Titre",
+          "placeholder": "Nom de l'événement",
+          "error": "Le titre est obligatoire"
+        },
+        "description": {
+          "label": "Description",
+          "placeholder": "Description de l'événement",
+          "error": "La description est obligatoire"
+        },
+        "startDateTime": {
+          "label": "Date et heure de début",
+          "error": "La date et l'heure de début sont obligatoires"
+        },
+        "endDateTime": {
+          "label": "Date et heure de fin",
+          "error": "La date et l'heure de fin sont obligatoires"
+        },
+        "imageUrl": {
+          "label": "URL de l'image",
+          "placeholder": "https://example.com/image.jpg"
+        }
+      },
+      "errors": {
+        "loginRequired": "Vous devez être connecté pour créer un événement",
+        "createFailed": "Échec de la création de l'événement"
+      },
+      "submit": "Créer un événement"
+    },
+    "room": {
+      "filters": {
+        "title": "Filtres",
+        "languages": "Langues",
+        "noResults": "Aucune salle ne correspond à vos critères"
+      },
+      "preview": {
+        "join": "Rejoindre",
+        "manage": "Gérer"
+      }
+    }
+  },
+  "footer": {
+    "description": "Plateforme professionnelle de gestion d'événements pour la Suisse",
+    "platform": {
+      "title": "Plateforme",
+      "events": "Événements",
+      "pricing": "Tarifs"
+    },
+    "company": {
+      "title": "Entreprise",
+      "about": "À propos",
+      "contact": "Contact",
+      "careers": "Carrières"
+    },
+    "copyright": "Swiss Live Event. Tous droits réservés."
+  },
+  "settings": {
+    "tabs": {
+      "profile": "Profil",
+      "password": "Mot de passe",
+      "appearance": "Apparence"
+    },
+    "profile": {
+      "title": "Paramètres du profil",
+      "description": "Mettez à jour vos informations de profil",
+      "form": {
+        "username": {
+          "label": "Nom d'utilisateur",
+          "placeholder": "Saisissez votre nom d'utilisateur"
+        },
+        "email": {
+          "label": "E-mail",
+          "placeholder": "Saisissez votre e-mail"
+        },
+        "firstName": {
+          "label": "Prénom",
+          "placeholder": "Saisissez votre prénom"
+        },
+        "lastName": {
+          "label": "Nom de famille",
+          "placeholder": "Saisissez votre nom de famille"
+        },
+        "language": {
+          "label": "Langue préférée",
+          "placeholder": "Sélectionnez votre langue"
+        },
+        "theme": {
+          "label": "Thème",
+          "placeholder": "Sélectionnez votre thème"
+        },
+        "avatar": {
+          "title": "Avatar",
+          "description": "Cliquez pour télécharger ou glisser-déposer",
+          "hint": "SVG, PNG, JPG (max. 2 Mo)",
+          "upload": "Télécharger l'avatar",
+          "success": {
+            "title": "Succès",
+            "description": "Avatar mis à jour avec succès"
+          },
+          "error": {
+            "title": "Erreur",
+            "description": "Échec de la mise à jour de l'avatar"
+          }
+        },
+        "submit": "Mettre à jour le profil",
+        "success": {
+          "title": "Succès",
+          "description": "Profil mis à jour avec succès"
+        },
+        "error": {
+          "title": "Erreur",
+          "description": "Échec de la mise à jour du profil"
+        }
+      }
+    },
+    "password": {
+      "title": "Changer le mot de passe",
+      "description": "Mettez à jour votre mot de passe",
+      "form": {
+        "currentPassword": {
+          "label": "Mot de passe actuel",
+          "placeholder": "Saisissez votre mot de passe actuel"
+        },
+        "newPassword": {
+          "label": "Nouveau mot de passe",
+          "placeholder": "Saisissez votre nouveau mot de passe"
+        },
+        "submit": "Changer le mot de passe",
+        "success": {
+          "title": "Succès",
+          "description": "Mot de passe mis à jour avec succès"
+        },
+        "error": {
+          "title": "Erreur",
+          "description": "Échec de la mise à jour du mot de passe"
+        }
+      }
+    },
+    "appearance": {
+      "title": "Paramètres d'apparence",
+      "description": "Personnalisez l'apparence de l'application",
+      "form": {
+        "theme": {
+          "label": "Thème",
+          "placeholder": "Sélectionnez un thème"
+        },
+        "submit": "Enregistrer les modifications"
+      }
+    }
+  },
+  "security": {
+    "title": "Paramètres de sécurité",
+    "description": "Configurez les paramètres de sécurité et de contrôle d'accès pour votre événement",
+    "accessControl": {
+      "title": "Contrôle d'accès",
+      "description": "Configurez qui peut accéder à votre événement et comment",
+      "requireRegistration": {
+        "label": "Inscription obligatoire",
+        "description": "Les utilisateurs doivent s'inscrire pour accéder aux détails de l'événement"
+      },
+      "emailVerification": {
+        "label": "Vérification de l'adresse e-mail",
+        "description": "Vérifiez les adresses e-mail des participants"
+      },
+      "accessCode": {
+        "label": "Code d'accès",
+        "placeholder": "Saisir le code d'accès",
+        "description": "Facultatif : exiger un code d'accès pour s'inscrire"
+      }
+    },
+    "privacy": {
+      "title": "Paramètres de confidentialité",
+      "description": "Contrôlez les informations visibles pour les participants",
+      "attendeeList": {
+        "label": "Visibilité de la liste des participants",
+        "description": "Afficher la liste des participants inscrits"
+      },
+      "contactSharing": {
+        "label": "Partage des contacts",
+        "description": "Autoriser les participants à voir les informations de contact des autres"
+      },
+      "socialMedia": {
+        "label": "Intégration des médias sociaux",
+        "description": "Autoriser le partage sur les médias sociaux"
+      }
+    },
+    "resetToDefaults": "Réinitialiser aux valeurs par défaut",
+    "saveSecuritySettings": "Enregistrer les paramètres de sécurité"
+  },
+  "analytics": {
+    "title": "Tableau de bord analytique",
+    "description": "Suivez et analysez les performances de votre événement",
+    "metrics": {
+      "totalAttendees": "Nombre total de participants",
+      "activeRooms": "Salles actives",
+      "averageEngagement": "Engagement moyen",
+      "peakConcurrent": "Pic d'utilisateurs simultanés",
+      "ticketsSold": "Billets vendus",
+      "revenue": "Revenus",
+      "registrations": "Inscriptions",
+      "waitlist": "Liste d'attente"
+    },
+    "charts": {
+      "attendanceOverTime": {
+        "title": "Participation au fil du temps",
+        "yAxis": "Nombre de participants",
+        "xAxis": "Temps"
+      },
+      "roomActivity": {
+        "title": "Activité des salles",
+        "yAxis": "Utilisateurs actifs",
+        "xAxis": "Salle"
+      },
+      "engagementMetrics": {
+        "title": "Métriques d'engagement",
+        "yAxis": "Score d'engagement",
+        "xAxis": "Temps"
+      }
+    },
+    "filters": {
+      "timeRange": {
+        "label": "Période",
+        "options": {
+          "1h": "Dernière heure",
+          "24h": "Dernières 24 heures",
+          "7d": "7 derniers jours",
+          "30d": "30 derniers jours"
+        }
+      },
+      "rooms": {
+        "label": "Salles",
+        "allRooms": "Toutes les salles"
+      }
+    },
+    "export": {
+      "label": "Exporter les données",
+      "formats": {
+        "csv": "CSV",
+        "pdf": "PDF"
+      }
+    },
+    "ticketSales": {
+      "title": "Ventes de billets au fil du temps",
+      "description": "Ventes de billets quotidiennes de la semaine dernière"
+    }
+  },
+  "rooms": {
+      "title": "Gestion des salles",
+      "description": "Gérer et configurer les salles d'événements",
+      "actions": {
+        "addRoom": "Ajouter une salle",
+        "editRoom": "Modifier la salle",
+        "deleteRoom": "Supprimer la salle"
+      },
+      "form": {
+        "name": "Nom de la salle",
+        "capacity": "Capacité",
+        "type": "Type de salle",
+        "description": "Description",
+        "startTime": "Heure de début",
+        "endTime": "Heure de fin",
+        "moderators": "Modérateurs"
+      },
+      "types": {
+        "presentation": "Présentation",
+        "workshop": "Atelier",
+        "panel": "Table ronde",
+        "networking": "Réseautage"
+      },
+      "status": {
+        "active": "Actif",
+        "inactive": "Inactif",
+        "full": "Complet",
+        "upcoming": "À venir"
+      },
+      "messages": {
+        "createSuccess": "Salle créée avec succès",
+        "updateSuccess": "Salle mise à jour avec succès",
+        "deleteSuccess": "Salle supprimée avec succès",
+        "error": "Une erreur s'est produite",
+        "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette salle ?"
+      },
+      "manage": {
+        "title": "Gestion des salles",
+        "description": "Gérer et configurer les salles de votre événement",
+        "roomNamePlaceholder": "Saisir le nom de la salle",
+        "capacityPlaceholder": "Saisir la capacité de la salle",
+        "addRoom": "Ajouter une salle"
+      }
+  },
+  "moderators": {
+    "title": "Gestion des modérateurs",
+    "description": "Gérer les modérateurs d'événements et leurs autorisations",
+    "actions": {
+      "addModerator": "Ajouter un modérateur",
+      "removeModerator": "Supprimer le modérateur",
+      "updatePermissions": "Mettre à jour les autorisations"
+    },
+    "form": {
+      "email": "Adresse e-mail",
+      "name": "Nom complet",
+      "role": "Rôle",
+      "rooms": "Salles attribuées"
+    },
+    "roles": {
+      "admin": "Administrateur",
+      "moderator": "Modérateur",
+      "assistant": "Assistant"
+    },
+    "permissions": {
+      "manageUsers": "Gérer les utilisateurs",
+      "manageContent": "Gérer le contenu",
+      "viewAnalytics": "Afficher les analyses"
+    },
+    "messages": {
+      "addSuccess": "Modérateur ajouté avec succès",
+      "updateSuccess": "Autorisations mises à jour avec succès",
+      "removeSuccess": "Modérateur supprimé avec succès",
+      "error": "Une erreur s'est produite"
+    }
+  },
+  "common": {
+    "success": "Succès",
+    "error": "Erreur",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "update": "Mettre à jour",
+    "add": "Ajouter",
+    "remove": "Supprimer",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "loading": "Chargement...",
+    "noResults": "Aucun résultat trouvé",
+    "retry": "Réessayer",
+    "confirm": "Confirmer",
+    "back": "Retour",
+    "next": "Suivant",
+    "finish": "Terminer",
+    "submit": "Soumettre",
+    "required": "Obligatoire",
+    "saveChanges":"Enregistrer les modifications"
+  },
+  "eventManagement": {
+    "title": "Gestion des événements",
+    "description": "Gérer et organiser vos événements",
+    "tabs": {
+      "overview": "Aperçu",
+      "settings": "Paramètres",
+      "rooms": "Salles",
+      "speakers": "Intervenants",
+      "analytics": "Analytique",
+      "security": "Sécurité"
+    },
+    "status": {
+      "draft": "Brouillon",
+      "published": "Publié",
+      "cancelled": "Annulé",
+      "completed": "Terminé",
+      "upcoming": "À venir",
+      "inProgress": "En cours"
+    },
+    "actions": {
+      "createEvent": "Créer un événement",
+      "editEvent": "Modifier l'événement",
+      "deleteEvent": "Supprimer l'événement",
+      "publishEvent": "Publier l'événement",
+      "unpublishEvent": "Dépublier l'événement",
+      "cancelEvent": "Annuler l'événement"
+    },
+    "filters": {
+      "status": "Statut",
+      "date": "Date",
+      "type": "Type d'événement",
+      "location": "Lieu"
+    },
+    "messages": {
+      "createSuccess": "Événement créé avec succès",
+      "updateSuccess": "Événement mis à jour avec succès",
+      "deleteSuccess": "Événement supprimé avec succès",
+      "publishSuccess": "Événement publié avec succès",
+      "unpublishSuccess": "Événement dépublié avec succès",
+      "cancelSuccess": "Événement annulé avec succès",
+      "error": "Une erreur s'est produite",
+      "confirmDelete": "Êtes-vous sûr de vouloir supprimer cet événement ?"
+    }
+  },
+  "manageRooms": {
+    "title": "Gestion des salles",
+    "description": "Gérer et configurer les salles d'événements",
+    "filters": {
+      "capacity": "Capacité",
+      "type": "Type de salle",
+      "availability": "Disponibilité"
+    },
+    "form": {
+      "basicInfo": {
+        "title": "Informations de base",
+        "name": "Nom de la salle",
+        "description": "Description de la salle",
+        "capacity": "Capacité de la salle",
+        "type": "Type de salle"
+      },
+      "schedule": {
+        "title": "Calendrier",
+        "startTime": "Heure de début",
+        "endTime": "Heure de fin",
+        "timezone": "Fuseau horaire"
+      },
+      "settings": {
+        "title": "Paramètres de la salle",
+        "isPublic": "Salle publique",
+        "isModerated": "Salle modérée",
+        "allowQuestions": "Autoriser les questions",
+        "allowChat": "Autoriser le chat"
+      }
+    },
+    "validation": {
+      "nameRequired": "Le nom de la salle est obligatoire",
+      "capacityMin": "La capacité doit être d'au moins 1",
+      "endTimeAfterStart": "L'heure de fin doit être postérieure à l'heure de début"
+    },
+    "messages": {
+      "createSuccess": "Salle créée avec succès",
+      "updateSuccess": "Salle mise à jour avec succès",
+      "deleteSuccess": "Salle supprimée avec succès",
+      "error": "Une erreur s'est produite lors du traitement de votre demande",
+      "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette salle ?"
+    }
+  },
+  "viewAnalytics": {
+    "title": "Tableau de bord analytique",
+    "description": "Afficher des analyses détaillées pour votre événement",
+    "metrics": {
+      "attendance": {
+        "title": "Participation",
+        "total": "Nombre total de participants",
+        "current": "Participants actuels",
+        "peak": "Pic de participation"
+      },
+      "engagement": {
+        "title": "Engagement",
+        "averageTime": "Temps moyen passé",
+        "interactionRate": "Taux d'interaction",
+        "participationScore": "Score de participation"
+      },
+      "rooms": {
+        "title": "Statistiques des salles",
+        "activeRooms": "Salles actives",
+        "totalCapacity": "Capacité totale",
+        "utilization": "Utilisation des salles"
+      }
+    },
+    "charts": {
+      "attendanceOverTime": {
+        "title": "Participation au fil du temps",
+        "xAxis": "Temps",
+        "yAxis": "Nombre de participants"
+      },
+      "roomOccupancy": {
+        "title": "Occupation des salles",
+        "xAxis": "Salle",
+        "yAxis": "Taux d'occupation"
+      },
+      "engagementMetrics": {
+        "title": "Métriques d'engagement",
+        "xAxis": "Temps",
+        "yAxis": "Niveau d'engagement"
+      }
+    },
+    "filters": {
+      "timeRange": "Période",
+      "rooms": "Salles",
+      "metrics": "Métriques"
+    },
+    "export": {
+      "title": "Exporter les données",
+      "options": {
+        "pdf": "Exporter au format PDF",
+        "csv": "Exporter au format CSV",
+        "excel": "Exporter au format Excel"
+      }
+    },
+    "ticketSales": {
+      "title": "Ventes de billets au fil du temps",
+      "description": "Ventes de billets quotidiennes de la semaine dernière"
+    }
+  },
+  "eventSettings": {
+    "title": "Paramètres de l'événement",
+    "description": "Configurer les paramètres de votre événement",
+    "sections": {
+      "basicInfo": {
+        "title": "Informations de base",
+        "eventName": "Nom de l'événement",
+        "description": "Description de l'événement",
+        "date": "Date de l'événement",
+        "time": "Heure de l'événement",
+        "timezone": "Fuseau horaire",
+        "location": "Lieu",
+        "type": "Type d'événement",
+        "imageUrl": "URL de l'image"
+      },
+      "registration": {
+        "title": "Paramètres d'inscription",
+        "allowRegistration": "Autoriser l'inscription",
+        "maxParticipants": "Nombre maximal de participants",
+        "registrationDeadline": "Date limite d'inscription",
+        "waitlist": "Activer la liste d'attente"
+      },
+      "customization": {
+        "title": "Personnalisation de l'événement",
+        "theme": "Thème de l'événement",
+        "branding": "Options de personnalisation",
+        "language": "Langue par défaut"
+      },
+      "notifications": {
+        "title": "Paramètres de notification",
+        "emailNotifications": "Notifications par e-mail",
+        "reminderSettings": "Paramètres de rappel",
+        "customMessages": "Messages personnalisés"
+      }
+    },
+    "validation": {
+      "nameRequired": "Le nom de l'événement est obligatoire",
+      "dateRequired": "La date de l'événement est obligatoire",
+      "validDate": "Veuillez saisir une date valide",
+      "maxParticipants": "Le nombre maximal de participants doit être un nombre positif"
+    },
+    "messages": {
+      "saveSuccess": "Paramètres enregistrés avec succès",
+      "saveError": "Erreur lors de l'enregistrement des paramètres",
+      "confirmDiscard": "Êtes-vous sûr de vouloir annuler les modifications ?"
+    },
+    "buttons": {
+      "save": "Enregistrer les paramètres",
+      "discard": "Annuler les modifications",
+      "preview": "Aperçu de l'événement"
+    },
+    "basicInfo": {
+      "title": "Informations de base",
+      "description": "Mettre à jour les informations de base et les paramètres de votre événement",
+      "eventTitle": "Titre de l'événement",
+      "description": "Description de l'événement",
+      "startDateTime": "Date et heure de début",
+      "endDateTime": "Date et heure de fin"
+    },
+    "actions": {
+      "deleteEvent": "Supprimer l'événement",
+      "cancelEvent": "Annuler l'événement",
+      "deleting": "Suppression en cours...",
+      "cancelling": "Annulation en cours..."
+    },
+    "cancelDialog": {
+      "title": "Annuler l'événement",
+      "description": "Cela annulera l'événement pour tous les participants. Vous pouvez le réactiver ultérieurement si nécessaire.",
+      "keepActive": "Non, le garder actif",
+      "confirmCancel": "Oui, annuler l'événement"
+    },
+    "deleteDialog": {
+      "title": "Supprimer l'événement",
+      "description": "Êtes-vous sûr de vouloir supprimer cet événement ? Cette action est irréversible."
+    }     
+  },
+  "eventDashboard": {
+    "actions": {
+      "viewEvent": "Voir l'événement",
+      "startEvent": "Démarrer l'événement",
+      "endEvent": "Terminer l'événement",
+      "reopenEvent": "Rouvrir l'événement",
+      "deleteEvent": "Supprimer l'événement",
+      "cancelEvent": "Annuler l'événement",
+      "deleting": "Suppression en cours...",
+      "cancelling": "Annulation en cours..."
+    },
+    "stats": {
+      "status": "Statut",
+      "rooms": "Salles",
+      "duration": "Durée",
+      "activeRooms": "Salles actives",
+      "to": "à"
+    },
+    "quickActions": {
+      "manageRooms": "Gérer les salles",
+      "viewAnalytics": "Voir les analyses",
+      "eventSettings": "Paramètres de l'événement",
+      "security": "Paramètres de sécurité"
+    },
+    "timeline": {
+      "title": "Chronologie de l'événement",
+      "createdOn": "Créé le {{date}}",
+      "startsOn": "Démarre le {{date}}",
+      "endsOn": "Se termine le {{date}}"
+    },
+    "speakers": {
+      "title": "Intervenants de l'événement",
+      "description": "Gérer les intervenants et les présentations"
+    }
+  },
+  "speakers": {
+    "title": "Gestion des intervenants",
+    "description": "Gérer les intervenants de votre événement",
+    "dialog": {
+      "editTitle": "Modifier l'intervenant",
+      "addTitle": "Ajouter un nouvel intervenant"
+    },
+    "form": {
+      "firstName": "Prénom",
+      "lastName": "Nom de famille",
+      "assignedRooms": "Salles attribuées",
+      "selectRooms": "Sélectionner les salles",
+      "profileImage": "Image de profil",
+      "chooseFile": "Choisir un fichier",
+      "noFileChosen": "Aucun fichier choisi",
+      "uploadImage": "Télécharger l'image"
+    },
+    "list": {
+      "title": "Liste des intervenants",
+      "searchPlaceholder": "Rechercher des intervenants...",
+      "noSpeakers": "Aucun intervenant trouvé",
+      "columns": {
+        "speaker": "Intervenant",
+        "rooms": "Salles",
+        "actions": "Actions"
+      }
+    },
+    "actions": {
+      "addSpeaker": "Ajouter un intervenant",
+      "update": "Mettre à jour l'intervenant",
+      "add": "Ajouter un intervenant",
+      "edit": "Modifier l'intervenant",
+      "delete": "Supprimer l'intervenant"
+    },
+    "deleteDialog": {
+      "title": "Supprimer l'intervenant",
+      "description": "Êtes-vous sûr de vouloir supprimer cet intervenant ? Cette action est irréversible."
+    },
+    "validation": {
+      "firstNameMin": "Le prénom doit comporter au moins 2 caractères",
+      "lastNameMin": "Le nom de famille doit comporter au moins 2 caractères"
+    }
+  }
+}
