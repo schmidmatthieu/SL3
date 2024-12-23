@@ -22,11 +22,23 @@ export const useProfileStore = create<ProfileState>()(
 
       fetchProfile: async () => {
         try {
+          // Check if we have a token before making the API call
+          const token = document.cookie.split(';').find(c => c.trim().startsWith('token='));
+          if (!token) {
+            set({ profile: null, isLoading: false, error: null });
+            return;
+          }
+
           set({ isLoading: true, error: null });
           const profile = await profileService.getMyProfile();
           set({ profile, isLoading: false });
         } catch (error) {
           console.error('Error fetching profile:', error);
+          // If unauthorized, clear the profile
+          if (error.status === 401) {
+            set({ profile: null, error: null, isLoading: false });
+            return;
+          }
           set({ error: error.message, isLoading: false });
         }
       },
