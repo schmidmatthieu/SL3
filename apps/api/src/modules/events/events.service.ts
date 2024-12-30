@@ -71,6 +71,16 @@ export class EventsService {
     this.logger.log(`Updating event ${id} for user: ${userId}`);
     this.logger.log('Update data:', updateEventDto);
 
+    // Vérifier que la date de fin est après la date de début
+    if (updateEventDto.startDateTime && updateEventDto.endDateTime) {
+      const startDate = new Date(updateEventDto.startDateTime);
+      const endDate = new Date(updateEventDto.endDateTime);
+      
+      if (endDate <= startDate) {
+        throw new Error('End date must be after start date');
+      }
+    }
+
     const event = await this.eventModel.findOneAndUpdate(
       { _id: id, createdBy: userId },
       { $set: updateEventDto },

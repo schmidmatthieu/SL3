@@ -1,4 +1,5 @@
 import { IsString, IsNotEmpty, IsOptional, IsEnum, IsNumber, Min, IsDateString } from 'class-validator';
+import { EventStatus } from '../schemas/event.schema';
 
 export class CreateEventDto {
   @IsString()
@@ -21,9 +22,9 @@ export class CreateEventDto {
   @IsOptional()
   imageUrl?: string;
 
-  @IsEnum(['live', 'upcoming', 'ended'])
+  @IsEnum(['active', 'scheduled', 'ended'])
   @IsNotEmpty()
-  status: string;
+  status: EventStatus;
 
   @IsNumber()
   @Min(1)

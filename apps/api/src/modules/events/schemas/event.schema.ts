@@ -3,7 +3,7 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
 
 export type EventDocument = Event & Document;
 
-export type EventStatus = 'active' | 'scheduled' | 'ended';
+export type EventStatus = 'active' | 'scheduled' | 'ended' | 'cancelled';
 
 @Schema({
   timestamps: true,
@@ -36,7 +36,7 @@ export class Event extends Document {
 
   @Prop({ 
     type: String, 
-    enum: ['active', 'scheduled', 'ended'],
+    enum: ['active', 'scheduled', 'ended', 'cancelled'],
     default: 'scheduled'
   })
   status: EventStatus;

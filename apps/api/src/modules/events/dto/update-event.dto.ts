@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsDateString, IsEnum } from 'class-validator';
+import { IsString, IsOptional, IsDateString, IsEnum, IsNumber, Min, ValidateIf } from 'class-validator';
 import { EventStatus } from '../schemas/event.schema';
 
 export class UpdateEventDto {
@@ -8,17 +8,32 @@ export class UpdateEventDto {
 
   @IsString()
   @IsOptional()
-  venue?: string;
+  description?: string;
 
   @IsDateString()
   @IsOptional()
-  date?: string;
+  startDateTime?: string;
+
+  @IsDateString()
+  @IsOptional()
+  @ValidateIf((o) => {
+    if (o.startDateTime && o.endDateTime) {
+      return new Date(o.endDateTime) <= new Date(o.startDateTime);
+    }
+    return false;
+  })
+  endDateTime?: string;
 
   @IsString()
   @IsOptional()
   imageUrl?: string;
 
-  @IsEnum(['live', 'upcoming', 'ended'])
+  @IsEnum(['active', 'scheduled', 'ended', 'cancelled'])
   @IsOptional()
   status?: EventStatus;
+
+  @IsNumber()
+  @Min(1)
+  @IsOptional()
+  rooms?: number;
 }

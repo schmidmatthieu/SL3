@@ -27,6 +27,8 @@ const getStatusColor = (status: string) => {
       return 'bg-blue-500 hover:bg-blue-600';
     case 'ended':
       return 'bg-gray-500 hover:bg-gray-600';
+    case 'cancelled':
+      return 'bg-red-500 hover:bg-red-600';
     default:
       return 'bg-gray-500 hover:bg-gray-600';
   }
@@ -40,6 +42,8 @@ const getDisplayStatus = (status: string) => {
       return 'Scheduled';
     case 'ended':
       return 'Ended';
+    case 'cancelled':
+      return 'Cancelled';
     default:
       return status.charAt(0).toUpperCase() + status.slice(1);
   }
@@ -58,10 +62,11 @@ export function EventCard({ event }: EventCardProps) {
         "bg-background/40 backdrop-blur-[12px] border-primary/10",
         "hover:bg-background/60 hover:shadow-[0_0_30px_-5px_rgba(var(--primary),.2)]",
         "dark:bg-background/20 dark:border-primary/20",
-        "dark:hover:bg-background/30 dark:hover:shadow-[0_0_30px_-5px_rgba(var(--primary),.3)]"
+        "dark:hover:bg-background/30 dark:hover:shadow-[0_0_30px_-5px_rgba(var(--primary),.3)]",
+        event.status === 'cancelled' && "opacity-50 pointer-events-none"
       )}
     >
-      <Link href={`/events/${event.id}`}>
+      <Link href={event.status === 'cancelled' ? '#' : `/events/${event.id}`}>
         <CardContent className="p-0">
           <div className="relative w-full h-48 overflow-hidden">
             <div className="absolute inset-0 bg-black/20 transition-opacity duration-300 group-hover:opacity-0" />
@@ -132,18 +137,24 @@ export function EventCard({ event }: EventCardProps) {
       </Link>
       
       {canManageEvent && (
-        <div className="absolute top-4 left-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          <Link href={`/events/${event.id}/manage`} passHref>
+        <CardFooter className="p-6 pt-0">
+          <Link
+            href={`/events/${event.id}/manage`}
+            className={cn(
+              "w-full",
+              event.status === 'cancelled' && "pointer-events-auto"
+            )}
+          >
             <Button
               variant="outline"
-              size="sm"
-              className="bg-background/80 backdrop-blur-sm hover:bg-background/90 border-background"
+              className="w-full group/button"
             >
-              <Settings className="h-4 w-4 mr-2" />
-              Manage
+              <Settings className="w-4 h-4 mr-2 transition-transform duration-300 group-hover/button:rotate-90" />
+              Manage Event
+              <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-300 group-hover/button:translate-x-1" />
             </Button>
           </Link>
-        </div>
+        </CardFooter>
       )}
     </Card>
   );

@@ -86,7 +86,6 @@ export function EventForm({ onComplete }: { onComplete?: () => void }) {
         imageUrl: data.imageUrl || undefined,
         status,
         rooms: 1,
-        createdBy: user.id,
       });
 
       if (onComplete) {

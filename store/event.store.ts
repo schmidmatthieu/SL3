@@ -77,14 +77,18 @@ export const useEventStore = create<EventState>()(
         try {
           set({ isLoading: true, error: null });
           const updatedEvent = await eventService.update(eventId, data);
-          const events = get().events.map(event =>
-            event.id === eventId ? updatedEvent : event
-          );
-          set({ 
-            events, 
-            currentEvent: updatedEvent,
-            isLoading: false 
-          });
+          
+          // Mettre à jour à la fois events et currentEvent
+          set((state) => ({
+            events: state.events.map((event) =>
+              event.id === eventId || event._id === eventId ? { ...event, ...updatedEvent } : event
+            ),
+            currentEvent: state.currentEvent && (state.currentEvent.id === eventId || state.currentEvent._id === eventId)
+              ? { ...state.currentEvent, ...updatedEvent }
+              : state.currentEvent,
+            isLoading: false
+          }));
+          
           return updatedEvent;
         } catch (error) {
           console.error('Error updating event:', error);
@@ -97,10 +101,18 @@ export const useEventStore = create<EventState>()(
         try {
           set({ isLoading: true, error: null });
           const updatedEvent = await eventService.updateStatus(eventId, status);
-          const events = get().events.map(event =>
-            event.id === eventId ? updatedEvent : event
-          );
-          set({ events, isLoading: false });
+          
+          // Mettre à jour à la fois events et currentEvent
+          set((state) => ({
+            events: state.events.map((event) =>
+              event.id === eventId || event._id === eventId ? { ...event, ...updatedEvent } : event
+            ),
+            currentEvent: state.currentEvent && (state.currentEvent.id === eventId || state.currentEvent._id === eventId)
+              ? { ...state.currentEvent, ...updatedEvent }
+              : state.currentEvent,
+            isLoading: false
+          }));
+          
           return updatedEvent;
         } catch (error) {
           console.error('Error updating event status:', error);
