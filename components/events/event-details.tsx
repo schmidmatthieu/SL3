@@ -3,7 +3,6 @@
 import { useState, useMemo } from 'react';
 import { Event } from '@/types/event';
 import { Language } from '@/types/room';
-import { rooms } from '@/lib/rooms';
 import { RoomCard } from '@/components/events/room-card';
 import { Timeline } from '@/components/events/timeline';
 import { RoomFilters } from '@/components/events/room-filters';
@@ -25,16 +24,13 @@ export function EventDetails({ event }: EventDetailsProps) {
   const [selectedLanguages, setSelectedLanguages] = useState<Language[]>([]);
 
   const filteredRooms = useMemo(() => {
-    return rooms.filter((room) => {
-      const roomStart = parseTime(room.startTime);
-      const roomEnd = parseTime(room.endTime);
-      const isInTimeRange = selectedHour >= roomStart && selectedHour < roomEnd;
-      const hasSelectedLanguage = selectedLanguages.length === 0 || 
-        selectedLanguages.some(lang => room.languages.includes(lang));
-
-      return isInTimeRange && hasSelectedLanguage;
+    if (!event.rooms) return [];
+    
+    return event.rooms.filter((room) => {
+      // Pour l'instant, on n'applique pas de filtres de temps/langue car ces infos ne sont pas dans notre modèle Room
+      return true;
     });
-  }, [selectedHour, selectedLanguages]);
+  }, [event.rooms, selectedHour, selectedLanguages]);
 
   const handleLanguageToggle = (language: Language) => {
     setSelectedLanguages(prev => 
@@ -80,7 +76,7 @@ export function EventDetails({ event }: EventDetailsProps) {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredRooms.map((room) => (
-              <RoomCard key={room.id} room={room} eventId={event.id} />
+              <RoomCard key={room._id} room={room} eventId={event._id} userLanguage="en" />
             ))}
           </div>
         )}

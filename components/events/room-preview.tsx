@@ -1,58 +1,52 @@
 "use client";
 
-import { RoomStatus } from '@/types/room';
-import { cn } from '@/lib/utils';
+import { Room } from '@/types/room';
+import { Card, CardContent } from '@/components/ui/card';
+import { StatusBadge } from '@/components/events/status-badge';
+import { Users } from 'lucide-react';
 import Image from 'next/image';
-import { Play, Clock, CheckCircle2, XCircle } from 'lucide-react';
+import Link from 'next/link';
+import { useRoom } from '@/hooks/useRoom';
 
 interface RoomPreviewProps {
-  status: RoomStatus;
-  thumbnail: string;
-  title: string;
+  eventId: string;
+  roomId: string;
 }
 
-export function RoomPreview({ status, thumbnail, title }: RoomPreviewProps) {
+export function RoomPreview({ eventId, roomId }: RoomPreviewProps) {
+  const { currentRoom, streamInfo } = useRoom(eventId, roomId);
+
+  if (!currentRoom) return null;
+
   return (
-    <div className="relative aspect-video w-full overflow-hidden rounded-t-lg">
-      <Image
-        src={thumbnail}
-        alt={title}
-        fill
-        className="object-cover transition-transform hover:scale-105"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-      
-      {status === 'live' && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="rounded-full bg-black/40 p-4">
-            <Play className="h-8 w-8 text-white" fill="white" />
+    <Link href={`/events/${eventId}/rooms/${roomId}`}>
+      <Card className="group overflow-hidden">
+        <CardContent className="p-0">
+          <div className="relative aspect-video">
+            <Image
+              src={currentRoom.thumbnail}
+              alt={currentRoom.title}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+            <div className="absolute top-2 right-2">
+              <StatusBadge status={currentRoom.status} />
+            </div>
+            {currentRoom.status === 'upcoming' && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                <p className="text-white text-lg font-semibold">Coming Soon</p>
+              </div>
+            )}
           </div>
-        </div>
-      )}
-      
-      {status === 'upcoming' && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="rounded-full bg-black/40 p-4">
-            <Clock className="h-8 w-8 text-white" />
+          <div className="p-4">
+            <h3 className="font-semibold truncate">{currentRoom.title}</h3>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mt-2">
+              <Users className="h-4 w-4" />
+              <span>{streamInfo?.viewerCount || currentRoom.participants} participants</span>
+            </div>
           </div>
-        </div>
-      )}
-      
-      {status === 'ended' && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="rounded-full bg-black/40 p-4">
-            <CheckCircle2 className="h-8 w-8 text-white" />
-          </div>
-        </div>
-      )}
-      
-      {status === 'off' && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="rounded-full bg-black/40 p-4">
-            <XCircle className="h-8 w-8 text-white" />
-          </div>
-        </div>
-      )}
-    </div>
+        </CardContent>
+      </Card>
+    </Link>
   );
 }

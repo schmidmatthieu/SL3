@@ -1,7 +1,6 @@
-"use client";
+'use client';
 
 import { Event } from '@/types/event';
-import { Room } from '@/types/room';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/events/status-badge';
 import { Chat } from '@/components/chat/chat';
@@ -9,66 +8,127 @@ import { RoomTabs } from '@/components/room/room-tabs';
 import { ArrowLeft, Users } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRoom } from '@/hooks/useRoom';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface RoomDetailsProps {
   event: Event;
-  room: Room;
+  roomId: string;
 }
 
-export function RoomDetails({ event, room }: RoomDetailsProps) {
+export function RoomDetails({ event, roomId }: RoomDetailsProps) {
+  console.log('RoomDetails props:', { event, roomId });
+  
+  const { currentRoom, isLoading, streamInfo } = useRoom(event._id, roomId);
+  console.log('Room hook state:', { currentRoom, isLoading, streamInfo });
+
+  if (!event.rooms) {
+    return (
+      <div className="container py-8">
+        <div className="flex items-center gap-4 mb-8">
+          <Button variant="ghost" size="icon" asChild>
+            <Link href={`/events/${event._id}`}>
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
+          </Button>
+          <div className="flex-1">
+            <h2 className="text-lg font-semibold">No Rooms Available</h2>
+            <p className="text-muted-foreground">This event doesn't have any rooms yet.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading || !currentRoom) {
+    return (
+      <div className="container py-8">
+        <div className="flex items-center gap-4 mb-8">
+          <Button variant="ghost" size="icon" asChild>
+            <Link href={`/events/${event._id}`}>
+              <ArrowLeft className="h-4 w-4" />
+            </Link>
+          </Button>
+          <div className="flex-1">
+            <Skeleton className="h-8 w-64" />
+            <Skeleton className="h-4 w-48 mt-2" />
+          </div>
+        </div>
+        <div className="grid gap-8 lg:grid-cols-4">
+          <div className="lg:col-span-3">
+            <Skeleton className="aspect-video w-full" />
+          </div>
+          <div>
+            <Skeleton className="h-[200px]" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const thumbnailUrl = currentRoom.thumbnail || '/placeholder-room.jpg';
+
   return (
     <div className="container py-8">
       <div className="flex items-center gap-4 mb-8">
         <Button variant="ghost" size="icon" asChild>
-          <Link href={`/events/${event.id}`}>
+          <Link href={`/events/${event._id}`}>
             <ArrowLeft className="h-4 w-4" />
           </Link>
         </Button>
         <div className="flex-1">
-          <h1 className="text-3xl font-bold tracking-tight">{room.title}</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{currentRoom.title}</h1>
           <p className="text-muted-foreground">{event.title}</p>
         </div>
-        <StatusBadge status={room.status} />
+        <StatusBadge status={currentRoom.status} />
       </div>
 
       <div className="grid gap-8 lg:grid-cols-4">
         <div className="lg:col-span-3 space-y-4">
-          <div className="relative aspect-video w-full overflow-hidden rounded-lg">
-            <Image
-              src={room.thumbnail}
-              alt={room.title}
-              fill
-              className="object-cover"
-            />
-          </div>
+          {currentRoom.status === 'live' && streamInfo?.streamUrl ? (
+            <div className="relative aspect-video w-full overflow-hidden rounded-lg">
+              {/* Le VideoPlayer sera implémenté dans la prochaine étape */}
+              <Image
+                src={thumbnailUrl}
+                alt={currentRoom.title}
+                fill
+                className="object-cover"
+              />
+            </div>
+          ) : (
+            <div className="relative aspect-video w-full overflow-hidden rounded-lg">
+              <Image
+                src={thumbnailUrl}
+                alt={currentRoom.title}
+                fill
+                className="object-cover"
+              />
+              {currentRoom.status === 'upcoming' && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                  <p className="text-white text-xl font-semibold">Coming Soon</p>
+                </div>
+              )}
+            </div>
+          )}
           
           <div className="flex justify-between items-center p-4 bg-muted rounded-lg">
             <div className="text-sm">
               <p className="font-medium">Schedule</p>
               <p className="text-muted-foreground">
-                {room.startTime} - {room.endTime}
+                {currentRoom.startTime} - {currentRoom.endTime}
               </p>
             </div>
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4" />
-              <span>{room.participants} participants</span>
+              <span>{streamInfo?.viewerCount || currentRoom.participants} participants</span>
             </div>
           </div>
 
-          <RoomTabs roomId={room.id} />
+          <RoomTabs roomId={currentRoom.id} />
         </div>
 
-        <div className="lg:col-span-1">
-          <div className="sticky top-24 space-y-6 h-[calc(100vh-12rem)]">
-            <Chat
-              roomId={room.id}
-              currentUser={{
-                id: '1',
-                username: 'Demo User',
-                color: '#FF4B4B'
-              }}
-            />
-          </div>
+        <div>
+          <Chat roomId={currentRoom.id} />
         </div>
       </div>
     </div>
