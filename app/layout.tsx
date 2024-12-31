@@ -19,8 +19,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  modal
 }: {
   children: React.ReactNode
+  modal: React.ReactNode
 }) {
   return (
     <html lang="en" suppressHydrationWarning className={`${GeistSans.variable} ${GeistMono.variable}`}>
@@ -29,13 +31,16 @@ export default function RootLayout({
           attribute="class"
           defaultTheme="system"
           enableSystem
+          disableTransitionOnChange
         >
           <AuthProvider>
             <I18nProvider>
-              <AnimatedBackground />
               <div className="relative flex min-h-screen flex-col">
                 <Header />
-                <main className="flex-1">{children}</main>
+                <main className="flex-1">
+                  {children}
+                  {modal}
+                </main>
                 <Footer />
               </div>
               <Toaster />

@@ -124,11 +124,90 @@ const config: Config = {
   				to: {
   					height: '0'
   				}
+  			},
+  			'sound-wave': {
+  				'0%': {
+  					transform: 'scale(1)',
+  					opacity: '0.3'
+  				},
+  				'100%': {
+  					transform: 'scale(1.5)',
+  					opacity: '0'
+  				}
+  			},
+  			'sound-pulse': {
+  				'0%': {
+  					opacity: '0.3',
+  					transform: 'translateX(-100%)'
+  				},
+  				'50%': {
+  					opacity: '0.5'
+  				},
+  				'100%': {
+  					opacity: '0.3',
+  					transform: 'translateX(100%)'
+  				}
+  			},
+  			'star-twinkle': {
+  				'0%, 100%': {
+  					opacity: '0',
+  					transform: 'scale(0.5)'
+  				},
+  				'50%': {
+  					opacity: '1',
+  					transform: 'scale(1)'
+  				}
+  			},
+  			'cloud-float': {
+  				'0%, 100%': {
+  					transform: 'translateX(0)'
+  				},
+  				'50%': {
+  					transform: 'translateX(-3px)'
+  				}
+  			},
+  			'shake': {
+  				'0%, 100%': {
+  					transform: 'rotate(0deg)'
+  				},
+  				'25%': {
+  					transform: 'rotate(-15deg)'
+  				},
+  				'75%': {
+  					transform: 'rotate(15deg)'
+  				}
+  			},
+  			'logo-spin': {
+  				'0%': {
+  					transform: 'rotateY(0deg)'
+  				},
+  				'100%': {
+  					transform: 'rotateY(360deg)'
+  				}
+  			},
+  			'glow-line': {
+  				'0%': {
+  					opacity: '0',
+  					transform: 'scaleX(0)'
+  				},
+  				'100%': {
+  					opacity: '1',
+  					transform: 'scaleX(1)'
+  				}
   			}
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
+  			'accordion-up': 'accordion-up 0.2s ease-out',
+  			'sound-wave-1': 'sound-wave 2s ease-out infinite',
+  			'sound-wave-2': 'sound-wave 2s ease-out infinite 0.5s',
+  			'sound-wave-3': 'sound-wave 2s ease-out infinite 1s',
+  			'sound-pulse': 'sound-pulse 2s ease-in-out infinite',
+  			'star-twinkle': 'star-twinkle 2s ease-in-out infinite',
+  			'cloud-float': 'cloud-float 3s ease-in-out infinite',
+  			'shake': 'shake 0.5s ease-in-out',
+  			'logo-spin': 'logo-spin 1s ease-in-out',
+  			'glow-line': 'glow-line 0.5s ease-out forwards'
   		}
   	}
   },
