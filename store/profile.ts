@@ -22,7 +22,7 @@ interface User {
   lastName: string;
   bio: string;
   imageUrl: string;
-  preferredLanguage: 'en' | 'fr';
+  preferredLanguage: 'en' | 'fr' | 'de' | 'it';
   theme: 'light' | 'dark' | 'system';
 }
 

@@ -46,9 +46,34 @@ export function AuthProvider({
 
         const data = await response.json();
         
-        // Set user and profile data
-        setUser(data);
-        setProfile(data);
+        // Set user and profile data if data exists
+        if (data) {
+          const user = {
+            id: data.id,
+            email: data.email,
+            username: data.username,
+            role: data.role,
+            createdAt: data.createdAt,
+            updatedAt: data.updatedAt
+          };
+          
+          const profile = {
+            id: data.id,
+            userId: data.id,
+            role: data.role,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            imageUrl: data.imageUrl,
+            bio: data.bio,
+            preferredLanguage: data.preferredLanguage,
+            theme: data.theme,
+            createdAt: data.createdAt,
+            updatedAt: data.updatedAt
+          };
+
+          setUser(user);
+          setProfile(profile);
+        }
         
         setLoading(false);
       } catch (error) {

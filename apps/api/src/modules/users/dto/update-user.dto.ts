@@ -42,10 +42,10 @@ export class UpdateUserDto {
   @ApiProperty({
     description: 'The preferred language of the user',
     example: 'fr',
-    enum: ['en', 'fr'],
+    enum: ['en', 'fr', 'de', 'it'],
     required: false,
   })
-  @IsString()
+  @IsEnum(['en', 'fr', 'de', 'it'])
   @IsOptional()
   preferredLanguage?: string;
 

@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Profile, ProfileDocument } from './schemas/profile.schema';
 import { Permission, PermissionDocument, PermissionType } from './schemas/permission.schema';
+import { User, UserDocument } from '../users/schemas/user.schema';
 import { Logger } from '@nestjs/common';
 
 @Injectable()
@@ -12,14 +13,28 @@ export class RolesService {
   constructor(
     @InjectModel(Profile.name) private profileModel: Model<ProfileDocument>,
     @InjectModel(Permission.name) private permissionModel: Model<PermissionDocument>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
   async getRole(userId: string): Promise<string> {
     this.logger.log('Getting role for user ID:', userId);
     try {
+      // First, try to get the role from the profile
       const profile = await this.profileModel.findOne({ userId }).exec();
-      this.logger.log('Role found:', profile ? JSON.stringify(profile) : 'no role found');
-      return profile?.role || 'participant';
+      if (profile?.role) {
+        this.logger.log('Role found in profile:', profile.role);
+        return profile.role;
+      }
+
+      // If no profile role, check the user model
+      const user = await this.userModel.findById(userId).exec();
+      if (user?.role) {
+        this.logger.log('Role found in user:', user.role);
+        return user.role;
+      }
+
+      this.logger.log('No role found, defaulting to participant');
+      return 'participant';
     } catch (error) {
       this.logger.error('Error getting role:', error);
       throw error;

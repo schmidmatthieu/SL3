@@ -107,8 +107,13 @@ export class User {
     description: 'The preferred language for the user interface',
     example: 'en',
     default: 'en',
+    enum: ['en', 'fr', 'de', 'it']
   })
-  @Prop({ default: 'en' })
+  @Prop({ 
+    default: 'en',
+    type: String,
+    enum: ['en', 'fr', 'de', 'it']
+  })
   preferredLanguage: string;
 
   @ApiProperty({

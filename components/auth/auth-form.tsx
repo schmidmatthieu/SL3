@@ -43,12 +43,38 @@ export function AuthForm() {
 
       // Store the token in cookie and user data in localStorage
       document.cookie = `token=${data.token}; path=/; max-age=2592000; SameSite=Lax`; // 30 days
-      localStorage.setItem('user', JSON.stringify(data.user));
-      localStorage.setItem('profile', JSON.stringify(data.profile));
+      
+      if (data.user) {
+        const user = {
+          id: data.user.id,
+          email: data.user.email,
+          username: data.user.username,
+          role: data.user.role,
+          createdAt: data.user.createdAt,
+          updatedAt: data.user.updatedAt
+        };
+        
+        const profile = {
+          id: data.user.id,
+          userId: data.user.id,
+          role: data.user.role,
+          firstName: data.user.firstName,
+          lastName: data.user.lastName,
+          imageUrl: data.user.imageUrl,
+          bio: data.user.bio,
+          preferredLanguage: data.user.preferredLanguage,
+          theme: data.user.theme,
+          createdAt: data.user.createdAt,
+          updatedAt: data.user.updatedAt
+        };
 
-      // Update auth store
-      setUser(data.user);
-      setProfile(data.profile);
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('profile', JSON.stringify(profile));
+
+        // Update auth store
+        setUser(user);
+        setProfile(profile);
+      }
       
       toast({
         title: "Success",
@@ -91,12 +117,38 @@ export function AuthForm() {
 
       // Store the token in cookie and user data in localStorage
       document.cookie = `token=${data.token}; path=/; max-age=2592000; SameSite=Lax`; // 30 days
-      localStorage.setItem('user', JSON.stringify(data.user));
-      localStorage.setItem('profile', JSON.stringify(data.profile));
+      
+      if (data.user) {
+        const user = {
+          id: data.user.id,
+          email: data.user.email,
+          username: data.user.username,
+          role: data.user.role,
+          createdAt: data.user.createdAt,
+          updatedAt: data.user.updatedAt
+        };
+        
+        const profile = {
+          id: data.user.id,
+          userId: data.user.id,
+          role: data.user.role,
+          firstName: data.user.firstName,
+          lastName: data.user.lastName,
+          imageUrl: data.user.imageUrl,
+          bio: data.user.bio,
+          preferredLanguage: data.user.preferredLanguage,
+          theme: data.user.theme,
+          createdAt: data.user.createdAt,
+          updatedAt: data.user.updatedAt
+        };
 
-      // Update auth store
-      setUser(data.user);
-      setProfile(data.profile);
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('profile', JSON.stringify(profile));
+
+        // Update auth store
+        setUser(user);
+        setProfile(profile);
+      }
 
       toast({
         title: "Success",
