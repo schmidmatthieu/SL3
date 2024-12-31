@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional, IsEnum, IsNumber, Min, IsDateString } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsEnum, IsDateString } from 'class-validator';
 import { EventStatus } from '../schemas/event.schema';
 
 export class CreateEventDto {
@@ -26,8 +26,6 @@ export class CreateEventDto {
   @IsNotEmpty()
   status: EventStatus;
 
-  @IsNumber()
-  @Min(1)
-  @IsNotEmpty()
-  rooms: number;
+  @IsOptional()
+  rooms?: string[];
 }

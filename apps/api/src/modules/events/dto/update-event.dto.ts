@@ -16,12 +16,7 @@ export class UpdateEventDto {
 
   @IsDateString()
   @IsOptional()
-  @ValidateIf((o) => {
-    if (o.startDateTime && o.endDateTime) {
-      return new Date(o.endDateTime) <= new Date(o.startDateTime);
-    }
-    return false;
-  })
+  @ValidateIf((o) => o.startDateTime && o.endDateTime)
   endDateTime?: string;
 
   @IsString()

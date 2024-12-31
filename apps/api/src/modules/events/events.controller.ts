@@ -2,78 +2,70 @@ import {
   Controller,
   Get,
   Post,
-  Put,
-  Delete,
   Body,
+  Patch,
   Param,
-  Query,
+  Delete,
   UseGuards,
+  Query,
   Request,
   Logger,
 } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
+import { EventResponseDto } from './dto/event-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { Event } from './schemas/event.schema';
 
 @Controller('events')
 @UseGuards(JwtAuthGuard)
 export class EventsController {
   private readonly logger = new Logger(EventsController.name);
-
+  
   constructor(private readonly eventsService: EventsService) {}
 
   @Post()
-  async create(@Request() req, @Body() createEventDto: CreateEventDto): Promise<Event> {
-    this.logger.log(`Creating event for user: ${req.user.id}`);
+  create(@Request() req, @Body() createEventDto: CreateEventDto) {
     return this.eventsService.create(req.user.id, createEventDto);
   }
 
   @Get()
-  async findAll(@Query('status') status?: string, @Query('date') date?: string): Promise<Event[]> {
-    this.logger.log('Finding all events');
+  findAll(@Query('status') status?: string, @Query('date') date?: string) {
     return this.eventsService.findAll({ status, date });
   }
 
-  @Get('me')
-  async findMyEvents(@Request() req): Promise<Event[]> {
-    this.logger.log(`Finding events for user: ${req.user.id}`);
+  @Get('my')
+  findMyEvents(@Request() req) {
     return this.eventsService.findByUser(req.user.id);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Event | { message: string }> {
-    // Skip if trying to access manage route
-    if (id === 'manage') {
-      return { message: 'Manage route' };
-    }
-    this.logger.log(`Finding event by id: ${id}`);
+  findOne(@Param('id') id: string): Promise<EventResponseDto> {
     return this.eventsService.findOne(id);
   }
 
-  @Put(':id')
-  async update(
-    @Request() req,
+  @Patch(':id')
+  update(
     @Param('id') id: string,
     @Body() updateEventDto: UpdateEventDto,
-  ): Promise<Event> {
-    this.logger.log(`Updating event ${id} for user: ${req.user.id}`);
-    return this.eventsService.update(id, req.user.id, updateEventDto);
-  }
-
-  @Put(':id/status')
-  async updateStatus(
-    @Param('id') id: string,
-    @Body('status') status: 'live' | 'upcoming' | 'ended',
-  ): Promise<Event> {
-    this.logger.log(`Updating status for event ${id} to ${status}`);
-    return this.eventsService.updateStatus(id, status);
+  ) {
+    return this.eventsService.update(id, updateEventDto);
   }
 
   @Delete(':id')
-  async remove(@Request() req, @Param('id') id: string): Promise<Event> {
-    this.logger.log(`Deleting event ${id} for user: ${req.user.id}`);
-    return this.eventsService.delete(id, req.user.id);
+  remove(@Param('id') id: string) {
+    return this.eventsService.remove(id);
+  }
+
+  @Post(':id/rooms/:roomId')
+  addRoom(@Param('id') id: string, @Param('roomId') roomId: string) {
+    this.logger.log(`Adding room ${roomId} to event ${id}`);
+    return this.eventsService.addRoomToEvent(id, roomId);
+  }
+
+  @Delete(':id/rooms/:roomId')
+  removeRoom(@Param('id') id: string, @Param('roomId') roomId: string) {
+    this.logger.log(`Removing room ${roomId} from event ${id}`);
+    return this.eventsService.removeRoom(id, roomId);
   }
 }

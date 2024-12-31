@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Room } from '../../rooms/room.schema';
 
 export type EventDocument = Event & Document;
 
@@ -41,8 +42,8 @@ export class Event extends Document {
   })
   status: EventStatus;
 
-  @Prop({ type: Number, min: 1, default: 1 })
-  rooms: number;
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Room' }], default: [] })
+  rooms: string[];
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   createdBy: string;
@@ -55,10 +56,6 @@ export const EventSchema = SchemaFactory.createForClass(Event);
 
 // Indexes
 EventSchema.index({ createdBy: 1 });
-EventSchema.index({ startDateTime: 1 });
 EventSchema.index({ status: 1 });
-
-// Virtuals
-EventSchema.virtual('isLive').get(function() {
-  return this.status === 'active';
-});
+EventSchema.index({ startDateTime: 1 });
+EventSchema.index({ endDateTime: 1 });
