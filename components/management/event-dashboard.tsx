@@ -162,7 +162,7 @@ export function EventDashboard({ event, eventId }: EventDashboardProps) {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{event.rooms || 0}</div>
+            <div className="text-2xl font-bold">{event.rooms?.length || 0}</div>
             <p className="text-xs text-muted-foreground">
               Active Rooms
             </p>

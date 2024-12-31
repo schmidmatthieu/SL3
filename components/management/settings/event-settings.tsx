@@ -151,6 +151,11 @@ export function EventSettings({ event }: EventSettingsProps) {
         throw new Error('Event ID is missing');
       }
 
+      // Vérifier que les dates sont valides
+      if (!formData.startDateTime || !formData.endDateTime) {
+        throw new Error('Start and end dates are required');
+      }
+
       // Vérifier que la date de fin est après la date de début
       if (new Date(formData.endDateTime) <= new Date(formData.startDateTime)) {
         throw new Error('End date must be after start date');
@@ -159,49 +164,36 @@ export function EventSettings({ event }: EventSettingsProps) {
       const updateData: Partial<Event> = {
         title: formData.title,
         description: formData.description,
-        startDateTime: formData.startDateTime?.toISOString(),
-        endDateTime: formData.endDateTime?.toISOString(),
-        rooms: parseInt(formData.maxParticipants)
+        startDateTime: formData.startDateTime.toISOString(),
+        endDateTime: formData.endDateTime.toISOString(),
+        maxParticipants: formData.maxParticipants ? parseInt(formData.maxParticipants) : undefined,
+        location: formData.location || undefined
       };
 
-      // Calculer le nouveau statut si les dates ont changé
-      if (formData.startDateTime || formData.endDateTime) {
-        const newStatus = calculateEventStatus(
-          new Date(formData.startDateTime),
-          new Date(formData.endDateTime)
-        );
-        updateData.status = newStatus;
-      }
+      // Calculer le nouveau statut
+      const newStatus = calculateEventStatus(
+        new Date(formData.startDateTime),
+        new Date(formData.endDateTime)
+      );
+      updateData.status = newStatus;
 
       // Mettre à jour l'événement
-      const updatedEvent = await updateEvent(eventId, updateData);
-
-      // Mettre à jour l'état local
-      setFormData({
-        ...formData,
-        title: formData.title,
-        maxParticipants: parseInt(formData.maxParticipants),
-        description: formData.description,
-        startDateTime: formData.startDateTime?.toISOString() || event.startDateTime,
-        endDateTime: formData.endDateTime?.toISOString() || event.endDateTime,
-        location: formData.location,
-        type: formData.type
-      });
+      await updateEvent(eventId, updateData);
 
       toast({
         title: "Success",
         description: "Event settings have been updated.",
       });
       
-      // Recharger la liste des événements et rediriger vers la page des paramètres de l'événement
+      // Recharger la liste des événements
       await fetchEvents();
       router.push(`/events/${eventId}/manage`);
     } catch (error) {
       console.error('Error updating event:', error);
       toast({
         title: "Error",
-        description: error.message,
-        variant: 'destructive',
+        description: error.message || "An error occurred while updating the event.",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
