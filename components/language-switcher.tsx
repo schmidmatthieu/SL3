@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { useTranslation } from 'react-i18next';
 import { languages } from "@/app/i18n/settings";
 import {
   DropdownMenu,
@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Globe } from "lucide-react";
+import { useProfileStore } from '@/store/profile';
+import { useToast } from '@/components/ui/use-toast';
 
 const languageNames = {
   en: "English",
@@ -19,28 +21,44 @@ const languageNames = {
 };
 
 export function LanguageSwitcher() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const currentLang = pathname.split("/")[1] || "en";
+  const { i18n } = useTranslation();
+  const { updateProfile, user } = useProfileStore();
+  const { toast } = useToast();
+  const currentLang = i18n.language || 'en';
 
-  const handleLanguageChange = (lang: string) => {
-    const newPath = pathname.replace(`/${currentLang}`, `/${lang}`);
-    router.push(newPath);
+  const handleLanguageChange = async (lang: string) => {
+    try {
+      // Changer la langue dans i18next
+      await i18n.changeLanguage(lang);
+      
+      // Mettre à jour les paramètres utilisateur si l'utilisateur est connecté
+      if (user) {
+        await updateProfile({
+          ...user,
+          preferredLanguage: lang,
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to change language. Please try again.',
+        variant: 'destructive',
+      });
+    }
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" className="w-9 px-0">
-          <Globe className="h-4 w-4" />
+        <Button variant="ghost" size="icon">
+          <Globe className="h-[1.2rem] w-[1.2rem]" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent>
         {languages.map((lang) => (
           <DropdownMenuItem
             key={lang}
             onClick={() => handleLanguageChange(lang)}
-            className={currentLang === lang ? "bg-muted" : ""}
           >
             {languageNames[lang as keyof typeof languageNames]}
           </DropdownMenuItem>
