@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/use-auth'
+import { useTranslation } from 'react-i18next'
 import { EventList } from '@/components/events/event-list'
 import { EventForm } from '@/components/events/event-form'
 import { Button } from '@/components/ui/button'
@@ -17,6 +18,12 @@ import {
 export default function EventsPage() {
   const { user, loading } = useAuth()
   const router = useRouter()
+  const { t } = useTranslation()
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   useEffect(() => {
     if (!loading && !user) {
@@ -29,17 +36,31 @@ export default function EventsPage() {
     return null
   }
 
+  const staticContent = {
+    title: "Events",
+    createButton: "Create Event",
+    dialogTitle: "Create New Event"
+  }
+
+  const translatedContent = {
+    title: t('events.title'),
+    createButton: t('events.createButton'),
+    dialogTitle: t('events.createDialog.title')
+  }
+
+  const content = isClient ? translatedContent : staticContent
+
   return (
     <div className="container py-10 space-y-10">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Events</h1>
+        <h1 className="text-3xl font-bold">{content.title}</h1>
         <Dialog>
           <DialogTrigger asChild>
-            <Button>Create Event</Button>
+            <Button>{content.createButton}</Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
-              <DialogTitle>Create New Event</DialogTitle>
+              <DialogTitle>{content.dialogTitle}</DialogTitle>
             </DialogHeader>
             <EventForm />
           </DialogContent>

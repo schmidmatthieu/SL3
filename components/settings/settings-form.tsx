@@ -21,7 +21,7 @@ const profileFormSchema = z.object({
   email: z.string().email(),
   firstName: z.string().min(2).max(50),
   lastName: z.string().min(2).max(50),
-  preferredLanguage: z.enum(['en', 'fr']),
+  preferredLanguage: z.enum(['en', 'fr', 'de', 'it']),
   theme: z.enum(['light', 'dark', 'system']),
 });
 
@@ -251,6 +251,8 @@ export function SettingsForm() {
                         <SelectContent>
                           <SelectItem value="en">English</SelectItem>
                           <SelectItem value="fr">Français</SelectItem>
+                          <SelectItem value="de">Deutsch</SelectItem>
+                          <SelectItem value="it">Italiano</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />

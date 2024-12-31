@@ -8,6 +8,7 @@ import { Toaster } from '@/components/ui/toaster'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { AnimatedBackground } from "@/components/ui/animated-background"
+import { I18nProvider } from './i18n/I18nProvider'
 import cn from 'classnames'
 
 export const metadata: Metadata = {
@@ -29,14 +30,16 @@ export default function RootLayout({
           defaultTheme="system"
           enableSystem
         >
-          <AnimatedBackground />
           <AuthProvider>
-            <div className="relative flex min-h-screen flex-col">
-              <Header />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
-            <Toaster />
+            <I18nProvider>
+              <AnimatedBackground />
+              <div className="relative flex min-h-screen flex-col">
+                <Header />
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </div>
+              <Toaster />
+            </I18nProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

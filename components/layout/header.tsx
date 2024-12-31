@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { ModeToggle } from '@/components/theme/mode-toggle';
 import { LanguageSwitcher } from '@/components/language-switcher';
@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/layout/logo';
 import { useAuthStore } from '@/store/auth-store';
+import { useTranslation } from 'react-i18next';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,12 +17,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useState, useEffect } from 'react';
 
 export function Header() {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const isAdminPage = pathname?.startsWith('/admin');
   const { user, profile, signOut } = useAuthStore();
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const userInitials = profile?.firstName && profile?.lastName
     ? `${profile.firstName[0]}${profile.lastName[0]}`
@@ -34,8 +42,51 @@ export function Header() {
     return url.startsWith('http') ? url : `${API_URL}${url.startsWith('/') ? '' : '/'}${url}`;
   };
 
-  console.log('Header - Profile:', profile); // Debug log
-  console.log('Header - Avatar URL:', profile?.imageUrl ? getFullImageUrl(profile.imageUrl) : 'No image'); // Debug log
+  // Static content for server-side rendering
+  const staticNavLinks = (
+    <div className="hidden md:flex items-center space-x-6">
+      <Link href="/events" className="text-sm font-medium hover:text-primary transition-colors">
+        Events
+      </Link>
+      <Link href="/about" className="text-sm font-medium hover:text-primary transition-colors">
+        About
+      </Link>
+    </div>
+  );
+
+  // Translated content for client-side rendering
+  const translatedNavLinks = (
+    <div className="hidden md:flex items-center space-x-6">
+      <Link href="/events" className="text-sm font-medium hover:text-primary transition-colors">
+        {t('nav.events')}
+      </Link>
+      <Link href="/about" className="text-sm font-medium hover:text-primary transition-colors">
+        {t('nav.about')}
+      </Link>
+    </div>
+  );
+
+  // Static auth buttons
+  const staticAuthButtons = (
+    <>
+      {!user ? (
+        <Button variant="default" size="sm" asChild>
+          <Link href="/login">Login</Link>
+        </Button>
+      ) : null}
+    </>
+  );
+
+  // Translated auth buttons
+  const translatedAuthButtons = (
+    <>
+      {!user ? (
+        <Button variant="default" size="sm" asChild>
+          <Link href="/login">{t('nav.login')}</Link>
+        </Button>
+      ) : null}
+    </>
+  );
 
   return (
     <header className="sticky top-0 z-40 w-full border-b header-shadow header-glow glass-effect">
@@ -45,16 +96,7 @@ export function Header() {
           <span className="font-bold text-gradient">SL3</span>
         </Link>
         
-        {!isAdminPage && (
-          <div className="hidden md:flex items-center space-x-6">
-            <Link href="/events" className="text-sm font-medium hover:text-primary transition-colors">
-              Events
-            </Link>
-            <Link href="/about" className="text-sm font-medium hover:text-primary transition-colors">
-              About
-            </Link>
-          </div>
-        )}
+        {!isAdminPage && (isClient ? translatedNavLinks : staticNavLinks)}
 
         <div className="flex items-center space-x-3">
           {!isAdminPage && user && profile?.role === 'admin' && (
@@ -73,6 +115,8 @@ export function Header() {
           <LanguageSwitcher />
           <ModeToggle />
           
+          {isClient ? translatedAuthButtons : staticAuthButtons}
+
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -99,32 +143,23 @@ export function Header() {
                     {profile?.firstName ? `${profile.firstName} ${profile.lastName}` : user.email}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {profile?.role || 'User'}
+                    {profile?.role === 'admin' ? t('nav.userRole.admin') : t('nav.userRole.user')}
                   </div>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link href="/settings">
                     <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
+                    {t('nav.settings')}
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => {
-                    signOut();
-                    window.location.href = '/';
-                  }}
-                >
+                <DropdownMenuItem onClick={signOut}>
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Logout</span>
+                  {t('nav.logout')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          ) : (
-            <Button variant="default" asChild>
-              <Link href="/login">Login</Link>
-            </Button>
-          )}
+          ) : null}
         </div>
       </nav>
     </header>

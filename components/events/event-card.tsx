@@ -12,6 +12,8 @@ import { Event } from '@/store/event.store';
 import { Settings, Calendar, Clock, Users, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
+import { useTranslation } from 'react-i18next';
+import { useState, useEffect } from 'react';
 
 const DEFAULT_EVENT_IMAGE = 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=2000&auto=format&fit=crop';
 
@@ -34,26 +36,59 @@ const getStatusColor = (status: string) => {
   }
 };
 
-const getDisplayStatus = (status: string) => {
-  switch (status.toLowerCase()) {
-    case 'active':
-      return 'Live';
-    case 'scheduled':
-      return 'Scheduled';
-    case 'ended':
-      return 'Ended';
-    case 'cancelled':
-      return 'Cancelled';
-    default:
-      return status.charAt(0).toUpperCase() + status.slice(1);
-  }
-};
-
 export function EventCard({ event }: EventCardProps) {
   const { user, profile } = useAuthStore();
   const isAdmin = profile?.role === 'admin';
   const isEventAdmin = user?.id === event.createdBy;
   const canManageEvent = isAdmin || isEventAdmin;
+  const { t } = useTranslation();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const staticContent = {
+    status: {
+      live: "Live",
+      scheduled: "Scheduled",
+      ended: "Ended",
+      draft: "Draft",
+      cancelled: "Cancelled",
+      postponed: "Postponed",
+      active: "Live"
+    },
+    card: {
+      startDate: "Start Date",
+      endDate: "End Date",
+      manageEvent: "Manage Event"
+    }
+  };
+
+  const translatedContent = {
+    status: {
+      live: t('events.status.live'),
+      scheduled: t('events.status.scheduled'),
+      ended: t('events.status.ended'),
+      draft: t('events.status.draft'),
+      cancelled: t('events.status.cancelled'),
+      postponed: t('events.status.postponed'),
+      active: t('events.status.active')
+    },
+    card: {
+      startDate: t('events.card.startDate'),
+      endDate: t('events.card.endDate'),
+      manageEvent: t('events.card.manage')
+    }
+  };
+
+  const content = isClient ? translatedContent : staticContent;
+
+  const getDisplayStatus = (status: string) => {
+    const statusKey = status.toLowerCase();
+    return content.status[statusKey as keyof typeof content.status] || 
+           status.charAt(0).toUpperCase() + status.slice(1);
+  };
 
   return (
     <Card
@@ -101,7 +136,7 @@ export function EventCard({ event }: EventCardProps) {
               <div className="flex items-center space-x-3">
                 <Calendar className="h-4 w-4 text-primary" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium">Start Date</p>
+                  <p className="text-sm font-medium">{content.card.startDate}</p>
                   <p className="text-sm text-muted-foreground truncate">
                     {format(new Date(event.startDateTime), 'PPP')}
                   </p>
@@ -111,7 +146,7 @@ export function EventCard({ event }: EventCardProps) {
               <div className="flex items-center space-x-3">
                 <Clock className="h-4 w-4 text-primary" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium">End Date</p>
+                  <p className="text-sm font-medium">{content.card.endDate}</p>
                   <p className="text-sm text-muted-foreground truncate">
                     {format(new Date(event.endDateTime), 'PPP')}
                   </p>
@@ -150,7 +185,7 @@ export function EventCard({ event }: EventCardProps) {
               className="w-full group/button"
             >
               <Settings className="w-4 h-4 mr-2 transition-transform duration-300 group-hover/button:rotate-90" />
-              Manage Event
+              {content.card.manageEvent}
               <ArrowRight className="w-4 h-4 ml-2 transition-transform duration-300 group-hover/button:translate-x-1" />
             </Button>
           </Link>
