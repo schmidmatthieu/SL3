@@ -58,7 +58,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { ImageUpload } from '@/components/ui/image-upload';
+import { ImageUploader } from '@/components/ui/image-uploader';
 
 interface Room {
   id: string;
@@ -274,10 +274,12 @@ export function SpeakerManagement({ eventId, rooms }: SpeakerManagementProps) {
                   name="imageUrl"
                   render={({ field }) => (
                     <FormItem>
+                      <FormLabel>Photo</FormLabel>
                       <FormControl>
-                        <ImageUpload
-                          value={field.value}
-                          onChange={field.onChange}
+                        <ImageUploader
+                          onImageSelect={(url) => field.onChange(url)}
+                          currentImage={field.value}
+                          mediaType="speaker"
                         />
                       </FormControl>
                       <FormMessage />
