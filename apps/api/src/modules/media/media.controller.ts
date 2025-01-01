@@ -10,17 +10,31 @@ import {
   UploadedFile,
   UseGuards,
   Request,
+  Query,
+  OnModuleInit,
+  BadRequestException
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MediaService } from './media.service';
+import { CreateMediaDto } from './dto/create-media.dto';
 import { UpdateMediaDto } from './dto/update-media.dto';
+import { UsageMediaDto } from './dto/usage-media.dto';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { extname, join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { MediaUsage, MediaUsageType } from './types/media.types';
+import * as fs from 'fs';
+
+const UPLOAD_DIR = './public/uploads';
+
+// S'assurer que le dossier d'upload existe
+if (!fs.existsSync(UPLOAD_DIR)) {
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+}
 
 const storage = diskStorage({
-  destination: './public/uploads',
+  destination: UPLOAD_DIR,
   filename: (req, file, callback) => {
     const uniqueSuffix = uuidv4();
     callback(null, `${uniqueSuffix}${extname(file.originalname)}`);
@@ -57,9 +71,28 @@ export class MediaController {
     return this.mediaService.create(file, req.user.id);
   }
 
+  @Post('upload-url')
+  async uploadFromUrl(
+    @Body() body: { url: string },
+    @Request() req: any
+  ): Promise<any> {
+    return this.mediaService.uploadFromUrl(body.url, req.user.id);
+  }
+
   @Get()
-  findAll() {
-    return this.mediaService.findAll();
+  async findAll(@Query('type') type?: MediaUsageType) {
+    switch (type) {
+      case 'unused':
+        return this.mediaService.findUnused();
+      case 'profile':
+      case 'speaker':
+      case 'event':
+      case 'room':
+      case 'logo':
+        return this.mediaService.findByUsageType(type);
+      default:
+        return this.mediaService.findAll();
+    }
   }
 
   @Get(':id')
@@ -75,5 +108,30 @@ export class MediaController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.mediaService.remove(id);
+  }
+
+  @Post(':id/usage')
+  async addUsage(
+    @Param('id') id: string,
+    @Body() usage: UsageMediaDto
+  ) {
+    return this.mediaService.addUsage(id, usage);
+  }
+
+  @Delete(':id/usage/:entityId')
+  async removeUsage(
+    @Param('id') id: string,
+    @Param('entityId') entityId: string
+  ) {
+    return this.mediaService.removeUsage(id, entityId);
+  }
+
+  @Patch('usage/:type/:entityId')
+  async updateUsageEntityName(
+    @Param('type') type: MediaUsage['type'],
+    @Param('entityId') entityId: string,
+    @Body('entityName') entityName: string
+  ) {
+    return this.mediaService.updateUsageEntityName(type, entityId, entityName);
   }
 }

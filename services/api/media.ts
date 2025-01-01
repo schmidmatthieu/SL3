@@ -36,38 +36,109 @@ export interface UploadResponse {
   filename: string;
 }
 
+export interface MediaUsage {
+  type: string;
+  entityId: string;
+  usedAt: string;
+  entityName?: string;
+}
+
+export interface Media {
+  _id: string;
+  url: string;
+  filename: string;
+  mimeType: string;
+  size: number;
+  metadata?: {
+    title?: string;
+    description?: string;
+    altText?: string;
+    seoTitle?: string;
+    seoDescription?: string;
+  };
+  uploadedBy: string;
+  createdAt?: string;
+  updatedAt?: string;
+  usages?: MediaUsage[];
+}
+
 export const mediaService = {
   async uploadImage(file: File): Promise<UploadResponse> {
     const formData = new FormData();
     formData.append('file', file);
 
-    console.log('Sending file upload request:', {
-      filename: file.name,
-      type: file.type,
-      size: file.size
-    });
+    try {
+      console.log('Sending file upload request:', {
+        filename: file.name,
+        type: file.type,
+        size: file.size
+      });
 
-    const response = await fetchWithAuth(`${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.media}/upload`, {
-      method: 'POST',
-      body: formData,
-    });
+      const response = await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.media}/upload`, {
+        method: 'POST',
+        body: formData,
+      });
 
-    console.log('Upload response:', response);
+      if (!response.url) {
+        throw new Error('Invalid response from server: missing URL');
+      }
+
+      return response;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      throw new Error(`Erreur lors de l'upload de l'image: ${error.message}`);
+    }
+  },
+
+  async getAll(type?: string): Promise<MediaItem[]> {
+    const url = new URL(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.media}`);
+    if (type) {
+      url.searchParams.append('type', type);
+    }
+    const response = await fetchWithAuth(url.toString());
     return response;
   },
 
-  async getAll(): Promise<MediaItem[]> {
-    return fetchWithAuth(`${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.media}`);
+  async getUnused(): Promise<MediaItem[]> {
+    return mediaService.getAll('unused');
   },
 
   async delete(_id: string): Promise<void> {
-    return fetchWithAuth(`${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.media}/${_id}`, {
+    await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.media}/${_id}`, {
       method: 'DELETE',
     });
   },
 
+  async addUsage(mediaId: string, usage: Omit<MediaUsage, 'usedAt'>): Promise<Media> {
+    const response = await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.media}/${mediaId}/usage`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(usage),
+    });
+    return response;
+  },
+
+  async removeUsage(mediaId: string, entityId: string): Promise<Media> {
+    const response = await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.media}/${mediaId}/usage/${entityId}`, {
+      method: 'DELETE',
+    });
+    return response;
+  },
+
+  async updateUsageEntityName(type: MediaUsage['type'], entityId: string, entityName: string): Promise<void> {
+    await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.media}/usage/${type}/${entityId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ entityName }),
+    });
+  },
+
   async updateMetadata(_id: string, metadata: MediaItem['metadata']): Promise<MediaItem> {
-    return fetchWithAuth(`${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.media}/${_id}`, {
+    return fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.media}/${_id}/metadata`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -76,7 +147,28 @@ export const mediaService = {
     });
   },
 
+  async uploadFromUrl(url: string): Promise<UploadResponse> {
+    try {
+      const response = await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.media}/upload-url`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url }),
+      });
+
+      if (!response.url) {
+        throw new Error('Invalid response from server: missing URL');
+      }
+
+      return response;
+    } catch (error) {
+      console.error('Error uploading image from URL:', error);
+      throw new Error(`Erreur lors de l'import de l'image depuis l'URL: ${error.message}`);
+    }
+  },
+
   getImageUrl(filename: string): string {
-    return `${API_CONFIG.baseUrl}/uploads/${filename}`;
-  }
+    return `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.media}/${filename}`;
+  },
 };

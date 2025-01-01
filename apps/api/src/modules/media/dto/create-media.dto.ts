@@ -1,15 +1,6 @@
-import { IsString, IsOptional, ValidateNested } from 'class-validator';
+import { IsString, IsOptional, IsNumber, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-
-class MetadataDto {
-  @IsString()
-  @IsOptional()
-  title?: string;
-
-  @IsString()
-  @IsOptional()
-  description?: string;
-}
+import { MediaMetadata } from '../types/media.types';
 
 export class CreateMediaDto {
   @IsString()
@@ -21,8 +12,15 @@ export class CreateMediaDto {
   @IsString()
   mimeType: string;
 
+  @IsNumber()
   @IsOptional()
+  size?: number;
+
   @ValidateNested()
-  @Type(() => MetadataDto)
-  metadata?: MetadataDto;
+  @Type(() => MediaMetadata)
+  @IsOptional()
+  metadata?: MediaMetadata;
+
+  @IsString()
+  uploadedBy: string;
 }

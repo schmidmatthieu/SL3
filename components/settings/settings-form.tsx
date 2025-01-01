@@ -13,8 +13,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
 import { useProfileStore } from '@/store/profile';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useAuthStore } from '@/store/auth-store';
 import { useTheme } from 'next-themes';
+import { ImageUploader } from '@/components/ui/image-uploader';
 
 const profileFormSchema = z.object({
   username: z.string().min(3).max(30),
@@ -41,6 +42,7 @@ export function SettingsForm() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const { user, fetchProfile, updateProfile, updatePassword, updateAvatar } = useProfileStore();
+  const { setProfile } = useAuthStore();
   const { setTheme } = useTheme();
 
   useEffect(() => {
@@ -87,10 +89,13 @@ export function SettingsForm() {
       if (data.theme) {
         setTheme(data.theme);
       }
+      const updatedProfile = await fetchProfile();
+      setProfile(updatedProfile);
       toast({
         title: 'Profile updated',
         description: 'Your profile has been updated successfully.',
       });
+      window.location.reload();
     } catch (error) {
       toast({
         title: 'Error',
@@ -137,133 +142,122 @@ export function SettingsForm() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="mb-6">
-              <Label>Profile Picture</Label>
-              <div className="flex items-center space-x-4">
-                <Avatar className="h-24 w-24">
-                  <AvatarImage src={user?.imageUrl} />
-                  <AvatarFallback>{user?.firstName?.[0]}{user?.lastName?.[0]}</AvatarFallback>
-                </Avatar>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  id="avatar-upload"
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
+            <div className="space-y-6">
+              <div>
+                <Label className="text-sm font-medium">Photo de profil</Label>
+                <div className="mt-2">
+                  <ImageUploader
+                    onImageSelect={async (url) => {
                       try {
-                        setIsLoading(true);
-                        await updateAvatar(file);
+                        if (url === "") {
+                          await updateProfile({ imageUrl: null });
+                        } else {
+                          await updateProfile({ imageUrl: url });
+                        }
+                        
                         toast({
-                          title: 'Success',
-                          description: 'Avatar updated successfully.',
+                          title: 'Succès',
+                          description: url === "" ? 'Photo de profil supprimée.' : 'Photo de profil mise à jour.',
                         });
                       } catch (error) {
-                        console.error('Error updating avatar:', error);
                         toast({
-                          title: 'Error',
-                          description: 'Failed to update avatar. Please try again.',
+                          title: 'Erreur',
+                          description: 'Impossible de mettre à jour la photo de profil.',
                           variant: 'destructive',
                         });
-                      } finally {
-                        setIsLoading(false);
                       }
-                    }
-                  }}
-                />
-                <Button
-                  variant="outline"
-                  onClick={() => document.getElementById('avatar-upload')?.click()}
-                >
-                  Change Avatar
-                </Button>
-              </div>
-            </div>
-            <Form {...profileForm}>
-              <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-4">
-                <FormField
-                  control={profileForm.control}
-                  name="username"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Username</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={profileForm.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input {...field} type="email" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={profileForm.control}
-                    name="firstName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>First Name</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={profileForm.control}
-                    name="lastName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Last Name</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    }}
+                    currentImage={user?.imageUrl}
+                    mediaType="avatar"
+                    size="lg"
                   />
                 </div>
-                <FormField
-                  control={profileForm.control}
-                  name="preferredLanguage"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Language</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+              </div>
+              <Form {...profileForm}>
+                <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-4">
+                  <FormField
+                    control={profileForm.control}
+                    name="username"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Username</FormLabel>
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a language" />
-                          </SelectTrigger>
+                          <Input {...field} />
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value="en">English</SelectItem>
-                          <SelectItem value="fr">Français</SelectItem>
-                          <SelectItem value="de">Deutsch</SelectItem>
-                          <SelectItem value="it">Italiano</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? 'Saving...' : 'Save Changes'}
-                </Button>
-              </form>
-            </Form>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={profileForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="email" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={profileForm.control}
+                      name="firstName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>First Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={profileForm.control}
+                      name="lastName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Last Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <FormField
+                    control={profileForm.control}
+                    name="preferredLanguage"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Language</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a language" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="en">English</SelectItem>
+                            <SelectItem value="fr">Français</SelectItem>
+                            <SelectItem value="de">Deutsch</SelectItem>
+                            <SelectItem value="it">Italiano</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" disabled={isLoading}>
+                    {isLoading ? 'Saving...' : 'Save Changes'}
+                  </Button>
+                </form>
+              </Form>
+            </div>
           </CardContent>
         </Card>
       </TabsContent>
