@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { useAuthStore } from '@/store/auth-store';
 import { useEvents } from '@/hooks/useEvents';
-import { useEvent } from '@/hooks/useEvent'; // Added import
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,15 +24,17 @@ interface EventCardProps {
 const getStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
     case 'active':
-      return 'bg-third-600 hover:bg-third-700 text-third-foreground';
+    case 'live':
+      return 'bg-third text-black';
     case 'scheduled':
-      return 'bg-blue-500 hover:bg-blue-600 text-white';
+    case 'upcoming':
+      return 'bg-blue-500 text-white dark:bg-blue-600';
     case 'ended':
-      return 'bg-secondary-600 hover:bg-secondary-700 text-secondary-foreground';
+      return 'bg-secondary text-black';
     case 'cancelled':
-      return 'bg-destructive hover:bg-destructive/90 text-destructive-foreground';
+      return 'bg-destructive text-destructive-foreground dark:bg-destructive/90';
     default:
-      return 'bg-secondary-600 hover:bg-secondary-700 text-secondary-foreground';
+      return 'bg-secondary text-black';
   }
 };
 
@@ -91,8 +92,8 @@ export function EventCard({ event }: EventCardProps) {
            status.charAt(0).toUpperCase() + status.slice(1);
   };
 
-  const { event: fetchedEvent } = useEvent(event.id || event._id);
-  const displayEvent = fetchedEvent || event; // Fallback sur les props si l'event n'est pas encore chargé
+  // On utilise directement l'événement passé en props
+  const displayEvent = event;
 
   return (
     <Card
@@ -101,7 +102,7 @@ export function EventCard({ event }: EventCardProps) {
         "bg-background/40 backdrop-blur-[12px]",
         "border-primary-100/30 dark:border-primary-800/30",
         "hover:bg-primary-50/30 dark:hover:bg-primary-950/30",
-        displayEvent.status === 'cancelled' && "opacity-50 pointer-events-none"
+        displayEvent.status === 'cancelled' && "opacity-50"
       )}
     >
       {displayEvent.status !== 'cancelled' && (
@@ -179,7 +180,7 @@ export function EventCard({ event }: EventCardProps) {
                 <Button
                   size="icon"
                   variant="outline"
-                  className="bg-background/80 backdrop-blur-sm hover:bg-background/90 hover:scale-105 transition-all"
+                  className="bg-background/80 backdrop-blur-sm hover:bg-background/90 hover:scale-105 transition-all border-primary-100/30 dark:border-primary-800/30"
                 >
                   <Settings className="h-4 w-4 transition-transform duration-300 hover:rotate-90" />
                 </Button>
