@@ -1,20 +1,62 @@
 import { useState, useEffect } from 'react';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Pencil, Trash2, Upload, Copy, Check } from 'lucide-react';
-import { mediaService, MediaItem } from '@/services/api/media';
+import { Pencil, Trash2, Upload, Copy, Check, Grid, List, Info } from 'lucide-react';
+import { MediaItem, MediaUsage } from '@/types/media';
 import { useToast } from "@/components/ui/use-toast";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { useMediaStore } from '@/store/media.store';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
+import Image from 'next/image';
+import cn from 'classnames';
 
-export function MediaManagement() {
-  const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+const ITEMS_PER_PAGE = 20;
+
+type ViewMode = 'grid' | 'list';
+type GridSize = '2' | '3' | '4';
+
+interface MediaManagementProps {
+  onSelect?: (url: string) => void;
+  mediaType?: string;
+  viewMode?: ViewMode;
+  hideHeader?: boolean;
+}
+
+export function MediaManagement({ 
+  onSelect, 
+  mediaType, 
+  viewMode: initialViewMode = 'grid',
+  hideHeader = false 
+}: MediaManagementProps) {
+  const { items: mediaItems, isLoading, error, fetchAll, uploadMedia, deleteMedia, updateMetadata } = useMediaStore();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [editingItem, setEditingItem] = useState<MediaItem | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>(initialViewMode);
+  const [gridSize, setGridSize] = useState<GridSize>('4');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedUsageType, setSelectedUsageType] = useState<string>('all');
   const { toast } = useToast();
 
   // Form state for editing
@@ -27,8 +69,8 @@ export function MediaManagement() {
   });
 
   useEffect(() => {
-    loadMediaItems();
-  }, []);
+    fetchAll();
+  }, [fetchAll]);
 
   useEffect(() => {
     if (editingItem) {
@@ -42,20 +84,20 @@ export function MediaManagement() {
     }
   }, [editingItem]);
 
-  const loadMediaItems = async () => {
-    try {
-      const items = await mediaService.getAll();
-      setMediaItems(items);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to load media items",
-        variant: "destructive",
-      });
-    }
-  };
+  const filteredItems = mediaItems.filter(item => {
+    if (selectedUsageType === 'all') return true;
+    if (selectedUsageType === 'unused') return !item.usages?.length;
+    return item.usages?.some(usage => usage.type === selectedUsageType);
+  });
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const paginatedItems = filteredItems.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setSelectedFile(file);
@@ -63,254 +105,475 @@ export function MediaManagement() {
   };
 
   const handleUpload = async () => {
-    if (!selectedFile) {
-      toast({
-        title: "Error",
-        description: "Please select a file to upload",
-        variant: "destructive",
-      });
-      return;
-    }
+    if (!selectedFile) return;
 
-    // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
-    if (!allowedTypes.includes(selectedFile.type)) {
-      toast({
-        title: "Error",
-        description: "File type not allowed. Please upload a JPEG, PNG, GIF, or SVG image.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Validate file size (20MB)
-    if (selectedFile.size > 20 * 1024 * 1024) {
-      toast({
-        title: "Error",
-        description: "File size too large. Maximum size is 20MB.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsLoading(true);
     try {
-      console.log('Uploading file:', selectedFile); // Add logging for debugging
-      const response = await mediaService.uploadImage(selectedFile);
-      console.log('Upload response:', response); // Add logging for debugging
-      await loadMediaItems();
+      await uploadMedia(selectedFile);
       setSelectedFile(null);
       toast({
-        title: "Success",
-        description: "Media uploaded successfully",
-      });
-    } catch (error: any) {
-      console.error('Upload error:', error); // Add logging for debugging
-      toast({
-        title: "Error",
-        description: error.message || "Failed to upload media",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDelete = async (_id: string) => {
-    try {
-      await mediaService.delete(_id);
-      setMediaItems(prev => prev.filter(item => item._id !== _id));
-      toast({
-        title: "Success",
-        description: "Media deleted successfully",
+        title: "Succès",
+        description: "Média téléchargé avec succès",
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to delete media",
+        title: "Erreur",
+        description: error.message,
         variant: "destructive",
       });
     }
   };
 
-  const handleEdit = (item: MediaItem) => {
-    setEditingItem(item);
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteMedia(id);
+      toast({
+        title: "Succès",
+        description: "Média supprimé avec succès",
+      });
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Erreur lors de la suppression du média",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleCopyUrl = async (url: string) => {
-    await navigator.clipboard.writeText(url);
-    setCopiedUrl(url);
-    setTimeout(() => setCopiedUrl(null), 2000);
-    toast({
-      title: "Success",
-      description: "URL copied to clipboard",
-    });
-  };
-
-  const handleSaveEdit = async () => {
+  const handleMetadataUpdate = async () => {
     if (!editingItem) return;
 
     try {
-      const updatedItem = await mediaService.updateMetadata(editingItem._id, {
-        ...editingItem.metadata,
-        title: editForm.title,
-        description: editForm.description,
-        altText: editForm.altText,
-        seoTitle: editForm.seoTitle,
-        seoDescription: editForm.seoDescription
-      });
-
-      setMediaItems(prev => prev.map(item => 
-        item._id === editingItem._id ? updatedItem : item
-      ));
-
+      await updateMetadata(editingItem._id, editForm);
       setEditingItem(null);
       toast({
-        title: "Success",
-        description: "Media updated successfully",
+        title: "Succès",
+        description: "Métadonnées mises à jour avec succès",
       });
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to update media",
+        title: "Erreur",
+        description: "Erreur lors de la mise à jour des métadonnées",
         variant: "destructive",
       });
     }
   };
 
-  return (
-    <div className="space-y-6">
-      <Card className="p-6">
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium">Upload New Media</h3>
-          <div className="grid w-full max-w-sm items-center gap-1.5">
-            <Label htmlFor="media">Media File</Label>
-            <Input
-              id="media"
-              type="file"
-              accept="image/*"
-              onChange={handleFileSelect}
-            />
-          </div>
-          <Button
-            onClick={handleUpload}
-            disabled={!selectedFile || isLoading}
-          >
-            <Upload className="h-4 w-4 mr-2" />
-            {isLoading ? 'Uploading...' : 'Upload'}
+  const copyToClipboard = (url: string) => {
+    navigator.clipboard.writeText(url);
+    setCopiedUrl(url);
+    setTimeout(() => setCopiedUrl(null), 2000);
+    toast({
+      title: "Succès",
+      description: "URL copiée dans le presse-papier",
+    });
+  };
+
+  function renderUsageInfo(usages: MediaUsage[] = []) {
+    if (!usages?.length) {
+      return (
+        <Badge 
+          variant="secondary" 
+          className="mt-2 bg-secondary-300 text-secondary-900 dark:bg-secondary-800 dark:text-secondary-100"
+        >
+          Non utilisé
+        </Badge>
+      );
+    }
+
+    return (
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm" className="w-full mt-2">
+            <Info className="h-4 w-4 mr-2" />
+            Utilisé dans {usages.length} endroit{usages.length > 1 ? 's' : ''}
           </Button>
-        </div>
-      </Card>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {mediaItems.map((item) => (
-          <Card key={item._id} className="p-4">
-            <div className="aspect-video relative overflow-hidden rounded-lg bg-gray-100">
-              <img
-                src={item.url}
-                alt={item.metadata?.altText || item.metadata?.title || item.filename}
-                className="object-contain w-full h-full"
-              />
-            </div>
-            <div className="mt-4 space-y-2">
-              <p className="font-medium truncate">{item.metadata?.title || item.filename}</p>
-              {item.metadata?.description && (
-                <p className="text-sm text-gray-500 truncate">{item.metadata.description}</p>
-              )}
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <button
-                  onClick={() => handleCopyUrl(item.url)}
-                  className="flex items-center gap-1 hover:text-gray-700"
-                >
-                  {copiedUrl === item.url ? (
-                    <Check className="h-4 w-4" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
-                  Copy URL
-                </button>
-                <span className="truncate flex-1">{item.url}</span>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleEdit(item)}
-                >
-                  <Pencil className="h-4 w-4 mr-2" />
-                  Edit
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => handleDelete(item._id)}
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete
-                </Button>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
-
-      <Dialog open={!!editingItem} onOpenChange={(open) => !open && setEditingItem(null)}>
-        <DialogContent className="sm:max-w-[500px]">
+        </DialogTrigger>
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Media</DialogTitle>
+            <DialogTitle>Utilisations de l'image</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="title">Title</Label>
-              <Input
-                id="title"
-                value={editForm.title}
-                onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
-              />
+          <ScrollArea className="max-h-[300px]">
+            <div className="space-y-4">
+              {usages.map((usage, index) => (
+                <div key={index} className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="capitalize">
+                      {usage.type === 'profile' ? 'Profil' :
+                       usage.type === 'speaker' ? 'Intervenant' :
+                       usage.type === 'event' ? 'Événement' :
+                       usage.type === 'room' ? 'Chambre' :
+                       usage.type === 'logo' ? 'Logo' : usage.type}
+                    </Badge>
+                    {usage.entityName && (
+                      <span className="text-sm font-medium">
+                        {usage.entityName}
+                      </span>
+                    )}
+                  </div>
+                  {usage.path && (
+                    <p className="text-sm text-muted-foreground pl-2">
+                      {usage.path}
+                    </p>
+                  )}
+                </div>
+              ))}
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={editForm.description}
-                onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="altText">Alt Text</Label>
-              <Input
-                id="altText"
-                value={editForm.altText}
-                onChange={(e) => setEditForm(prev => ({ ...prev, altText: e.target.value }))}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="seoTitle">SEO Title</Label>
-              <Input
-                id="seoTitle"
-                value={editForm.seoTitle}
-                onChange={(e) => setEditForm(prev => ({ ...prev, seoTitle: e.target.value }))}
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="seoDescription">SEO Description</Label>
-              <Textarea
-                id="seoDescription"
-                value={editForm.seoDescription}
-                onChange={(e) => setEditForm(prev => ({ ...prev, seoDescription: e.target.value }))}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditingItem(null)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSaveEdit}>
-              Save changes
-            </Button>
-          </DialogFooter>
+          </ScrollArea>
         </DialogContent>
       </Dialog>
+    );
+  };
+
+  if (error) {
+    return <div className="text-red-500">Erreur: {error}</div>;
+  }
+
+  return (
+    <div className="space-y-4">
+      {!hideHeader && (
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div className="space-y-1">
+            <h2 className="text-2xl font-semibold tracking-tight">Médiathèque</h2>
+            <p className="text-sm text-muted-foreground">
+              Gérez vos images et autres médias
+            </p>
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center sm:justify-between">
+          <Select 
+            value={selectedUsageType} 
+            onValueChange={setSelectedUsageType}
+          >
+            <SelectTrigger className="w-full sm:w-[280px]">
+              <SelectValue placeholder="Tous les médias" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tous les médias</SelectItem>
+              <SelectItem value="unused">Non utilisés</SelectItem>
+              <SelectItem value="rooms">Chambres</SelectItem>
+              <SelectItem value="services">Services</SelectItem>
+              <SelectItem value="pages">Pages</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <Select 
+              value={gridSize} 
+              onValueChange={(value: GridSize) => setGridSize(value)}
+            >
+              <SelectTrigger className="w-full sm:w-[130px]">
+                <SelectValue placeholder="Colonnes" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="2">2 colonnes</SelectItem>
+                <SelectItem value="3">3 colonnes</SelectItem>
+                <SelectItem value="4">4 colonnes</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <div className="flex items-center rounded-md bg-primary/10">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setViewMode('grid')}
+                className={cn(
+                  "h-9 w-9",
+                  viewMode === 'grid' 
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                    : "hover:bg-primary/20 text-primary"
+                )}
+              >
+                <Grid className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setViewMode('list')}
+                className={cn(
+                  "h-9 w-9",
+                  viewMode === 'list' 
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90" 
+                    : "hover:bg-primary/20 text-primary"
+                )}
+              >
+                <List className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div className="flex flex-wrap items-center gap-4">
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="w-auto flex-1 min-w-[200px] max-w-[300px]"
+            />
+            <Button
+              onClick={handleUpload}
+              disabled={!selectedFile || isLoading}
+              className="whitespace-nowrap"
+            >
+              {isLoading ? 'Uploading...' : 'Upload'}
+            </Button>
+          </div>
+        </div>
+
+        <div className={cn(
+          viewMode === 'grid' 
+            ? `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-${gridSize} gap-6`
+            : 'flex flex-col space-y-4'
+        )}>
+          {isLoading ? (
+            Array.from({ length: 6 }).map((_, index) => (
+              <Card key={index} className="aspect-video animate-pulse bg-muted" />
+            ))
+          ) : viewMode === 'grid' ? (
+            paginatedItems.map((item) => (
+              <Card
+                key={item._id}
+                className="group relative overflow-visible border hover:border-primary/50 transition-colors cursor-pointer"
+                onClick={() => onSelect && onSelect(item.url)}
+              >
+                <CardContent className="p-0">
+                  <div className="relative aspect-video bg-muted/30">
+                    <Image
+                      src={item.url}
+                      alt={item.alt || 'Media item'}
+                      fill
+                      className="object-contain rounded-t-lg p-2"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                  </div>
+                  <div className="p-4 space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="font-medium truncate flex-1">{item.filename}</p>
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            copyToClipboard(item.url);
+                          }}
+                        >
+                          <Copy className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEditingItem(item);
+                          }}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(item._id);
+                          }}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <span>{formatFileSize(item.size)}</span>
+                      <span>•</span>
+                      <span>{new Date(item.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      {renderUsageInfo(item.usages)}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            paginatedItems.map((item) => (
+              <Card
+                key={item._id}
+                className={cn(
+                  "group relative overflow-visible hover:border-primary/50 transition-colors",
+                  onSelect && "cursor-pointer"
+                )}
+                onClick={() => onSelect && onSelect(item.url)}
+              >
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-6">
+                    <div className="relative h-24 w-36 shrink-0 bg-muted/30">
+                      <Image
+                        src={item.url}
+                        alt={item.alt || 'Media item'}
+                        fill
+                        className="object-contain rounded-md p-1"
+                        sizes="(max-width: 768px) 144px, 144px"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="space-y-1 flex-1 min-w-0">
+                          <p className="font-medium truncate">{item.filename}</p>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <span>{formatFileSize(item.size)}</span>
+                            <span>•</span>
+                            <span>{new Date(item.createdAt).toLocaleDateString()}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {renderUsageInfo(item.usages)}
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-1.5">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              copyToClipboard(item.url);
+                            }}
+                          >
+                            <Copy className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingItem(item);
+                            }}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(item._id);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                />
+              </PaginationItem>
+              {Array.from({ length: totalPages }).map((_, i) => (
+                <PaginationItem key={i + 1}>
+                  <PaginationLink
+                    onClick={() => setCurrentPage(i + 1)}
+                    isActive={currentPage === i + 1}
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
+
+        {/* Edit Dialog */}
+        <Dialog open={!!editingItem} onOpenChange={() => setEditingItem(null)}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Modifier les métadonnées</DialogTitle>
+              <p className="text-sm text-muted-foreground">
+                Modifiez les informations de votre fichier média ici. Cliquez sur enregistrer une fois terminé.
+              </p>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="title">Titre</Label>
+                <Input
+                  id="title"
+                  value={editForm.title}
+                  onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={editForm.description}
+                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="altText">Texte alternatif</Label>
+                <Input
+                  id="altText"
+                  value={editForm.altText}
+                  onChange={(e) => setEditForm({ ...editForm, altText: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="seoTitle">Titre SEO</Label>
+                <Input
+                  id="seoTitle"
+                  value={editForm.seoTitle}
+                  onChange={(e) => setEditForm({ ...editForm, seoTitle: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="seoDescription">Description SEO</Label>
+                <Textarea
+                  id="seoDescription"
+                  value={editForm.seoDescription}
+                  onChange={(e) => setEditForm({ ...editForm, seoDescription: e.target.value })}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setEditingItem(null)}>
+                Annuler
+              </Button>
+              <Button onClick={handleMetadataUpdate}>
+                Sauvegarder
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
+}
+
+function formatFileSize(size: number) {
+  return `${(size / 1024).toFixed(2)} KB`;
 }
