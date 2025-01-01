@@ -1,16 +1,35 @@
-export type EventStatus = 'scheduled' | 'active' | 'ended' | 'cancelled';
+import { Room } from './room';
+
+export type EventStatus = 'draft' | 'scheduled' | 'active' | 'ended' | 'cancelled' | 'postponed';
 
 export interface Event {
-  id?: string;  // Pour la compatibilité avec l'ancien code
-  _id: string;  // ID MongoDB principal
+  _id?: string;
+  id?: string;
+  title: string;
+  description: string;
+  startDateTime: string;
+  endDateTime: string;
+  status: EventStatus;
+  imageUrl?: string;
+  rooms: Room[];
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateEventDTO {
   title: string;
   description: string;
   startDateTime: string;
   endDateTime: string;
   imageUrl?: string;
-  status: EventStatus;
-  rooms: number;
-  createdBy: string;
-  createdAt?: string;
-  updatedAt?: string;
+}
+
+export interface UpdateEventDTO {
+  title?: string;
+  description?: string;
+  startDateTime?: string;
+  endDateTime?: string;
+  status?: EventStatus;
+  imageUrl?: string;
 }

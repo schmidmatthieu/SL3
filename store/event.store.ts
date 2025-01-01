@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { Event } from '@/types/event';
+import { Room } from '@/types/room';
 import { eventService } from '@/services/api/events';
 
 interface EventState {
@@ -15,6 +16,7 @@ interface EventState {
   updateEvent: (eventId: string, data: Partial<Event>) => Promise<Event>;
   deleteEvent: (eventId: string) => Promise<void>;
   updateEventStatus: (eventId: string, status: Event['status']) => Promise<Event>;
+  createRoom: (eventId: string, roomData: Partial<Room>) => Promise<Room>;
   reset: () => void;
 }
 
@@ -129,6 +131,23 @@ export const useEventStore = create<EventState>()(
           set({ events, currentEvent: null, isLoading: false });
         } catch (error) {
           console.error('Error deleting event:', error);
+          set({ error: error.message, isLoading: false });
+          throw error;
+        }
+      },
+
+      createRoom: async (eventId: string, roomData: Partial<Room>) => {
+        try {
+          set({ isLoading: true, error: null });
+          const newRoom = await eventService.createRoom(eventId, roomData);
+          
+          // Rafraîchir l'événement complet pour avoir les données à jour
+          await get().fetchEvent(eventId);
+          
+          set({ isLoading: false });
+          return newRoom;
+        } catch (error) {
+          console.error('Error creating room:', error);
           set({ error: error.message, isLoading: false });
           throw error;
         }
