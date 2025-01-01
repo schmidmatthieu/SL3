@@ -1,87 +1,185 @@
 import { Event } from '@/types/event';
 import { API_CONFIG } from './config';
 import { getAuthHeaders, handleApiResponse } from './utils';
+import { Room } from '@/types/room';
 
 const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      ...getAuthHeaders(),
-      ...options.headers,
-    },
-    credentials: 'include',
-  });
-  return handleApiResponse(response);
+  try {
+    console.log('Fetching:', url);
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        ...getAuthHeaders(),
+        ...options.headers,
+      },
+      credentials: 'include',
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      const errorMessage = errorData?.message || `HTTP error! status: ${response.status}`;
+      console.error('API Error:', { url, status: response.status, error: errorMessage });
+      throw new Error(errorMessage);
+    }
+    
+    return handleApiResponse(response);
+  } catch (error) {
+    console.error('Fetch error:', { url, error });
+    throw error;
+  }
+};
+
+const transformEventResponse = (event: any): Event => {
+  // Assurons-nous que rooms est toujours un tableau
+  const rooms = Array.isArray(event.rooms) 
+    ? event.rooms.map((room: any) => {
+        // Si c'est juste un ID, on le garde comme référence
+        if (typeof room === 'string') {
+          return { _id: room };
+        }
+        // Si c'est un objet room complet, on le transforme
+        return transformRoomResponse(room);
+      }).filter(Boolean)
+    : [];
+
+  return {
+    ...event,
+    rooms
+  };
+};
+
+const transformRoomResponse = (room: any): Room | null => {
+  // Si c'est juste un ID, on retourne un objet room minimal
+  if (typeof room === 'string') {
+    return { _id: room };
+  }
+  
+  // Si c'est un objet room mais qu'il manque des champs requis
+  if (!room.name || !room.eventId || !room.status) {
+    return null;
+  }
+
+  // Transformation complète d'une room
+  return {
+    _id: room._id || room.id,
+    name: room.name,
+    eventId: room.eventId,
+    status: room.status,
+    capacity: room.capacity,
+    description: room.description || '',
+    startDateTime: room.startDateTime,
+    endDateTime: room.endDateTime,
+    thumbnail: room.thumbnail || '',
+    isPublic: room.isPublic ?? true,
+    chatEnabled: room.chatEnabled ?? true,
+    recordingEnabled: room.recordingEnabled ?? true,
+    originalLanguage: room.originalLanguage || 'en',
+    availableLanguages: Array.isArray(room.availableLanguages) ? room.availableLanguages : [],
+    createdBy: room.createdBy,
+    createdAt: room.createdAt,
+    updatedAt: room.updatedAt
+  };
 };
 
 export const eventService = {
   getAll: async (): Promise<Event[]> => {
-    return fetchWithAuth(`${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.events}`);
+    const events = await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}`);
+    return events.map(transformEventResponse);
   },
 
   getMyEvents: async (): Promise<Event[]> => {
-    return fetchWithAuth(`${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.events}/my`);
+    const events = await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/my`);
+    return events.map(transformEventResponse);
   },
 
   getById: async (id: string): Promise<Event> => {
-    return fetchWithAuth(`${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.events}/${id}`);
+    const event = await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${id}`);
+    return transformEventResponse(event);
   },
 
   create: async (data: Partial<Event>): Promise<Event> => {
-    return fetchWithAuth(`${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.events}`, {
+    const response = await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
     });
+    return transformEventResponse(response);
   },
 
   update: async (id: string, data: Partial<Event>): Promise<Event> => {
-    console.log('Updating event:', { id, data });
-    
-    const response = await fetch(`${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.events}/${id}`, {
-      method: 'PUT',
+    const response = await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${id}`, {
+      method: 'PATCH',
       headers: {
-        ...getAuthHeaders(),
         'Content-Type': 'application/json',
       },
-      credentials: 'include',
       body: JSON.stringify(data),
     });
-
-    return handleApiResponse(response);
+    return transformEventResponse(response);
   },
 
   updateStatus: async (id: string, status: Event['status']): Promise<Event> => {
-    const response = await fetch(`${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.events}/${id}/status`, {
+    const response = await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${id}/status`, {
       method: 'PUT',
       headers: {
-        ...getAuthHeaders(),
         'Content-Type': 'application/json',
       },
-      credentials: 'include',
       body: JSON.stringify({ status }),
     });
-
-    return handleApiResponse(response);
+    return transformEventResponse(response);
   },
 
   delete: async (id: string): Promise<void> => {
-    return fetchWithAuth(`${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.events}/${id}`, {
+    return fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${id}`, {
       method: 'DELETE',
     });
   },
 
   join: async (id: string): Promise<Event> => {
-    return fetchWithAuth(`${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.events}/${id}/join`, {
+    return fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${id}/join`, {
       method: 'POST',
     });
   },
 
   leave: async (id: string): Promise<Event> => {
-    return fetchWithAuth(`${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.events}/${id}/leave`, {
+    return fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${id}/leave`, {
       method: 'POST',
+    });
+  },
+
+  getRooms: async (eventId: string): Promise<Room[]> => {
+    const rooms = await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/rooms`);
+    return rooms.map(transformRoomResponse);
+  },
+
+  createRoom: async (eventId: string, data: Partial<Room>): Promise<Room> => {
+    const response = await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/rooms`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    return transformRoomResponse(response);
+  },
+
+  updateRoom: async (eventId: string, roomId: string, data: Partial<Room>): Promise<Room> => {
+    const response = await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/rooms/${roomId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    return transformRoomResponse(response);
+  },
+
+  deleteRoom: async (eventId: string, roomId: string): Promise<void> => {
+    return fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/rooms/${roomId}`, {
+      method: 'DELETE',
     });
   },
 };

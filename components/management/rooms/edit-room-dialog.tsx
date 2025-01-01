@@ -26,6 +26,7 @@ import { format, addHours } from 'date-fns';
 import { CalendarIcon, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/components/ui/use-toast';
+import { ImageUploader } from '@/components/ui/image-uploader';
 
 const AVAILABLE_LANGUAGES = [
   { code: 'fr', label: 'Français' },
@@ -233,11 +234,11 @@ export function EditRoomDialog({ room, onClose }: EditRoomDialogProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label>Thumbnail URL</Label>
-              <Input
-                placeholder="Thumbnail URL"
-                value={thumbnail}
-                onChange={(e) => setThumbnail(e.target.value)}
+              <Label>Image de couverture</Label>
+              <ImageUploader
+                onImageSelect={setThumbnail}
+                currentImage={thumbnail}
+                mediaType="room"
               />
             </div>
           </div>

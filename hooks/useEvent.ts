@@ -1,84 +1,96 @@
 'use client';
 
-import useSWR from 'swr';
+import { useEffect, useState, useCallback } from 'react';
 import { apiRequest } from '@/lib/utils';
 import { Event } from '@/types/event';
-import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/store/auth-store';
 import { Room } from '@/types/room';
-import { useEffect } from 'react';
 
-const fetchEvent = async (url: string) => {
+const fetchEvent = async (eventId: string): Promise<Event> => {
   try {
-    const { data } = await apiRequest<Event>(url);
+    console.log('useEvent: Fetching event with ID:', eventId);
+    const { data } = await apiRequest<Event>(`/api/events/${eventId}`);
+    console.log('useEvent: Event data received:', data);
     return data;
   } catch (error) {
-    if (error instanceof Error) {
-      if (error.message === 'Authentication required') {
-        throw new Error('Please log in to view this event');
-      }
-      throw new Error(`Failed to load event: ${error.message}`);
-    }
+    console.error('useEvent: Error fetching event:', error);
     throw error;
   }
 };
 
-const fetchRooms = async (eventId: string) => {
+const fetchRooms = async (eventId: string): Promise<Room[]> => {
   try {
+    console.log('useEvent: Fetching rooms for event:', eventId);
     const { data } = await apiRequest<Room[]>(`/api/rooms/event/${eventId}`);
+    console.log('useEvent: Rooms data received:', data);
     return data;
   } catch (error) {
-    console.error('Error fetching rooms:', error);
+    console.error('useEvent: Error fetching rooms:', error);
     return [];
   }
 };
 
-export function useEvent(eventId: string) {
-  const router = useRouter();
-  const { user } = useAuthStore();
-  
-  const { data: event, error: eventError, isLoading: eventLoading, mutate: mutateEvent } = useSWR<Event>(
-    eventId && user ? `/api/events/${eventId}` : null,
-    fetchEvent,
-    {
-      onError: (err) => {
-        if (err.message === 'Please log in to view this event') {
-          router.push('/login');
-        }
-      },
-      revalidateOnFocus: false,
-      dedupingInterval: 5000,
-      shouldRetryOnError: (err) => {
-        return !(err.message === 'Please log in to view this event');
+export function useEvent(eventId?: string) {
+  const [event, setEvent] = useState<Event | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const loadEvent = useCallback(async () => {
+    if (!eventId) {
+      console.log('useEvent: No eventId provided');
+      setEvent(null);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      console.log('useEvent: Starting to load event:', eventId);
+      setIsLoading(true);
+      setIsError(false);
+      setError(null);
+
+      const [eventData, roomsData] = await Promise.all([
+        fetchEvent(eventId),
+        fetchRooms(eventId)
+      ]);
+
+      const eventWithRooms = { ...eventData, rooms: roomsData };
+      console.log('useEvent: Setting combined event data:', eventWithRooms);
+      setEvent(eventWithRooms);
+      setIsError(false);
+      setError(null);
+    } catch (err) {
+      console.error('useEvent: Error in loadEvent:', err);
+      setIsError(true);
+      setError(err instanceof Error ? err.message : 'Failed to load event');
+      setEvent(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [eventId]);
+
+  // Fonction de rafraîchissement exposée
+  const refresh = useCallback(() => {
+    console.log('useEvent: Refreshing data');
+    setRefreshKey(prev => prev + 1);
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const load = async () => {
+      if (mounted) {
+        await loadEvent();
       }
-    }
-  );
+    };
 
-  const { data: rooms, error: roomsError, isLoading: roomsLoading, mutate: mutateRooms } = useSWR<Room[]>(
-    event ? `/api/rooms/event/${eventId}` : null,
-    () => fetchRooms(eventId),
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 5000
-    }
-  );
+    load();
 
-  const combinedEvent = event && rooms ? {
-    ...event,
-    rooms: rooms
-  } : null;
+    return () => {
+      mounted = false;
+    };
+  }, [loadEvent, refreshKey]); // Ajout de refreshKey comme dépendance
 
-  const isLoading = eventLoading || roomsLoading;
-  const error = eventError?.message || roomsError?.message;
-
-  const mutate = async () => {
-    await Promise.all([mutateEvent(), mutateRooms()]);
-  };
-
-  return {
-    event: combinedEvent,
-    isLoading,
-    isError: error,
-    mutate,
-  };
+  return { event, isLoading, isError, error, refresh };
 }

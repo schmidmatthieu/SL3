@@ -25,7 +25,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useRooms } from "@/hooks/useRooms"; 
+import { useRoomSync } from '../../../hooks/useRoomSync';
+import { useRoomStore } from '../../../store/room.store';
 import { useParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -48,6 +49,8 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { Spinner } from "@/components/ui/spinner"; // Correction de l'import du Spinner
 import { Room } from "@/types/room";
+import { EditRoomDialog } from './edit-room-dialog';
+import { ImageUploader } from '@/components/ui/image-uploader';
 
 const AVAILABLE_LANGUAGES = [
   { code: 'fr', label: 'Français' },
@@ -57,7 +60,10 @@ const AVAILABLE_LANGUAGES = [
 ];
 
 export function ManageRooms({ eventId }: { eventId: string }) {
-  const { rooms, isLoading, error, endRoom, pauseRoom, cancelRoom, reactivateRoom, createRoom, updateRoom, deleteRoom, startStream, stopStream } = useRooms(eventId);
+  const roomStore = useRoomStore();
+  const roomSync = useRoomSync(eventId);
+  const { rooms, fetchEventRooms } = roomSync;
+  const { createRoom } = roomStore;
   
   const [newRoomName, setNewRoomName] = useState("");
   const [newRoomCapacity, setNewRoomCapacity] = useState("");
@@ -102,7 +108,7 @@ export function ManageRooms({ eventId }: { eventId: string }) {
     }
   };
 
-  const handleAddRoom = async () => {
+  const handleCreateRoom = async () => {
     if (newRoomName && newRoomCapacity && startDate && endDate) {
       try {
         const start = new Date(startDate);
@@ -113,21 +119,26 @@ export function ManageRooms({ eventId }: { eventId: string }) {
         start.setHours(startHours, startMinutes);
         end.setHours(endHours, endMinutes);
 
-        await createRoom(eventId, newRoomName, {
-          isPublic,
-          chatEnabled,
-          recordingEnabled,
-          maxParticipants: parseInt(newRoomCapacity),
-          allowQuestions: true,
-          originalLanguage,
-          availableLanguages,
-        }, {
+        await createRoom({
+          name: newRoomName,
+          eventId,
           description,
           thumbnail,
           startTime: start.toISOString(),
           endTime: end.toISOString(),
+          status: 'upcoming',
+          settings: {
+            isPublic,
+            chatEnabled,
+            recordingEnabled,
+            maxParticipants: parseInt(newRoomCapacity),
+            allowQuestions: true,
+            originalLanguage,
+            availableLanguages,
+          },
         });
-        
+
+        // Reset form
         setNewRoomName("");
         setNewRoomCapacity("");
         setDescription("");
@@ -137,6 +148,9 @@ export function ManageRooms({ eventId }: { eventId: string }) {
         setStartTime(format(new Date(), "HH:mm"));
         setEndTime(format(addHours(new Date(), 1), "HH:mm"));
         setAvailableLanguages([]);
+        
+        // Forcer un rafraîchissement des rooms
+        await fetchEventRooms(eventId);
 
         toast({
           title: "Success",
@@ -153,23 +167,26 @@ export function ManageRooms({ eventId }: { eventId: string }) {
   };
 
   const handleDeleteRoom = async (roomId: string) => {
-    await deleteRoom(eventId, roomId);
+    await roomSync.deleteRoom(eventId, roomId);
   };
 
-  const handleStreamControl = async (roomId: string, action: 'start' | 'pause' | 'stop') => {
+  const handleStreamControl = async (roomId: string, action: 'start' | 'pause' | 'stop' | 'end') => {
     try {
       const room = rooms.find(r => r._id === roomId);
       if (!room) return;
 
       switch (action) {
         case 'start':
-          await startStream(roomId);
+          await roomSync.startStream(roomId);
           break;
         case 'pause':
-          await pauseStream(roomId);
+          await roomSync.pauseStream(roomId);
           break;
         case 'stop':
-          await stopStream(roomId);
+          await roomSync.stopStream(roomId);
+          break;
+        case 'end':
+          await roomSync.endStream(roomId);
           break;
       }
 
@@ -190,11 +207,11 @@ export function ManageRooms({ eventId }: { eventId: string }) {
   const handleRoomStatusChange = async (roomId: string, status: RoomStatus) => {
     try {
       if (status === 'cancelled') {
-        await cancelRoom(roomId);
+        await roomSync.cancelRoom(roomId);
       } else if (status === 'upcoming') {
-        await reactivateRoom(roomId);
+        await roomSync.reactivateRoom(roomId);
       } else {
-        await updateRoom(roomId, { status });
+        await roomSync.updateRoom(roomId, { status });
       }
       
       toast({
@@ -218,17 +235,17 @@ export function ManageRooms({ eventId }: { eventId: string }) {
   const getStatusColor = (status: RoomStatus) => {
     switch (status) {
       case 'live':
-        return 'bg-green-500/20 text-green-600 dark:bg-green-500/30 dark:text-green-400';
+        return 'bg-third text-black';
       case 'paused':
-        return 'bg-yellow-500/20 text-yellow-600 dark:bg-yellow-500/30 dark:text-yellow-400';
+        return 'bg-yellow-500 text-black';
       case 'ended':
-        return 'bg-gray-500/20 text-gray-600 dark:bg-gray-500/30 dark:text-gray-400';
+        return 'bg-secondary text-black';
       case 'cancelled':
-        return 'bg-red-500/20 text-red-600 dark:bg-red-500/30 dark:text-red-400';
+        return 'bg-destructive text-destructive-foreground dark:bg-destructive/90';
       case 'upcoming':
-        return 'bg-blue-500/20 text-blue-600 dark:bg-blue-500/30 dark:text-blue-400';
+        return 'bg-blue-500 text-white dark:bg-blue-600';
       default:
-        return 'bg-gray-500/20 text-gray-600 dark:bg-gray-500/30 dark:text-gray-400';
+        return 'bg-secondary text-black';
     }
   };
 
@@ -240,7 +257,7 @@ export function ManageRooms({ eventId }: { eventId: string }) {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => pauseStream(room._id)}
+              onClick={() => handleStreamControl(room._id, 'pause')}
             >
               <Pause className="w-4 h-4 mr-2" />
               Pause
@@ -248,7 +265,7 @@ export function ManageRooms({ eventId }: { eventId: string }) {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => endRoom(room._id)}
+              onClick={() => handleStreamControl(room._id, 'end')}
             >
               <Power className="w-4 h-4 mr-2" />
               End
@@ -261,7 +278,7 @@ export function ManageRooms({ eventId }: { eventId: string }) {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => startStream(room._id)}
+              onClick={() => handleStreamControl(room._id, 'start')}
             >
               <Play className="w-4 h-4 mr-2" />
               Resume
@@ -269,7 +286,7 @@ export function ManageRooms({ eventId }: { eventId: string }) {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => endRoom(room._id)}
+              onClick={() => handleStreamControl(room._id, 'end')}
             >
               <Power className="w-4 h-4 mr-2" />
               End
@@ -282,7 +299,7 @@ export function ManageRooms({ eventId }: { eventId: string }) {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => startStream(room._id)}
+              onClick={() => handleStreamControl(room._id, 'start')}
             >
               <Play className="w-4 h-4 mr-2" />
               Start
@@ -290,7 +307,7 @@ export function ManageRooms({ eventId }: { eventId: string }) {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => cancelRoom(room._id)}
+              onClick={() => handleRoomStatusChange(room._id, 'cancelled')}
             >
               <X className="w-4 h-4 mr-2" />
               Cancel
@@ -303,7 +320,7 @@ export function ManageRooms({ eventId }: { eventId: string }) {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => reactivateRoom(room._id)}
+              onClick={() => handleRoomStatusChange(room._id, 'upcoming')}
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               Reactivate
@@ -316,7 +333,7 @@ export function ManageRooms({ eventId }: { eventId: string }) {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => reactivateRoom(room._id)}
+              onClick={() => handleRoomStatusChange(room._id, 'upcoming')}
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               Reactivate
@@ -328,7 +345,7 @@ export function ManageRooms({ eventId }: { eventId: string }) {
     }
   };
 
-  if (isLoading) {
+  if (roomSync.isLoading) {
     return <div className="flex justify-center p-4"><Spinner /></div>;
   }
 
@@ -361,11 +378,14 @@ export function ManageRooms({ eventId }: { eventId: string }) {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
-              <Input
-                placeholder="Thumbnail URL"
-                value={thumbnail}
-                onChange={(e) => setThumbnail(e.target.value)}
-              />
+              <div className="space-y-2">
+                <Label>Image de couverture</Label>
+                <ImageUploader
+                  onImageSelect={setThumbnail}
+                  currentImage={thumbnail}
+                  mediaType="room"
+                />
+              </div>
             </div>
             
             <div className="grid grid-cols-2 gap-4">
@@ -547,7 +567,7 @@ export function ManageRooms({ eventId }: { eventId: string }) {
               </div>
             </div>
 
-            <Button onClick={handleAddRoom} className="w-full">
+            <Button onClick={handleCreateRoom} className="w-full">
               <Plus className="w-4 h-4 mr-2" />
               Create Room
             </Button>
@@ -618,6 +638,7 @@ export function ManageRooms({ eventId }: { eventId: string }) {
                       </div>
                     </div>
                     <div className="flex flex-col gap-2">
+                      <EditRoomDialog room={room} />
                       {getStatusActions(room)}
                       <Button
                         variant="outline"

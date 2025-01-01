@@ -21,6 +21,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { ImageUploader } from '@/components/ui/image-uploader';
 
 const formSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -174,10 +175,17 @@ export function EventForm({ onComplete }: { onComplete?: () => void }) {
               name="imageUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Image URL (optional)</FormLabel>
+                  <FormLabel>Image de couverture</FormLabel>
                   <FormControl>
-                    <Input placeholder="https://..." {...field} />
+                    <ImageUploader
+                      onImageSelect={(url) => field.onChange(url)}
+                      currentImage={field.value}
+                      mediaType="event"
+                    />
                   </FormControl>
+                  <FormDescription>
+                    Cette image sera affichée comme couverture de votre événement
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

@@ -1,7 +1,8 @@
-import { events } from '@/lib/data';
-import { rooms } from '@/lib/rooms';
-import { notFound } from 'next/navigation';
-import { RoomDetails } from '@/components/events/room-details';
+'use server';
+
+import { Suspense } from 'react';
+import { RoomContent } from './room-content';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface RoomPageProps {
   params: {
@@ -10,22 +11,32 @@ interface RoomPageProps {
   };
 }
 
-export function generateStaticParams() {
-  return events.flatMap((event) =>
-    rooms.map((room) => ({
-      eventId: event.id,
-      roomId: room.id,
-    }))
+export default async function RoomPage({ params }: RoomPageProps) {
+  return (
+    <Suspense
+      fallback={
+        <div className="container py-8">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="h-10 w-10">
+              <Skeleton className="h-full w-full rounded-full" />
+            </div>
+            <div className="flex-1">
+              <Skeleton className="h-8 w-64" />
+              <Skeleton className="h-4 w-48 mt-2" />
+            </div>
+          </div>
+          <div className="grid gap-8 lg:grid-cols-4">
+            <div className="lg:col-span-3">
+              <Skeleton className="aspect-video w-full" />
+            </div>
+            <div>
+              <Skeleton className="h-[400px]" />
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <RoomContent eventId={params.eventId} roomId={params.roomId} />
+    </Suspense>
   );
-}
-
-export default function RoomPage({ params }: RoomPageProps) {
-  const event = events.find((e) => e.id === params.eventId);
-  const room = rooms.find((r) => r.id === params.roomId);
-
-  if (!event || !room) {
-    notFound();
-  }
-
-  return <RoomDetails event={event} room={room} />;
 }

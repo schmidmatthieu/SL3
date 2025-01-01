@@ -1,215 +1,137 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Room, RoomSettings, RoomStatus } from '@/types/room';
+import { useEffect } from 'react';
+import { useRoomStore } from '@/store/room.store';
+import { Room, RoomSettings } from '@/types/room';
 import { useToast } from '@/components/ui/use-toast';
 import { useAuthStore } from '@/store/auth-store';
-import useSWR from 'swr';
+import { getAuthHeaders } from '@/services/api/utils';
 
 interface UseRoomsResult {
   rooms: Room[];
   isLoading: boolean;
-  error: string | null;
-  createRoom: (
-    eventId: string,
-    name: string,
-    settings: Partial<RoomSettings>,
-    extraData?: {
-      description?: string;
-      thumbnail?: string;
-      startTime?: string;
-      endTime?: string;
-    }
-  ) => Promise<void>;
+  error: Error | null;
+  createRoom: (eventId: string, name: string, settings: RoomSettings, options: {
+    description?: string;
+    thumbnail?: string;
+    startTime: string;
+    endTime: string;
+  }) => Promise<Room>;
   updateRoom: (roomId: string, data: Partial<Room>) => Promise<void>;
-  deleteRoom: (eventId: string, roomId: string) => Promise<void>;
-  startStream: (roomId: string) => Promise<void>;
-  stopStream: (roomId: string) => Promise<void>;
-  pauseStream: (roomId: string) => Promise<void>;
+  deleteRoom: (roomId: string) => Promise<void>;
+  endRoom: (roomId: string) => Promise<void>;
+  pauseRoom: (roomId: string) => Promise<void>;
   cancelRoom: (roomId: string) => Promise<void>;
   reactivateRoom: (roomId: string) => Promise<void>;
+  startStream: (roomId: string) => Promise<void>;
+  stopStream: (roomId: string) => Promise<void>;
   joinRoom: (roomId: string) => Promise<void>;
   leaveRoom: (roomId: string) => Promise<void>;
-  endRoom: (roomId: string) => Promise<void>;
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const getAuthHeaders = () => {
-  const token = useAuthStore.getState().token;
-  return {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`,
-  };
-};
-
-const fetcher = async (url: string) => {
-  console.log('Fetching rooms from:', url);
-  const response = await fetch(url, {
-    headers: getAuthHeaders(),
-  });
-  if (!response.ok) {
-    console.error('Failed to fetch rooms:', response.status, response.statusText);
-    throw new Error('Failed to fetch rooms');
-  }
-  const data = await response.json();
-  console.log('Fetched rooms:', data);
-  return data;
-};
-
 export function useRooms(eventId?: string): UseRoomsResult {
   const { toast } = useToast();
-  
-  console.log('useRooms hook called with eventId:', eventId);
-  
-  const { data: rooms = [], error, isLoading, mutate } = useSWR<Room[]>(
-    eventId ? `/api/rooms/event/${eventId}` : null,
-    fetcher
-  );
+  const {
+    rooms,
+    loading: isLoading,
+    error,
+    fetchEventRooms,
+    createRoom: createRoomStore,
+    updateRoom: updateRoomStore,
+    deleteRoom: deleteRoomStore,
+  } = useRoomStore();
 
-  console.log('useRooms hook state:', { rooms, error, isLoading });
+  useEffect(() => {
+    if (eventId) {
+      fetchEventRooms(eventId);
+    }
+  }, [eventId, fetchEventRooms]);
 
   const handleError = (error: any, message: string) => {
     console.error(message, error);
     toast({
-      title: 'Error',
+      title: "Error",
       description: message,
-      variant: 'destructive',
+      variant: "destructive",
     });
-    throw error;
   };
 
   const createRoom = async (
     eventId: string,
     name: string,
-    settings: Partial<RoomSettings>,
-    extraData?: {
+    settings: RoomSettings,
+    options: {
       description?: string;
       thumbnail?: string;
-      startTime?: string;
-      endTime?: string;
+      startTime: string;
+      endTime: string;
     }
   ) => {
     try {
-      const response = await fetch(`/api/rooms`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-        body: JSON.stringify({
-          eventId,
-          name,
-          settings,
-          ...extraData,
-        }),
+      const newRoom = await createRoomStore({
+        name,
+        eventId,
+        description: options.description || '',
+        thumbnail: options.thumbnail || '',
+        startTime: options.startTime,
+        endTime: options.endTime,
+        settings: {
+          ...settings,
+          maxParticipants: settings.maxParticipants || 100,
+          originalLanguage: settings.originalLanguage || 'en',
+          availableLanguages: settings.availableLanguages || []
+        }
+      });
+      
+      toast({
+        title: "Success",
+        description: "Room created successfully",
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to create room');
-      }
-
-      mutate();
+      return newRoom;
     } catch (error) {
       handleError(error, 'Failed to create room');
+      throw error;
     }
   };
 
   const updateRoom = async (roomId: string, data: Partial<Room>) => {
     try {
-      const response = await fetch(`/api/rooms/${roomId}`, {
-        method: 'PATCH',
-        headers: getAuthHeaders(),
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update room');
-      }
-
-      mutate();
+      await updateRoomStore(eventId!, roomId, data);
     } catch (error) {
       handleError(error, 'Failed to update room');
     }
   };
 
-  const deleteRoom = async (eventId: string, roomId: string) => {
+  const deleteRoom = async (roomId: string) => {
     try {
-      const response = await fetch(`/api/rooms/${roomId}`, {
-        method: 'DELETE',
-        headers: getAuthHeaders(),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete room');
-      }
-
-      mutate();
+      await deleteRoomStore(eventId!, roomId);
     } catch (error) {
       handleError(error, 'Failed to delete room');
     }
   };
 
-  const startStream = async (roomId: string) => {
+  const endRoom = async (roomId: string) => {
     try {
-      const response = await fetch(`/api/rooms/${roomId}/stream`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to start stream');
-      }
-
-      mutate();
+      await updateRoom(roomId, { status: 'ended' });
     } catch (error) {
-      handleError(error, 'Failed to start stream');
+      handleError(error, 'Failed to end room');
     }
   };
 
-  const stopStream = async (roomId: string) => {
+  const pauseRoom = async (roomId: string) => {
     try {
-      const response = await fetch(`/api/rooms/${roomId}/stream/stop`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to stop stream');
-      }
-
-      mutate();
+      await updateRoom(roomId, { status: 'paused' });
     } catch (error) {
-      handleError(error, 'Failed to stop stream');
-    }
-  };
-
-  const pauseStream = async (roomId: string) => {
-    try {
-      const response = await fetch(`/api/rooms/${roomId}/stream/pause`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to pause stream');
-      }
-
-      mutate();
-    } catch (error) {
-      handleError(error, 'Failed to pause stream');
+      handleError(error, 'Failed to pause room');
     }
   };
 
   const cancelRoom = async (roomId: string) => {
     try {
-      const response = await fetch(`/api/rooms/${roomId}/cancel`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to cancel room');
-      }
-
-      mutate();
+      await updateRoom(roomId, { status: 'cancelled' });
     } catch (error) {
       handleError(error, 'Failed to cancel room');
     }
@@ -217,18 +139,25 @@ export function useRooms(eventId?: string): UseRoomsResult {
 
   const reactivateRoom = async (roomId: string) => {
     try {
-      const response = await fetch(`/api/rooms/${roomId}/reactivate`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to reactivate room');
-      }
-
-      mutate();
+      await updateRoom(roomId, { status: 'upcoming' });
     } catch (error) {
       handleError(error, 'Failed to reactivate room');
+    }
+  };
+
+  const startStream = async (roomId: string) => {
+    try {
+      await updateRoom(roomId, { status: 'live' });
+    } catch (error) {
+      handleError(error, 'Failed to start stream');
+    }
+  };
+
+  const stopStream = async (roomId: string) => {
+    try {
+      await updateRoom(roomId, { status: 'ended' });
+    } catch (error) {
+      handleError(error, 'Failed to stop stream');
     }
   };
 
@@ -243,7 +172,9 @@ export function useRooms(eventId?: string): UseRoomsResult {
         throw new Error('Failed to join room');
       }
 
-      mutate();
+      // Force revalidation and update the cache with fresh data
+      await fetchEventRooms(eventId!);
+
     } catch (error) {
       handleError(error, 'Failed to join room');
     }
@@ -260,43 +191,28 @@ export function useRooms(eventId?: string): UseRoomsResult {
         throw new Error('Failed to leave room');
       }
 
-      mutate();
+      // Force revalidation and update the cache with fresh data
+      await fetchEventRooms(eventId!);
+
     } catch (error) {
       handleError(error, 'Failed to leave room');
-    }
-  };
-
-  const endRoom = async (roomId: string) => {
-    try {
-      const response = await fetch(`/api/rooms/${roomId}/end`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to end room');
-      }
-
-      mutate();
-    } catch (error) {
-      handleError(error, 'Failed to end room');
     }
   };
 
   return {
     rooms,
     isLoading,
-    error: error ? error.message : null,
+    error,
     createRoom,
     updateRoom,
     deleteRoom,
-    startStream,
-    stopStream,
-    pauseStream,
+    endRoom,
+    pauseRoom,
     cancelRoom,
     reactivateRoom,
+    startStream,
+    stopStream,
     joinRoom,
     leaveRoom,
-    endRoom,
   };
 }
