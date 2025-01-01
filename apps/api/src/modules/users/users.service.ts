@@ -3,6 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { User, UserDocument } from './schemas/user.schema';
+import { MediaService } from '../media/media.service';
+import { MediaDocument } from '../media/schemas/media.schema';
 
 @Injectable()
 export class UsersService {
@@ -10,6 +12,7 @@ export class UsersService {
 
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private readonly mediaService: MediaService,
   ) {}
 
   async create(createUserDto: {
@@ -64,31 +67,36 @@ export class UsersService {
     preferredLanguage?: string;
     theme?: string;
   }): Promise<UserDocument> {
-    this.logger.log(`Updating profile for user ${userId}`);
-    
-    // Vérifier si l'utilisateur existe
     const user = await this.userModel.findById(userId);
     if (!user) {
       throw new Error('User not found');
     }
 
-    // Exclure explicitement le rôle des mises à jour
-    const { role, ...safeUpdateData } = updateData as any;
+    // Si l'image est modifiée, mettre à jour les utilisations
+    if (updateData.imageUrl && updateData.imageUrl !== user.imageUrl) {
+      // Supprimer l'ancienne utilisation si elle existe
+      if (user.imageUrl) {
+        const oldMediaPath = user.imageUrl.split('/uploads/')[1];
+        const oldMedia = await this.mediaService.findByFilename(oldMediaPath);
+        if (oldMedia) {
+          await this.mediaService.removeUsage(oldMedia.id, userId);
+        }
+      }
 
-    const updatedUser = await this.userModel
-      .findByIdAndUpdate(
-        userId,
-        { $set: safeUpdateData },
-        { new: true, runValidators: true }
-      )
-      .exec();
-
-    if (!updatedUser) {
-      throw new Error('Failed to update user');
+      // Ajouter la nouvelle utilisation
+      const newMediaPath = updateData.imageUrl.split('/uploads/')[1];
+      const newMedia = await this.mediaService.findByFilename(newMediaPath);
+      if (newMedia) {
+        await this.mediaService.addUsage(newMedia.id, {
+          type: 'profile',
+          entityId: userId,
+          entityName: `${updateData.firstName || user.firstName} ${updateData.lastName || user.lastName}`.trim()
+        });
+      }
     }
 
-    this.logger.log(`Profile updated for user ${userId}`);
-    return updatedUser;
+    Object.assign(user, updateData);
+    return user.save();
   }
 
   async updatePassword(userId: string, newPassword: string): Promise<UserDocument | null> {

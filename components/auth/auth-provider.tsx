@@ -19,7 +19,7 @@ export function AuthProvider({
 }: { 
   children: React.ReactNode;
 }) {
-  const { user, profile, loading, setUser, setProfile, setLoading, signOut } = useAuthStore();
+  const { user, profile, loading, setUser, setProfile, setLoading, signOut, setToken } = useAuthStore();
 
   useEffect(() => {
     const getSession = async () => {
@@ -31,8 +31,11 @@ export function AuthProvider({
           return;
         }
 
+        // Store token in the auth store
+        setToken(token);
+
         // Fetch user data from API
-        const response = await fetch('http://localhost:3001/api/auth/me', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -48,44 +51,40 @@ export function AuthProvider({
         
         // Set user and profile data if data exists
         if (data) {
+          // Créer un objet user avec uniquement les propriétés nécessaires
           const user = {
             id: data.id,
             email: data.email,
-            username: data.username,
             role: data.role,
-            createdAt: data.createdAt,
-            updatedAt: data.updatedAt
           };
           
+          // Créer un profil complet avec toutes les informations
           const profile = {
             id: data.id,
-            userId: data.id,
-            role: data.role,
+            email: data.email,
+            username: data.username,
             firstName: data.firstName,
             lastName: data.lastName,
             imageUrl: data.imageUrl,
-            bio: data.bio,
             preferredLanguage: data.preferredLanguage,
             theme: data.theme,
-            createdAt: data.createdAt,
-            updatedAt: data.updatedAt
+            role: data.role,
           };
 
+          // Mettre à jour le user et le profile en même temps
           setUser(user);
           setProfile(profile);
         }
-        
-        setLoading(false);
       } catch (error) {
-        console.error('Session error:', error);
-        setLoading(false);
-        // Clear data on error
+        console.error('Error fetching session:', error);
         signOut();
+      } finally {
+        setLoading(false);
       }
     };
 
     getSession();
-  }, [setUser, setProfile, setLoading, signOut]);
+  }, [setUser, setProfile, setLoading, signOut, setToken]);
 
   return (
     <AuthContext.Provider value={{ user, profile, loading, signOut }}>

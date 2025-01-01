@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { Profile } from '@/types/profile';
 import { profileService } from '@/services/api/profiles';
+import { useAuthStore } from '@/store/auth-store';
 
 interface ProfileState {
   profile: Profile | null;
@@ -32,6 +33,8 @@ export const useProfileStore = create<ProfileState>()(
           set({ isLoading: true, error: null });
           const profile = await profileService.getMyProfile();
           set({ profile, isLoading: false });
+          // Sync with auth store
+          useAuthStore.getState().setProfile(profile);
         } catch (error) {
           console.error('Error fetching profile:', error);
           // If unauthorized, clear the profile
@@ -48,6 +51,8 @@ export const useProfileStore = create<ProfileState>()(
           set({ isLoading: true, error: null });
           const updatedProfile = await profileService.update(data);
           set({ profile: updatedProfile, isLoading: false });
+          // Sync with auth store
+          useAuthStore.getState().setProfile(updatedProfile);
         } catch (error) {
           console.error('Error updating profile:', error);
           set({ error: error.message, isLoading: false });
@@ -59,7 +64,24 @@ export const useProfileStore = create<ProfileState>()(
         try {
           set({ isLoading: true, error: null });
           const updatedProfile = await profileService.updateAvatar(formData);
-          set({ profile: updatedProfile, isLoading: false });
+          // Assurons-nous de préserver les propriétés existantes du profil
+          const currentProfile = useProfileStore.getState().profile;
+          const mergedProfile = {
+            ...currentProfile,
+            ...updatedProfile,
+          };
+          
+          // Mettre à jour le profile store
+          set({ profile: mergedProfile, isLoading: false });
+          
+          // Mettre à jour le auth store avec le user minimal et le profil complet
+          const authStore = useAuthStore.getState();
+          authStore.setProfile(mergedProfile);
+          authStore.setUser({
+            id: mergedProfile.id,
+            email: mergedProfile.email,
+            role: mergedProfile.role,
+          });
         } catch (error) {
           console.error('Error updating avatar:', error);
           set({ error: error.message, isLoading: false });
@@ -73,6 +95,8 @@ export const useProfileStore = create<ProfileState>()(
           isLoading: false,
           error: null,
         });
+        // Sync with auth store
+        useAuthStore.getState().setProfile(null);
       },
     }),
     {
