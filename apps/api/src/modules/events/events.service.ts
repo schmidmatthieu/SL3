@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, Logger, forwardRef, Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, Types, Query, Document } from 'mongoose';
 import { Event, EventDocument } from './schemas/event.schema';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
@@ -37,21 +37,51 @@ export class EventsService {
     return savedEvent;
   }
 
-  async findAll(filters: { status?: string; date?: string } = {}): Promise<Event[]> {
+  async findAll(filters: { status?: string; date?: string } = {}): Promise<any[]> {
     this.logger.log('Finding all events with filters:', filters);
     
-    const query: any = {};
+    // Construire la requête
+    const query = this.eventModel.find();
+    
     if (filters.status) {
-      query.status = filters.status;
+      query.where('status', filters.status);
     }
     if (filters.date) {
-      query.date = new Date(filters.date);
+      query.where('date', new Date(filters.date));
     }
 
-    const events = await this.eventModel.find(query)
+    // Récupérer les événements
+    const events = await query
       .sort({ startDateTime: 1 })
+      .lean()
       .exec();
-    this.logger.log(`Found ${events.length} events`);
+
+    // Pour chaque événement dans le tableau
+    for (let i = 0; i < events.length; i++) {
+      const event = events[i] as any;
+      
+      // Récupérer toutes les rooms qui existent réellement
+      const existingRooms = await this.roomService.findAll(event._id.toString());
+
+      // S'assurer que event.rooms existe
+      if (!event.rooms) {
+        event.rooms = [];
+      }
+
+      // Mettre à jour l'événement avec les rooms complètes
+      if (existingRooms.length !== event.rooms.length) {
+        this.logger.warn(`Event ${event._id} has ${event.rooms.length} room references but found ${existingRooms.length} rooms`);
+        
+        // Mettre à jour dans la base de données
+        await this.eventModel.findByIdAndUpdate(event._id, {
+          $set: { rooms: existingRooms }
+        });
+        
+        // Mettre à jour l'objet local
+        event.rooms = existingRooms;
+      }
+    }
+
     return events;
   }
 

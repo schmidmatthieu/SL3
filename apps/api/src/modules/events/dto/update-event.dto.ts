@@ -1,34 +1,6 @@
-import { IsString, IsOptional, IsDateString, IsEnum, IsNumber, Min, ValidateIf } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsEnum, IsDateString } from 'class-validator';
 import { EventStatus } from '../schemas/event.schema';
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateEventDto } from './create-event.dto';
 
-export class UpdateEventDto {
-  @IsString()
-  @IsOptional()
-  title?: string;
-
-  @IsString()
-  @IsOptional()
-  description?: string;
-
-  @IsDateString()
-  @IsOptional()
-  startDateTime?: string;
-
-  @IsDateString()
-  @IsOptional()
-  @ValidateIf((o) => o.startDateTime && o.endDateTime)
-  endDateTime?: string;
-
-  @IsString()
-  @IsOptional()
-  imageUrl?: string;
-
-  @IsEnum(['active', 'scheduled', 'ended', 'cancelled'])
-  @IsOptional()
-  status?: EventStatus;
-
-  @IsNumber()
-  @Min(1)
-  @IsOptional()
-  rooms?: number;
-}
+export class UpdateEventDto extends PartialType(CreateEventDto) {}
