@@ -8,6 +8,7 @@ import { RolesModule } from './modules/roles/roles.module';
 import { EventsModule } from './modules/events/events.module';
 import { SpeakersModule } from './modules/speakers/speakers.module';
 import { MediaModule } from './modules/media/media.module';
+import { RoomModule } from './modules/rooms/room.module';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 
 @Module({
@@ -41,6 +42,7 @@ import { LoggerMiddleware } from './middleware/logger.middleware';
     EventsModule,
     SpeakersModule,
     MediaModule,
+    RoomModule,
   ],
   controllers: [],
   providers: [],

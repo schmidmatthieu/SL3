@@ -27,9 +27,11 @@ export function Header() {
   const { user, profile, signOut } = useAuthStore();
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
   const [isClient, setIsClient] = useState(false);
+  const [isTranslationsLoaded, setTranslationsLoaded] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
+    setTranslationsLoaded(true);
   }, []);
 
   const userInitials = profile?.firstName && profile?.lastName
@@ -44,8 +46,8 @@ export function Header() {
   };
 
   const navItems = [
-    { href: '/events', label: t('nav.events') },
-    { href: '/about', label: t('nav.about') },
+    { href: '/events', label: isTranslationsLoaded ? t('nav.events') : '' },
+    { href: '/about', label: isTranslationsLoaded ? t('nav.about') : '' },
   ];
 
   return (
@@ -111,11 +113,15 @@ export function Header() {
                   {profile?.imageUrl ? (
                     <img
                       src={getFullImageUrl(profile.imageUrl)}
-                      alt={profile?.firstName || user?.email || ''}
+                      alt={profile?.firstName || user.email || ''}
                       className="rounded-full object-cover w-full h-full"
                     />
                   ) : (
-                    <User2 className="h-4 w-4 text-primary-600 dark:text-primary-400" />
+                    <div className="flex items-center justify-center w-full h-full rounded-full bg-primary-100 dark:bg-primary-800">
+                      <span className="text-xs font-medium text-primary-900 dark:text-primary-100">
+                        {userInitials}
+                      </span>
+                    </div>
                   )}
                 </Button>
               </DropdownMenuTrigger>

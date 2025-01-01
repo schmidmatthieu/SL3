@@ -1,0 +1,8 @@
+1. Read the rules in @new_rules folder
+2. Use Mongo db in a docker container
+3. Use Nestjs
+4. Use Zustand
+5. Use Nextjs 15
+6. Use tailwind
+7. Use Shadcn/ui
+8. Code in a monorepo
