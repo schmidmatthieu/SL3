@@ -33,17 +33,17 @@ interface RoomCardProps {
 const getStatusColor = (status: Room['status']) => {
   switch (status) {
     case 'live':
-      return 'bg-third text-foreground dark:bg-third/90 dark:text-foreground';
+      return 'bg-third text-black';
     case 'upcoming':
       return 'bg-blue-500 text-white dark:bg-blue-600';
     case 'paused':
-      return 'bg-primary-500 text-primary-foreground dark:bg-primary-600';
+      return 'bg-yellow-500 text-black';
     case 'ended':
-      return 'bg-secondary-600 text-secondary-foreground dark:bg-secondary-700';
+      return 'bg-secondary text-black';
     case 'cancelled':
       return 'bg-destructive text-destructive-foreground dark:bg-destructive/90';
     default:
-      return 'bg-secondary-600 text-secondary-foreground dark:bg-secondary-700';
+      return 'bg-secondary text-black';
   }
 };
 
@@ -55,19 +55,17 @@ export function RoomCard({ room, eventId, userLanguage = 'en' }: RoomCardProps) 
   const router = useRouter();
 
   const handleClick = () => {
-    if (room.status === 'cancelled' || room.status === 'ended') {
+    if (room.status === 'cancelled') {
       return;
     }
     router.push(`/events/${eventId}/rooms/${room._id}`);
   };
 
   const handleAccessClick = (e: React.MouseEvent, type: 'mod' | 'speaker') => {
-    if (room.status === 'cancelled' || room.status === 'ended') {
-      e.preventDefault();
-      return;
-    }
     e.stopPropagation();
-    router.push(`/events/${eventId}/rooms/${room._id}/${type}`);
+    if (type === 'mod' || room.status !== 'cancelled') {
+      router.push(`/events/${eventId}/rooms/${room._id}/${type}`);
+    }
   };
 
   const statusTranslation = ROOM_STATUS_TRANSLATIONS[room.status]?.[userLanguage] || room.status;
@@ -76,7 +74,7 @@ export function RoomCard({ room, eventId, userLanguage = 'en' }: RoomCardProps) 
     <Card 
       className={cn(
         "group relative overflow-hidden transition-all card-hover-effect",
-        (room.status === 'cancelled' || room.status === 'ended') 
+        room.status === 'cancelled'
           ? "cursor-not-allowed opacity-60" 
           : "cursor-pointer",
         "bg-background/40 backdrop-blur-[12px]",
@@ -106,31 +104,31 @@ export function RoomCard({ room, eventId, userLanguage = 'en' }: RoomCardProps) 
             {statusTranslation}
           </Badge>
 
-          {room.status !== 'ended' && room.status !== 'cancelled' && (
-            <div className="absolute bottom-4 right-4 opacity-0 transform translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    className="group/settings relative bg-background/80 backdrop-blur-sm hover:bg-background/90 hover:scale-105 transition-all border-primary-100/30 dark:border-primary-800/30"
-                  >
-                    <Settings className="h-4 w-4 text-primary-600 dark:text-primary-400 transition-transform duration-300 group-hover/settings:rotate-90" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={(e) => handleAccessClick(e, 'mod')}>
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Accès modérateur</span>
-                  </DropdownMenuItem>
+          <div className="absolute bottom-4 right-4 opacity-0 transform translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="group/settings relative bg-background/80 backdrop-blur-sm hover:bg-background/90 hover:scale-105 transition-all border-primary-100/30 dark:border-primary-800/30"
+                >
+                  <Settings className="h-4 w-4 text-primary-600 dark:text-primary-400 transition-transform duration-300 group-hover/settings:rotate-90" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={(e) => handleAccessClick(e, 'mod')}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Accès modérateur</span>
+                </DropdownMenuItem>
+                {room.status !== 'cancelled' && (
                   <DropdownMenuItem onClick={(e) => handleAccessClick(e, 'speaker')}>
                     <Mic className="mr-2 h-4 w-4" />
                     <span>Accès speaker</span>
                   </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          )}
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
         
         <div className="p-6">
