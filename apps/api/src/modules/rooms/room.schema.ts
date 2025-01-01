@@ -42,8 +42,8 @@ export class Room {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true })
-  eventId: Types.ObjectId;
+  @Prop({ required: true, type: MongooseSchema.Types.Mixed })
+  eventId: Types.ObjectId | string;
 
   @Prop({ 
     required: true, 

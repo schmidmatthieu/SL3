@@ -49,12 +49,16 @@ export class RoomService {
 
   async findAll(eventId: string): Promise<Room[]> {
     console.log('Finding rooms for event:', eventId);
-    const rooms = await this.roomModel.find({ 
-      eventId: new Types.ObjectId(eventId)
-    })
-    .populate('eventId')
-    .sort({ startTime: 1 })
-    .exec();
+    
+    // Vérifier si l'eventId est déjà un ObjectId
+    const eventIdQuery = Types.ObjectId.isValid(eventId) 
+      ? eventId 
+      : eventId;
+      
+    const rooms = await this.roomModel.find({ eventId: eventIdQuery })
+      .populate('eventId')
+      .sort({ startTime: 1 })
+      .exec();
     
     console.log('Found rooms:', rooms.map(r => ({ 
       id: r._id, 
@@ -78,11 +82,22 @@ export class RoomService {
       throw new NotFoundException('Room not found');
     }
 
+    // Vérifier la transition de statut uniquement si le statut est modifié
     if (updateRoomDto.status && !this.isValidStatusTransition(room.status, updateRoomDto.status)) {
       throw new BadRequestException(`Invalid status transition from ${room.status} to ${updateRoomDto.status}`);
     }
 
-    const updatedRoom = await this.roomModel.findByIdAndUpdate(id, updateRoomDto, { new: true }).exec();
+    // Nettoyer l'objet updateRoomDto pour ne garder que les champs définis
+    const cleanedUpdate = Object.fromEntries(
+      Object.entries(updateRoomDto).filter(([_, value]) => value !== undefined)
+    );
+
+    const updatedRoom = await this.roomModel.findByIdAndUpdate(
+      id, 
+      { $set: cleanedUpdate },
+      { new: true }
+    ).exec();
+
     if (!updatedRoom) {
       throw new NotFoundException(`Room #${id} not found`);
     }
