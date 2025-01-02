@@ -24,7 +24,8 @@ export class Speaker extends Document {
   lastName: string;
 
   @Prop({ type: String })
-  imageUrl?: string = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
+  imageUrl?: string =
+    'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
 
   @Prop({ type: [String], default: [] })
   rooms?: string[];
@@ -43,6 +44,6 @@ SpeakerSchema.index({ eventId: 1 });
 SpeakerSchema.index({ rooms: 1 });
 
 // Virtuals
-SpeakerSchema.virtual('fullName').get(function() {
+SpeakerSchema.virtual('fullName').get(function () {
   return `${this.firstName} ${this.lastName}`;
 });

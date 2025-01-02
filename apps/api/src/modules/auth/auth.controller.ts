@@ -98,7 +98,10 @@ export class AuthController {
       },
     },
   })
-  @ApiResponse({ status: 400, description: 'Invalid input or email already exists' })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input or email already exists',
+  })
   @Post('signup')
   async signup(
     @Body() signupDto: { email: string; password: string; username: string },
@@ -135,15 +138,24 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @Get('me')
   async getProfile(@Request() req) {
-    this.logger.log('Profile request received with user:', JSON.stringify(req.user));
+    this.logger.log(
+      'Profile request received with user:',
+      JSON.stringify(req.user),
+    );
     try {
       if (!req.user || !req.user.id) {
-        this.logger.error('No user ID found in request:', JSON.stringify(req.user));
+        this.logger.error(
+          'No user ID found in request:',
+          JSON.stringify(req.user),
+        );
         throw new Error('User ID not found in request');
       }
 
       const profile = await this.authService.getProfile(req.user.id);
-      this.logger.log('Profile retrieved successfully:', JSON.stringify(profile));
+      this.logger.log(
+        'Profile retrieved successfully:',
+        JSON.stringify(profile),
+      );
       return profile;
     } catch (error) {
       this.logger.error('Error in getProfile controller:', error);

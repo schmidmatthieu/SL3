@@ -62,7 +62,9 @@ describe('UsersService', () => {
         lastName: 'Doe',
       };
 
-      jest.spyOn(bcrypt, 'hash').mockImplementation(() => Promise.resolve('hashedpassword'));
+      jest
+        .spyOn(bcrypt, 'hash')
+        .mockImplementation(() => Promise.resolve('hashedpassword'));
       jest.spyOn(model.prototype, 'save').mockResolvedValue(mockUser);
 
       const result = await service.create(createUserDto);
@@ -113,9 +115,13 @@ describe('UsersService', () => {
       const newPassword = 'newpassword123';
       const hashedPassword = 'newhashpassword';
 
-      jest.spyOn(bcrypt, 'hash').mockImplementation(() => Promise.resolve(hashedPassword));
+      jest
+        .spyOn(bcrypt, 'hash')
+        .mockImplementation(() => Promise.resolve(hashedPassword));
       jest.spyOn(model, 'findByIdAndUpdate').mockReturnValue({
-        exec: jest.fn().mockResolvedValueOnce({ ...mockUser, password: hashedPassword }),
+        exec: jest
+          .fn()
+          .mockResolvedValueOnce({ ...mockUser, password: hashedPassword }),
       } as any);
 
       const result = await service.updatePassword('user_id', newPassword);
@@ -135,7 +141,9 @@ describe('UsersService', () => {
       const newImageUrl = 'https://example.com/newimage.jpg';
 
       jest.spyOn(model, 'findByIdAndUpdate').mockReturnValue({
-        exec: jest.fn().mockResolvedValueOnce({ ...mockUser, imageUrl: newImageUrl }),
+        exec: jest
+          .fn()
+          .mockResolvedValueOnce({ ...mockUser, imageUrl: newImageUrl }),
       } as any);
 
       const result = await service.updateAvatar('user_id', newImageUrl);

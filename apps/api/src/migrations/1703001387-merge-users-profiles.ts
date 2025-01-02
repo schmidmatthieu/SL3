@@ -19,7 +19,9 @@ export const up = async (connection: Connection) => {
 
     // Pour chaque utilisateur, fusionner avec son profil
     for (const user of users) {
-      const profile = profiles.find(p => p.userId.toString() === user._id.toString());
+      const profile = profiles.find(
+        (p) => p.userId.toString() === user._id.toString(),
+      );
       if (profile) {
         await db.collection('users').updateOne(
           { _id: user._id },
@@ -32,8 +34,8 @@ export const up = async (connection: Connection) => {
               preferredLanguage: profile.preferredLanguage || 'en',
               theme: profile.theme || 'system',
             },
-            $unset: { profile: "" }
-          }
+            $unset: { profile: '' },
+          },
         );
         logger.log(`Updated user ${user._id} with profile data`);
       }
@@ -85,14 +87,14 @@ export const down = async (connection: Connection) => {
         {
           $set: { profile: profile.insertedId },
           $unset: {
-            firstName: "",
-            lastName: "",
-            bio: "",
-            imageUrl: "",
-            preferredLanguage: "",
-            theme: "",
-          }
-        }
+            firstName: '',
+            lastName: '',
+            bio: '',
+            imageUrl: '',
+            preferredLanguage: '',
+            theme: '',
+          },
+        },
       );
       logger.log(`Updated user ${user._id} with profile reference`);
     }

@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsOptional, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 import { UserRole } from '../schemas/user.schema';
 
 export class UpdateUserDto {
@@ -69,7 +75,7 @@ export class UpdateUserDto {
   bio?: string;
 
   @ApiProperty({
-    description: 'The URL of the user\'s profile image',
+    description: "The URL of the user's profile image",
     example: 'http://example.com/avatar.jpg',
     required: false,
   })

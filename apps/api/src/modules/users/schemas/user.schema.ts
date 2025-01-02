@@ -9,7 +9,7 @@ export enum UserRole {
   EVENT_ADMIN = 'event_admin',
   ROOM_MODERATOR = 'room_moderator',
   ROOM_SPEAKER = 'room_speaker',
-  PARTICIPANT = 'participant'
+  PARTICIPANT = 'participant',
 }
 
 @Schema({
@@ -29,7 +29,7 @@ export enum UserRole {
         theme: ret.theme || 'system',
         role: ret.role,
         createdAt: ret.createdAt,
-        updatedAt: ret.updatedAt
+        updatedAt: ret.updatedAt,
       };
     },
   },
@@ -41,8 +41,8 @@ export enum UserRole {
       delete ret.__v;
       delete ret.password;
       return ret;
-    }
-  }
+    },
+  },
 })
 export class User {
   @ApiProperty({
@@ -66,12 +66,12 @@ export class User {
     description: 'The user role',
     example: 'participant',
   })
-  @Prop({ 
-    type: String, 
-    required: true, 
+  @Prop({
+    type: String,
+    required: true,
     enum: Object.values(UserRole),
     default: UserRole.PARTICIPANT,
-    immutable: true // Le rôle ne peut pas être modifié une fois défini
+    immutable: true, // Le rôle ne peut pas être modifié une fois défini
   })
   role: UserRole;
 
@@ -107,12 +107,12 @@ export class User {
     description: 'The preferred language for the user interface',
     example: 'en',
     default: 'en',
-    enum: ['en', 'fr', 'de', 'it']
+    enum: ['en', 'fr', 'de', 'it'],
   })
-  @Prop({ 
+  @Prop({
     default: 'en',
     type: String,
-    enum: ['en', 'fr', 'de', 'it']
+    enum: ['en', 'fr', 'de', 'it'],
   })
   preferredLanguage: string;
 
@@ -131,8 +131,8 @@ export class User {
 export const UserSchema = SchemaFactory.createForClass(User);
 
 // Middleware pour le nettoyage des champs
-UserSchema.pre('save', function(next) {
-  ['firstName', 'lastName', 'bio'].forEach(field => {
+UserSchema.pre('save', function (next) {
+  ['firstName', 'lastName', 'bio'].forEach((field) => {
     if (this[field]) {
       this[field] = this[field].trim();
     }
@@ -140,10 +140,10 @@ UserSchema.pre('save', function(next) {
   next();
 });
 
-UserSchema.pre('findOneAndUpdate', function(next) {
+UserSchema.pre('findOneAndUpdate', function (next) {
   const update = this.getUpdate() as any;
   if (update) {
-    ['firstName', 'lastName', 'bio'].forEach(field => {
+    ['firstName', 'lastName', 'bio'].forEach((field) => {
       if (update[field]) {
         update[field] = update[field].trim();
       }

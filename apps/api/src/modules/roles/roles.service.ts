@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Profile, ProfileDocument } from './schemas/profile.schema';
-import { Permission, PermissionDocument, PermissionType } from './schemas/permission.schema';
+import {
+  Permission,
+  PermissionDocument,
+  PermissionType,
+} from './schemas/permission.schema';
 import { User, UserDocument } from '../users/schemas/user.schema';
 import { Logger } from '@nestjs/common';
 
@@ -12,7 +16,8 @@ export class RolesService {
 
   constructor(
     @InjectModel(Profile.name) private profileModel: Model<ProfileDocument>,
-    @InjectModel(Permission.name) private permissionModel: Model<PermissionDocument>,
+    @InjectModel(Permission.name)
+    private permissionModel: Model<PermissionDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
@@ -41,22 +46,32 @@ export class RolesService {
     }
   }
 
-  async checkPermission(userId: string, type: PermissionType, resourceId: string): Promise<boolean> {
-    const permission = await this.permissionModel.findOne({
-      userId,
-      type,
-      resourceId,
-      active: true,
-      $or: [
-        { expiresAt: { $exists: false } },
-        { expiresAt: { $gt: new Date() } },
-      ],
-    }).exec();
+  async checkPermission(
+    userId: string,
+    type: PermissionType,
+    resourceId: string,
+  ): Promise<boolean> {
+    const permission = await this.permissionModel
+      .findOne({
+        userId,
+        type,
+        resourceId,
+        active: true,
+        $or: [
+          { expiresAt: { $exists: false } },
+          { expiresAt: { $gt: new Date() } },
+        ],
+      })
+      .exec();
 
     return !!permission;
   }
 
-  async grantPermission(userId: string, type: PermissionType, resourceId: string): Promise<Permission> {
+  async grantPermission(
+    userId: string,
+    type: PermissionType,
+    resourceId: string,
+  ): Promise<Permission> {
     const permission = new this.permissionModel({
       userId,
       type,
@@ -65,11 +80,14 @@ export class RolesService {
     return permission.save();
   }
 
-  async revokePermission(userId: string, type: PermissionType, resourceId: string): Promise<boolean> {
-    const result = await this.permissionModel.updateOne(
-      { userId, type, resourceId },
-      { active: false }
-    ).exec();
+  async revokePermission(
+    userId: string,
+    type: PermissionType,
+    resourceId: string,
+  ): Promise<boolean> {
+    const result = await this.permissionModel
+      .updateOne({ userId, type, resourceId }, { active: false })
+      .exec();
     return result.modifiedCount > 0;
   }
 }

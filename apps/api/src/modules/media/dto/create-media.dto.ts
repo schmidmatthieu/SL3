@@ -1,4 +1,9 @@
-import { IsString, IsOptional, IsNumber, ValidateNested } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsNumber,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { MediaMetadata } from '../types/media.types';
 

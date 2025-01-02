@@ -26,7 +26,7 @@ export class SpeakersController {
   @Post()
   async create(
     @Param('eventId') eventId: string,
-    @Body() createSpeakerDto: CreateSpeakerDto
+    @Body() createSpeakerDto: CreateSpeakerDto,
   ): Promise<Speaker> {
     this.logger.log(`Creating speaker for event: ${eventId}`);
     return this.speakersService.create({ ...createSpeakerDto, eventId });
@@ -41,7 +41,7 @@ export class SpeakersController {
   @Get(':id')
   async findOne(
     @Param('eventId') eventId: string,
-    @Param('id') id: string
+    @Param('id') id: string,
   ): Promise<Speaker> {
     this.logger.log(`Finding speaker by id: ${id} for event: ${eventId}`);
     return this.speakersService.findOne(id);
@@ -60,7 +60,7 @@ export class SpeakersController {
   @Delete(':id')
   async remove(
     @Param('eventId') eventId: string,
-    @Param('id') id: string
+    @Param('id') id: string,
   ): Promise<Speaker> {
     this.logger.log(`Removing speaker ${id} from event: ${eventId}`);
     return this.speakersService.remove(id);
@@ -69,9 +69,11 @@ export class SpeakersController {
   @Get('room/:roomId')
   async findByRoom(
     @Param('eventId') eventId: string,
-    @Param('roomId') roomId: string
+    @Param('roomId') roomId: string,
   ): Promise<Speaker[]> {
-    this.logger.log(`Finding speakers for room: ${roomId} in event: ${eventId}`);
+    this.logger.log(
+      `Finding speakers for room: ${roomId} in event: ${eventId}`,
+    );
     return this.speakersService.findByRoom(roomId);
   }
 }

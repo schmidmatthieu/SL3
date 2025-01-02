@@ -28,17 +28,17 @@ export class UsersService {
     role?: string;
   }): Promise<UserDocument> {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-    
+
     // Définir le rôle par défaut comme 'user', sauf pour le premier utilisateur qui sera admin
     const userCount = await this.userModel.countDocuments();
     const role = userCount === 0 ? 'admin' : 'user';
-    
+
     const createdUser = new this.userModel({
       ...createUserDto,
       password: hashedPassword,
       role,
     });
-    
+
     this.logger.log(`Creating new user with role: ${role}`);
     return createdUser.save();
   }
@@ -55,18 +55,24 @@ export class UsersService {
     return this.userModel.countDocuments().exec();
   }
 
-  async validatePassword(user: UserDocument, password: string): Promise<boolean> {
+  async validatePassword(
+    user: UserDocument,
+    password: string,
+  ): Promise<boolean> {
     return bcrypt.compare(password, user.password);
   }
 
-  async updateProfile(userId: string, updateData: {
-    firstName?: string;
-    lastName?: string;
-    bio?: string;
-    imageUrl?: string;
-    preferredLanguage?: string;
-    theme?: string;
-  }): Promise<UserDocument> {
+  async updateProfile(
+    userId: string,
+    updateData: {
+      firstName?: string;
+      lastName?: string;
+      bio?: string;
+      imageUrl?: string;
+      preferredLanguage?: string;
+      theme?: string;
+    },
+  ): Promise<UserDocument> {
     const user = await this.userModel.findById(userId);
     if (!user) {
       throw new Error('User not found');
@@ -90,7 +96,8 @@ export class UsersService {
         await this.mediaService.addUsage(newMedia.id, {
           type: 'profile',
           entityId: userId,
-          entityName: `${updateData.firstName || user.firstName} ${updateData.lastName || user.lastName}`.trim()
+          entityName:
+            `${updateData.firstName || user.firstName} ${updateData.lastName || user.lastName}`.trim(),
         });
       }
     }
@@ -99,21 +106,27 @@ export class UsersService {
     return user.save();
   }
 
-  async updatePassword(userId: string, newPassword: string): Promise<UserDocument | null> {
+  async updatePassword(
+    userId: string,
+    newPassword: string,
+  ): Promise<UserDocument | null> {
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    return this.userModel.findByIdAndUpdate(
-      userId,
-      { $set: { password: hashedPassword } },
-      { new: true }
-    ).exec();
+    return this.userModel
+      .findByIdAndUpdate(
+        userId,
+        { $set: { password: hashedPassword } },
+        { new: true },
+      )
+      .exec();
   }
 
-  async updateAvatar(userId: string, imageUrl: string): Promise<UserDocument | null> {
-    return this.userModel.findByIdAndUpdate(
-      userId,
-      { $set: { imageUrl } },
-      { new: true }
-    ).exec();
+  async updateAvatar(
+    userId: string,
+    imageUrl: string,
+  ): Promise<UserDocument | null> {
+    return this.userModel
+      .findByIdAndUpdate(userId, { $set: { imageUrl } }, { new: true })
+      .exec();
   }
 
   async deleteByEmail(email: string): Promise<boolean> {

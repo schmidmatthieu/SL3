@@ -8,7 +8,11 @@ export interface Migration {
   down: (connection: Connection) => Promise<void>;
 }
 
-export async function runMigration(connection: Connection, migration: Migration, direction: 'up' | 'down') {
+export async function runMigration(
+  connection: Connection,
+  migration: Migration,
+  direction: 'up' | 'down',
+) {
   try {
     logger.log(`Running migration ${direction}`);
     await migration[direction](connection);

@@ -1,4 +1,10 @@
-export type MediaUsageType = 'profile' | 'speaker' | 'event' | 'room' | 'logo' | 'unused';
+export type MediaUsageType =
+  | 'profile'
+  | 'speaker'
+  | 'event'
+  | 'room'
+  | 'logo'
+  | 'unused';
 
 export interface MediaUsage {
   type: Exclude<MediaUsageType, 'unused'>;

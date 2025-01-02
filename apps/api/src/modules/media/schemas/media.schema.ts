@@ -24,18 +24,19 @@ export class Media {
   @Prop({ required: true })
   uploadedBy: string;
 
-  @Prop([{
-    type: {
-      type: String,
-      enum: ['profile', 'speaker', 'event', 'room', 'logo'],
-      required: true
+  @Prop([
+    {
+      type: {
+        type: String,
+        enum: ['profile', 'speaker', 'event', 'room', 'logo'],
+        required: true,
+      },
+      entityId: { type: String, required: true },
+      entityName: String,
+      usedAt: { type: Date, default: Date.now },
     },
-    entityId: { type: String, required: true },
-    entityName: String,
-    usedAt: { type: Date, default: Date.now }
-  }])
+  ])
   usages: MediaUsage[];
-
 }
 
 export const MediaSchema = SchemaFactory.createForClass(Media);

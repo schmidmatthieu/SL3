@@ -15,7 +15,7 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<any> {
     const user = await this.usersService.findOne(email);
-    if (user && await this.usersService.validatePassword(user, password)) {
+    if (user && (await this.usersService.validatePassword(user, password))) {
       const { password, ...result } = user.toObject();
       return result;
     }
@@ -36,7 +36,7 @@ export class AuthService {
       imageUrl: user.imageUrl,
       preferredLanguage: user.preferredLanguage,
       theme: user.theme,
-      role
+      role,
     };
     this.logger.log('Login - User Response:', JSON.stringify(userResponse));
     return {
@@ -45,9 +45,13 @@ export class AuthService {
     };
   }
 
-  async signup(signupDto: { email: string; password: string; username: string }) {
+  async signup(signupDto: {
+    email: string;
+    password: string;
+    username: string;
+  }) {
     this.logger.log('Starting signup process for:', signupDto.email);
-    
+
     const existingUser = await this.usersService.findOne(signupDto.email);
     if (existingUser) {
       throw new ConflictException('User already exists');
@@ -68,13 +72,13 @@ export class AuthService {
 
   async getProfile(userId: string) {
     this.logger.log('Getting profile for user ID:', userId);
-    
+
     const user = await this.usersService.findById(userId);
     if (!user) {
       this.logger.error('User not found');
       return null;
     }
-    
+
     this.logger.log('User found:', 'yes');
     this.logger.log('User object created:', user);
 
@@ -91,7 +95,7 @@ export class AuthService {
       imageUrl: user.imageUrl,
       preferredLanguage: user.preferredLanguage,
       theme: user.theme,
-      role: role
+      role: role,
     };
 
     this.logger.log('Final profile result:', profile);
@@ -100,9 +104,12 @@ export class AuthService {
 
   async updateProfile(userId: string, updateDto: any) {
     this.logger.log('Updating profile for user:', userId);
-    
+
     try {
-      const updatedUser = await this.usersService.updateProfile(userId, updateDto);
+      const updatedUser = await this.usersService.updateProfile(
+        userId,
+        updateDto,
+      );
       if (!updatedUser) {
         throw new Error('User not found');
       }
@@ -110,7 +117,7 @@ export class AuthService {
       // Le mot de passe est déjà supprimé par le schéma
       const userObject = updatedUser.toObject();
       const role = await this.rolesService.getRole(userId);
-      
+
       return {
         ...userObject,
         role,
@@ -121,16 +128,22 @@ export class AuthService {
     }
   }
 
-  async updatePassword(userId: string, passwordDto: { currentPassword: string; newPassword: string }) {
+  async updatePassword(
+    userId: string,
+    passwordDto: { currentPassword: string; newPassword: string },
+  ) {
     this.logger.log('Updating password for user:', userId);
-    
+
     try {
       const user = await this.usersService.findById(userId);
       if (!user) {
         throw new Error('User not found');
       }
 
-      const isValid = await this.usersService.validatePassword(user, passwordDto.currentPassword);
+      const isValid = await this.usersService.validatePassword(
+        user,
+        passwordDto.currentPassword,
+      );
       if (!isValid) {
         throw new Error('Current password is incorrect');
       }

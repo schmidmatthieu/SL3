@@ -9,7 +9,7 @@ export enum UserRole {
   EVENT_ADMIN = 'event_admin',
   MODERATOR = 'moderator',
   SPEAKER = 'speaker',
-  PARTICIPANT = 'participant'
+  PARTICIPANT = 'participant',
 }
 
 @Schema({ timestamps: true })

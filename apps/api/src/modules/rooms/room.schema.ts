@@ -8,7 +8,7 @@ export enum RoomStatus {
   LIVE = 'live',
   PAUSED = 'paused',
   ENDED = 'ended',
-  CANCELLED = 'cancelled'
+  CANCELLED = 'cancelled',
 }
 
 @Schema({ timestamps: true })
@@ -45,11 +45,11 @@ export class Room {
   @Prop({ required: true, type: MongooseSchema.Types.Mixed })
   eventId: Types.ObjectId | string;
 
-  @Prop({ 
-    required: true, 
+  @Prop({
+    required: true,
     type: String,
     enum: RoomStatus,
-    default: RoomStatus.UPCOMING
+    default: RoomStatus.UPCOMING,
   })
   status: RoomStatus;
 

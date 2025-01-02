@@ -13,13 +13,24 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       ignoreExpiration: false,
       secretOrKey: configService.get<string>('JWT_SECRET'),
     });
-    this.logger.log('JWT Strategy initialized with secret:', configService.get<string>('JWT_SECRET') ? 'Secret present' : 'No secret found');
+    this.logger.log(
+      'JWT Strategy initialized with secret:',
+      configService.get<string>('JWT_SECRET')
+        ? 'Secret present'
+        : 'No secret found',
+    );
   }
 
   async validate(payload: any) {
-    this.logger.log('JWT Strategy - Validating payload:', JSON.stringify(payload));
+    this.logger.log(
+      'JWT Strategy - Validating payload:',
+      JSON.stringify(payload),
+    );
     const result = { id: payload.sub, email: payload.email };
-    this.logger.log('JWT Strategy - Validation result:', JSON.stringify(result));
+    this.logger.log(
+      'JWT Strategy - Validation result:',
+      JSON.stringify(result),
+    );
     return result;
   }
 }

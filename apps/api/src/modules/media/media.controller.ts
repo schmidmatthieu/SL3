@@ -12,7 +12,7 @@ import {
   Request,
   Query,
   OnModuleInit,
-  BadRequestException
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MediaService } from './media.service';
@@ -47,34 +47,43 @@ export class MediaController {
   constructor(private readonly mediaService: MediaService) {}
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file', {
-    storage,
-    fileFilter: (req, file, callback) => {
-      const allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
-      if (!allowedMimes.includes(file.mimetype)) {
-        return callback(new Error('File type not allowed. Please upload a JPEG, PNG, GIF, or SVG image.'), false);
-      }
-      callback(null, true);
-    },
-    limits: {
-      fileSize: 20 * 1024 * 1024, // 20MB
-    },
-  }))
-  async uploadFile(
-    @UploadedFile() file: Express.Multer.File,
-    @Request() req,
-  ) {
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage,
+      fileFilter: (req, file, callback) => {
+        const allowedMimes = [
+          'image/jpeg',
+          'image/png',
+          'image/gif',
+          'image/svg+xml',
+        ];
+        if (!allowedMimes.includes(file.mimetype)) {
+          return callback(
+            new Error(
+              'File type not allowed. Please upload a JPEG, PNG, GIF, or SVG image.',
+            ),
+            false,
+          );
+        }
+        callback(null, true);
+      },
+      limits: {
+        fileSize: 20 * 1024 * 1024, // 20MB
+      },
+    }),
+  )
+  async uploadFile(@UploadedFile() file: Express.Multer.File, @Request() req) {
     if (!file) {
       throw new Error('No file uploaded');
     }
-    console.log('Received file:', file); 
+    console.log('Received file:', file);
     return this.mediaService.create(file, req.user.id);
   }
 
   @Post('upload-url')
   async uploadFromUrl(
     @Body() body: { url: string },
-    @Request() req: any
+    @Request() req: any,
   ): Promise<any> {
     return this.mediaService.uploadFromUrl(body.url, req.user.id);
   }
@@ -111,17 +120,14 @@ export class MediaController {
   }
 
   @Post(':id/usage')
-  async addUsage(
-    @Param('id') id: string,
-    @Body() usage: UsageMediaDto
-  ) {
+  async addUsage(@Param('id') id: string, @Body() usage: UsageMediaDto) {
     return this.mediaService.addUsage(id, usage);
   }
 
   @Delete(':id/usage/:entityId')
   async removeUsage(
     @Param('id') id: string,
-    @Param('entityId') entityId: string
+    @Param('entityId') entityId: string,
   ) {
     return this.mediaService.removeUsage(id, entityId);
   }
@@ -130,7 +136,7 @@ export class MediaController {
   async updateUsageEntityName(
     @Param('type') type: MediaUsage['type'],
     @Param('entityId') entityId: string,
-    @Body('entityName') entityName: string
+    @Body('entityName') entityName: string,
   ) {
     return this.mediaService.updateUsageEntityName(type, entityId, entityName);
   }

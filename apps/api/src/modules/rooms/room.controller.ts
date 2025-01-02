@@ -45,7 +45,7 @@ export class RoomController {
   async update(
     @Param('id') id: string,
     @Body() updateRoomDto: UpdateRoomDto,
-    @CurrentUser() user: JwtPayload
+    @CurrentUser() user: JwtPayload,
   ) {
     try {
       const room = await this.roomService.update(id, updateRoomDto);
@@ -62,10 +62,7 @@ export class RoomController {
   }
 
   @Post(':id/stream')
-  async startStream(
-    @Param('id') id: string,
-    @CurrentUser() user: JwtPayload
-  ) {
+  async startStream(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
     try {
       const room = await this.roomService.startStream(id);
       return room;
@@ -75,10 +72,7 @@ export class RoomController {
   }
 
   @Post(':id/stream/pause')
-  async pauseStream(
-    @Param('id') id: string,
-    @CurrentUser() user: JwtPayload
-  ) {
+  async pauseStream(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
     try {
       const room = await this.roomService.pauseStream(id);
       return room;
@@ -88,10 +82,7 @@ export class RoomController {
   }
 
   @Post(':id/stream/stop')
-  async stopStream(
-    @Param('id') id: string,
-    @CurrentUser() user: JwtPayload
-  ) {
+  async stopStream(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
     try {
       const room = await this.roomService.stopStream(id);
       return room;
@@ -101,12 +92,12 @@ export class RoomController {
   }
 
   @Post(':id/cancel')
-  async cancelRoom(
-    @Param('id') id: string,
-    @CurrentUser() user: JwtPayload
-  ) {
+  async cancelRoom(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
     try {
-      const room = await this.roomService.updateStatus(id, RoomStatus.CANCELLED);
+      const room = await this.roomService.updateStatus(
+        id,
+        RoomStatus.CANCELLED,
+      );
       return room;
     } catch (error) {
       throw new BadRequestException(error.message);
@@ -116,7 +107,7 @@ export class RoomController {
   @Post(':id/reactivate')
   async reactivateRoom(
     @Param('id') id: string,
-    @CurrentUser() user: JwtPayload
+    @CurrentUser() user: JwtPayload,
   ) {
     try {
       const room = await this.roomService.updateStatus(id, RoomStatus.UPCOMING);
@@ -144,7 +135,11 @@ export class RoomController {
     @Param('id') id: string,
     @Body() body: { streamKey: string; streamUrl: string },
   ) {
-    return this.roomService.updateStreamInfo(id, body.streamKey, body.streamUrl);
+    return this.roomService.updateStreamInfo(
+      id,
+      body.streamKey,
+      body.streamUrl,
+    );
   }
 
   @Post(':id/end')

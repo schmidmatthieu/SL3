@@ -7,7 +7,7 @@ export type PermissionDocument = Permission & Document;
 export enum PermissionType {
   EVENT_MODERATOR = 'event_moderator',
   ROOM_MODERATOR = 'room_moderator',
-  SPEAKER = 'speaker'
+  SPEAKER = 'speaker',
 }
 
 @Schema({ timestamps: true })

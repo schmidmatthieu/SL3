@@ -33,7 +33,10 @@ export class FilesService {
 
     try {
       await fs.writeFile(filePath, file.buffer);
-      const baseUrl = this.configService.get<string>('app.baseUrl', 'http://localhost:3001');
+      const baseUrl = this.configService.get<string>(
+        'app.baseUrl',
+        'http://localhost:3001',
+      );
       return `${baseUrl}/uploads/${fileName}`;
     } catch (error) {
       this.logger.error(`Failed to save file: ${error.message}`, error.stack);

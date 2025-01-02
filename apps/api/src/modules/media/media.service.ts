@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, FilterQuery } from 'mongoose';
 import { Media, MediaDocument } from './schemas/media.schema';
@@ -16,10 +20,12 @@ export class MediaService {
 
   constructor(
     @InjectModel(Media.name) private mediaModel: Model<MediaDocument>,
-    private configService: ConfigService
+    private configService: ConfigService,
   ) {
     this.uploadPath = path.join(process.cwd(), 'public', 'uploads');
-    this.apiUrl = this.configService.get('API_URL') || `http://localhost:${this.configService.get('port')}`;
+    this.apiUrl =
+      this.configService.get('API_URL') ||
+      `http://localhost:${this.configService.get('port')}`;
   }
 
   async create(file: Express.Multer.File, userId: string): Promise<Media> {
@@ -28,7 +34,7 @@ export class MediaService {
       url: `${this.apiUrl}/uploads/${file.filename}`,
       mimeType: file.mimetype,
       size: file.size,
-      uploadedBy: userId
+      uploadedBy: userId,
     };
 
     const createdMedia = new this.mediaModel(createMediaDto);
@@ -48,15 +54,21 @@ export class MediaService {
   }
 
   async findByUsageType(type: MediaUsage['type']): Promise<Media[]> {
-    return this.mediaModel.find({
-      'usages.type': type
-    }).sort({ createdAt: -1 }).exec();
+    return this.mediaModel
+      .find({
+        'usages.type': type,
+      })
+      .sort({ createdAt: -1 })
+      .exec();
   }
 
   async findUnused(): Promise<Media[]> {
-    return this.mediaModel.find({
-      usages: { $size: 0 }
-    }).sort({ createdAt: -1 }).exec();
+    return this.mediaModel
+      .find({
+        usages: { $size: 0 },
+      })
+      .sort({ createdAt: -1 })
+      .exec();
   }
 
   async update(id: string, updateMediaDto: UpdateMediaDto): Promise<Media> {
@@ -69,7 +81,10 @@ export class MediaService {
     return media;
   }
 
-  async addUsage(mediaId: string, usage: Omit<MediaUsage, 'usedAt'>): Promise<Media> {
+  async addUsage(
+    mediaId: string,
+    usage: Omit<MediaUsage, 'usedAt'>,
+  ): Promise<Media> {
     const media = await this.mediaModel.findById(mediaId);
     if (!media) {
       throw new NotFoundException(`Media with ID ${mediaId} not found`);
@@ -78,7 +93,7 @@ export class MediaService {
     media.usages = media.usages || [];
     media.usages.push({
       ...usage,
-      usedAt: new Date()
+      usedAt: new Date(),
     });
 
     return media.save();
@@ -90,15 +105,19 @@ export class MediaService {
       throw new NotFoundException(`Media with ID ${mediaId} not found`);
     }
 
-    media.usages = media.usages.filter(usage => usage.entityId !== entityId);
+    media.usages = media.usages.filter((usage) => usage.entityId !== entityId);
     return media.save();
   }
 
-  async updateUsageEntityName(type: MediaUsage['type'], entityId: string, entityName: string): Promise<void> {
+  async updateUsageEntityName(
+    type: MediaUsage['type'],
+    entityId: string,
+    entityName: string,
+  ): Promise<void> {
     await this.mediaModel.updateMany(
       { 'usages.type': type, 'usages.entityId': entityId },
       { $set: { 'usages.$[elem].entityName': entityName } },
-      { arrayFilters: [{ 'elem.type': type, 'elem.entityId': entityId }] }
+      { arrayFilters: [{ 'elem.type': type, 'elem.entityId': entityId }] },
     );
   }
 
@@ -126,18 +145,18 @@ export class MediaService {
       const response = await fetch(url);
       const arrayBuffer = await response.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
-      
+
       // Obtenir le type MIME et l'extension
       const contentType = response.headers.get('content-type');
       const ext = contentType?.split('/')[1] || 'jpg';
-      
+
       // Générer un nom de fichier unique
       const filename = `url_${Date.now()}.${ext}`;
-      
+
       // Sauvegarder le fichier
       const filePath = path.join(this.uploadPath, filename);
       await writeFile(filePath, buffer);
-      
+
       // Créer l'entrée dans la base de données avec le chemin complet de l'API
       const media = new this.mediaModel({
         filename,
@@ -147,13 +166,15 @@ export class MediaService {
         uploadedBy: userId,
         metadata: {
           source: 'url',
-          originalUrl: url
-        }
+          originalUrl: url,
+        },
       });
-      
+
       return await media.save();
     } catch (error) {
-      throw new BadRequestException(`Erreur lors de l'import de l'image depuis l'URL: ${error.message}`);
+      throw new BadRequestException(
+        `Erreur lors de l'import de l'image depuis l'URL: ${error.message}`,
+      );
     }
   }
 }
