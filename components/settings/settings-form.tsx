@@ -147,29 +147,32 @@ export function SettingsForm() {
                 <Label className="text-sm font-medium">Photo de profil</Label>
                 <div className="mt-2">
                   <ImageUploader
+                    currentImage={user?.imageUrl}
                     onImageSelect={async (url) => {
                       try {
                         if (url === "") {
-                          await updateProfile({ imageUrl: null });
-                        } else {
-                          await updateProfile({ imageUrl: url });
+                          return;
                         }
-                        
+                        await updateProfile({
+                          imageUrl: url,
+                        });
                         toast({
-                          title: 'Succès',
-                          description: url === "" ? 'Photo de profil supprimée.' : 'Photo de profil mise à jour.',
+                          title: "Succès",
+                          description: "Photo de profil mise à jour avec succès",
                         });
                       } catch (error) {
+                        console.error('Error updating profile picture:', error);
                         toast({
-                          title: 'Erreur',
-                          description: 'Impossible de mettre à jour la photo de profil.',
-                          variant: 'destructive',
+                          title: "Erreur",
+                          description: "Erreur lors de la mise à jour de la photo de profil",
+                          variant: "destructive",
                         });
                       }
                     }}
-                    currentImage={user?.imageUrl}
-                    mediaType="avatar"
+                    mediaType="profile"
                     size="lg"
+                    entityId={user?._id}
+                    entityName={user?.name}
                   />
                 </div>
               </div>

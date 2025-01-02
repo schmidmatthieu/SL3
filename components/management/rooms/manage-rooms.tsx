@@ -381,9 +381,11 @@ export function ManageRooms({ eventId }: { eventId: string }) {
               <div className="space-y-2">
                 <Label>Image de couverture</Label>
                 <ImageUploader
-                  onImageSelect={setThumbnail}
                   currentImage={thumbnail}
+                  onImageSelect={setThumbnail}
                   mediaType="room"
+                  entityId={eventId}
+                  entityName={newRoomName}
                 />
               </div>
             </div>

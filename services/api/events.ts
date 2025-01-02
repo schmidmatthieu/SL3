@@ -109,6 +109,16 @@ export const eventService = {
   },
 
   update: async (id: string, data: Partial<Event>): Promise<Event> => {
+    console.log('eventService.update: Données reçues:', data);
+    
+    // Vérifier le format des dates avant l'envoi
+    if (data.startDateTime) {
+      console.log('eventService.update: startDateTime avant envoi:', data.startDateTime);
+    }
+    if (data.endDateTime) {
+      console.log('eventService.update: endDateTime avant envoi:', data.endDateTime);
+    }
+
     const response = await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${id}`, {
       method: 'PATCH',
       headers: {
@@ -116,12 +126,14 @@ export const eventService = {
       },
       body: JSON.stringify(data),
     });
+
+    console.log('eventService.update: Réponse du serveur:', response);
     return transformEventResponse(response);
   },
 
   updateStatus: async (id: string, status: Event['status']): Promise<Event> => {
-    const response = await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${id}/status`, {
-      method: 'PUT',
+    const response = await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${id}`, {
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },

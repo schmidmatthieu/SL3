@@ -234,11 +234,13 @@ export function EditRoomDialog({ room, onClose }: EditRoomDialogProps) {
               />
             </div>
             <div className="space-y-2">
-              <Label>Image de couverture</Label>
+              <Label>Image de la salle</Label>
               <ImageUploader
-                onImageSelect={setThumbnail}
                 currentImage={thumbnail}
+                onImageSelect={setThumbnail}
                 mediaType="room"
+                entityId={room._id}
+                entityName={name}
               />
             </div>
           </div>

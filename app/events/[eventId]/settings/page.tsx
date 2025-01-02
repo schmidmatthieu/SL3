@@ -2,11 +2,13 @@
 
 import { EventSettings } from "@/components/management/settings/event-settings";
 import { BackButton } from "@/components/ui/back-button";
+import { Badge } from "@/components/ui/badge"; // Added Badge import
 import { useEvents } from "@/hooks/useEvents";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
+import cn from "classnames"; // Added classnames import
 
 export default function SettingsPage() {
   const params = useParams();
@@ -32,7 +34,7 @@ export default function SettingsPage() {
 
   if (isLoading || isInitialLoad) {
     return (
-      <div className="container py-8">
+      <div className="responsive-container py-8">
         <Skeleton className="h-8 w-64 mb-6" />
         <div className="space-y-4">
           <Skeleton className="h-12 w-full" />
@@ -45,7 +47,7 @@ export default function SettingsPage() {
 
   if (error) {
     return (
-      <div className="container py-8">
+      <div className="responsive-container py-8">
         <Alert variant="destructive">
           <AlertDescription>{error}</AlertDescription>
         </Alert>
@@ -55,7 +57,7 @@ export default function SettingsPage() {
 
   if (!currentEvent) {
     return (
-      <div className="container py-8">
+      <div className="responsive-container py-8">
         <Alert>
           <AlertDescription>Event not found.</AlertDescription>
         </Alert>
@@ -64,9 +66,29 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="container py-8">
-      <BackButton className="mb-6" />
-      <h1 className="text-3xl font-bold tracking-tight mb-8">Event Settings</h1>
+    <div className="responsive-container py-8">
+      <div className="mb-8">
+        <div className="flex items-start justify-between">
+          <div className="space-y-4">
+            <BackButton />
+            <div className="space-y-1">
+              <h1 className="text-3xl font-bold tracking-tight">{currentEvent.title}</h1>
+              <p className="text-muted-foreground">
+                Gérez les paramètres et les détails de votre événement
+              </p>
+            </div>
+          </div>
+          <Badge 
+            variant={currentEvent.status === 'cancelled' ? 'destructive' : 'default'}
+            className={cn(
+              "text-sm font-medium",
+              currentEvent.status === 'active' ? "bg-third text-black" : ""
+            )}
+          >
+            {currentEvent.status}
+          </Badge>
+        </div>
+      </div>
       <EventSettings event={currentEvent} />
     </div>
   );

@@ -22,7 +22,9 @@ const DEFAULT_PLACEHOLDER = "https://images.unsplash.com/photo-1505373877841-8d2
 interface ImageUploaderProps {
   onImageSelect: (url: string) => void;
   currentImage?: string;
-  mediaType?: string;
+  mediaType?: MediaUsageType;
+  entityId?: string;
+  entityName?: string;
   className?: string;
   size?: 'sm' | 'md' | 'lg';
   placeholder?: string;
@@ -31,14 +33,16 @@ interface ImageUploaderProps {
 export function ImageUploader({ 
   onImageSelect, 
   currentImage, 
-  mediaType, 
+  mediaType = 'unused',
+  entityId,
+  entityName,
   className,
   size = 'md',
   placeholder = DEFAULT_PLACEHOLDER
 }: ImageUploaderProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [urlInput, setUrlInput] = useState('');
-  const { items, fetchAll, uploadMedia, uploadFromUrl, isLoading } = useMediaStore();
+  const { items, fetchAll, uploadMedia, uploadFromUrl, addUsage, isLoading } = useMediaStore();
   const [error, setError] = useState<string | null>(null);
   const [isMediaDialogOpen, setIsMediaDialogOpen] = useState(false);
 
@@ -61,6 +65,16 @@ export function ImageUploader({
     try {
       setError(null);
       const url = await uploadMedia(file);
+      if (entityId && mediaType !== 'unused') {
+        const mediaId = items.find(item => item.url === url)?._id;
+        if (mediaId) {
+          await addUsage(mediaId, {
+            type: mediaType,
+            entityId,
+            entityName
+          });
+        }
+      }
       onImageSelect(url);
       setIsOpen(false);
     } catch (err) {
@@ -72,6 +86,16 @@ export function ImageUploader({
     try {
       setError(null);
       const url = await uploadFromUrl(urlInput);
+      if (entityId && mediaType !== 'unused') {
+        const mediaId = items.find(item => item.url === url)?._id;
+        if (mediaId) {
+          await addUsage(mediaId, {
+            type: mediaType,
+            entityId,
+            entityName
+          });
+        }
+      }
       onImageSelect(url);
       setIsOpen(false);
       setUrlInput('');
@@ -80,7 +104,17 @@ export function ImageUploader({
     }
   };
 
-  const handleExistingImageSelect = (url: string) => {
+  const handleExistingImageSelect = async (url: string) => {
+    if (entityId && mediaType !== 'unused') {
+      const mediaId = items.find(item => item.url === url)?._id;
+      if (mediaId) {
+        await addUsage(mediaId, {
+          type: mediaType,
+          entityId,
+          entityName
+        });
+      }
+    }
     onImageSelect(url);
     setIsOpen(false);
   };
@@ -242,8 +276,7 @@ export function ImageUploader({
                 <div className="h-[600px]">
                   <MediaManagement
                     onSelect={(url) => {
-                      onImageSelect(url);
-                      setIsOpen(false);
+                      handleExistingImageSelect(url);
                     }}
                     mediaType={mediaType}
                     viewMode="grid"

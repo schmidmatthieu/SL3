@@ -277,9 +277,13 @@ export function SpeakerManagement({ eventId, rooms }: SpeakerManagementProps) {
                       <FormLabel>Photo</FormLabel>
                       <FormControl>
                         <ImageUploader
-                          onImageSelect={(url) => field.onChange(url)}
-                          currentImage={field.value}
+                          currentImage={currentSpeaker?.imageUrl}
+                          onImageSelect={(url) =>
+                            form.setValue('imageUrl', url)
+                          }
                           mediaType="speaker"
+                          entityId={currentSpeaker?._id}
+                          entityName={`${currentSpeaker?.firstName} ${currentSpeaker?.lastName}`}
                         />
                       </FormControl>
                       <FormMessage />

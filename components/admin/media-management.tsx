@@ -201,20 +201,16 @@ export function MediaManagement({
                       {usage.type === 'profile' ? 'Profil' :
                        usage.type === 'speaker' ? 'Intervenant' :
                        usage.type === 'event' ? 'Événement' :
-                       usage.type === 'room' ? 'Chambre' :
-                       usage.type === 'logo' ? 'Logo' : usage.type}
+                       usage.type === 'room' ? 'Salle' :
+                       usage.type === 'logo' ? 'Logo' : 'Autre'}
                     </Badge>
                     {usage.entityName && (
-                      <span className="text-sm font-medium">
-                        {usage.entityName}
-                      </span>
+                      <span className="text-sm">{usage.entityName || 'Sans nom'}</span>
                     )}
                   </div>
-                  {usage.path && (
-                    <p className="text-sm text-muted-foreground pl-2">
-                      {usage.path}
-                    </p>
-                  )}
+                  <span className="text-xs text-muted-foreground">
+                    Utilisé depuis le {new Date(usage.usedAt).toLocaleDateString()}
+                  </span>
                 </div>
               ))}
             </div>
@@ -247,15 +243,17 @@ export function MediaManagement({
             value={selectedUsageType} 
             onValueChange={setSelectedUsageType}
           >
-            <SelectTrigger className="w-full sm:w-[280px]">
-              <SelectValue placeholder="Tous les médias" />
+            <SelectTrigger>
+              <SelectValue placeholder="Filtrer par utilisation" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Tous les médias</SelectItem>
+              <SelectItem value="all">Tous</SelectItem>
               <SelectItem value="unused">Non utilisés</SelectItem>
-              <SelectItem value="rooms">Chambres</SelectItem>
-              <SelectItem value="services">Services</SelectItem>
-              <SelectItem value="pages">Pages</SelectItem>
+              <SelectItem value="profile">Profils</SelectItem>
+              <SelectItem value="speaker">Intervenants</SelectItem>
+              <SelectItem value="event">Événements</SelectItem>
+              <SelectItem value="room">Salles</SelectItem>
+              <SelectItem value="logo">Logos</SelectItem>
             </SelectContent>
           </Select>
 
