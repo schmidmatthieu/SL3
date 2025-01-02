@@ -3,6 +3,7 @@
 Ce document définit les standards et meilleures pratiques à suivre pour le développement de l'application. Il servira de référence pour tous les développeurs actuels et futurs.
 
 ## Table des matières
+
 1. [Structure des Modules](#structure-des-modules)
 2. [Frontend](#frontend)
 3. [Backend](#backend)
@@ -14,6 +15,7 @@ Ce document définit les standards et meilleures pratiques à suivre pour le dé
 ## Structure des Modules
 
 ### Organisation Standard d'un Module
+
 ```
 modules/
 └── feature/
@@ -38,6 +40,7 @@ modules/
 ## Frontend
 
 ### Gestion d'État
+
 - Utiliser Zustand comme solution principale de gestion d'état
 - Structure standard pour les stores :
 
@@ -53,7 +56,7 @@ interface FeatureState {
   deleteItem: (id: string) => Promise<void>;
 }
 
-export const useFeatureStore = create<FeatureState>((set) => ({
+export const useFeatureStore = create<FeatureState>(set => ({
   items: [],
   isLoading: false,
   error: null,
@@ -72,6 +75,7 @@ export const useFeatureStore = create<FeatureState>((set) => ({
 ```
 
 ### Composants
+
 - Utiliser des composants fonctionnels avec TypeScript
 - Suivre le pattern de composition
 - Utiliser les props typées
@@ -89,6 +93,7 @@ export function FeatureForm({ initialData, onSubmit, onCancel }: FeatureFormProp
 ```
 
 ### Validation
+
 - Utiliser Zod pour la validation des formulaires
 - Centraliser les schémas de validation
 
@@ -105,6 +110,7 @@ export type FeatureFormData = z.infer<typeof featureSchema>;
 ## Backend
 
 ### Controllers
+
 - Routes cohérentes avec préfixe API et versioning
 - Documentation Swagger/OpenAPI
 - Gestion des erreurs standardisée
@@ -126,6 +132,7 @@ export class FeaturesController {
 ```
 
 ### Services
+
 - Logique métier isolée
 - Gestion des erreurs avec exceptions personnalisées
 - Logging cohérent
@@ -137,7 +144,7 @@ export class FeaturesService {
 
   constructor(
     @InjectModel(Feature.name) private featureModel: Model<FeatureDocument>,
-    private readonly filesService: FilesService,
+    private readonly filesService: FilesService
   ) {}
 
   async create(dto: CreateFeatureDTO): Promise<Feature> {
@@ -154,6 +161,7 @@ export class FeaturesService {
 ```
 
 ### Schémas MongoDB
+
 - Utiliser des indexes appropriés
 - Définir des transformations cohérentes
 - Implémenter des hooks de middleware si nécessaire
@@ -183,11 +191,13 @@ export class Feature {
 ```
 
 ## Base de données
+
 - Utiliser des indexes pour les champs fréquemment recherchés
 - Implémenter des contraintes de validation
 - Maintenir des relations cohérentes entre les collections
 
 ## Sécurité
+
 - Authentification JWT pour toutes les routes API
 - Validation des entrées côté client et serveur
 - Gestion sécurisée des fichiers uploadés
@@ -195,18 +205,21 @@ export class Feature {
 - Rate limiting
 
 ## Tests
+
 - Tests unitaires pour les services
 - Tests d'intégration pour les API
 - Tests E2E pour les flux critiques
 - Mocks pour les services externes
 
 ## Logging
+
 - Niveaux de log appropriés (debug, info, warn, error)
 - Contexte suffisant dans chaque log
 - Format standardisé
 - Rotation des logs
 
 ## Bonnes Pratiques Générales
+
 1. DRY (Don't Repeat Yourself)
 2. SOLID principles
 3. Clean Code
@@ -215,6 +228,7 @@ export class Feature {
 6. Gestion des versions sémantique
 
 ## Process de Développement
+
 1. Créer une branche feature/
 2. Développer selon les standards
 3. Tests

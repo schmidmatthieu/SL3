@@ -8,7 +8,7 @@ export const events: Event[] = [
     rooms: 12,
     status: 'upcoming',
     imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87',
-    venue: 'Messe Zürich'
+    venue: 'Messe Zürich',
   },
   {
     id: '2',
@@ -17,7 +17,7 @@ export const events: Event[] = [
     rooms: 8,
     status: 'live',
     imageUrl: 'https://images.unsplash.com/photo-1531058020387-3be344556be6',
-    venue: 'Basel Convention Center'
+    venue: 'Basel Convention Center',
   },
   {
     id: '3',
@@ -26,7 +26,7 @@ export const events: Event[] = [
     rooms: 15,
     status: 'upcoming',
     imageUrl: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085',
-    venue: 'Palexpo'
+    venue: 'Palexpo',
   },
   {
     id: '4',
@@ -35,7 +35,7 @@ export const events: Event[] = [
     rooms: 20,
     status: 'upcoming',
     imageUrl: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a',
-    venue: 'Montreux Music & Convention Centre'
+    venue: 'Montreux Music & Convention Centre',
   },
   {
     id: '5',
@@ -44,7 +44,7 @@ export const events: Event[] = [
     rooms: 10,
     status: 'upcoming',
     imageUrl: 'https://images.unsplash.com/photo-1555244162-803834f70033',
-    venue: 'Bern Expo'
+    venue: 'Bern Expo',
   },
   {
     id: '6',
@@ -53,6 +53,6 @@ export const events: Event[] = [
     rooms: 6,
     status: 'live',
     imageUrl: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2',
-    venue: 'SwissTech Convention Center'
-  }
+    venue: 'SwissTech Convention Center',
+  },
 ];

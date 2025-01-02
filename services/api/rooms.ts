@@ -1,4 +1,5 @@
 import { Room } from '@/types/room';
+
 import { API_CONFIG } from './config';
 import { getAuthHeaders, handleApiResponse } from './utils';
 
@@ -62,11 +63,7 @@ export const roomService = {
   },
 
   // Mettre à jour une room
-  update: async (
-    eventId: string,
-    roomId: string,
-    data: UpdateRoomDTO
-  ): Promise<Room> => {
+  update: async (eventId: string, roomId: string, data: UpdateRoomDTO): Promise<Room> => {
     return fetchWithAuth(
       `${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.events}/${eventId}/rooms/${roomId}`,
       {
@@ -110,7 +107,10 @@ export const roomService = {
   },
 
   // Récupérer les informations de streaming d'une room
-  getStreamInfo: async (eventId: string, roomId: string): Promise<{
+  getStreamInfo: async (
+    eventId: string,
+    roomId: string
+  ): Promise<{
     streamUrl?: string;
     status: string;
     viewerCount: number;

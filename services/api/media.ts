@@ -71,13 +71,16 @@ export const mediaService = {
       console.log('Sending file upload request:', {
         filename: file.name,
         type: file.type,
-        size: file.size
+        size: file.size,
       });
 
-      const response = await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.media}/upload`, {
-        method: 'POST',
-        body: formData,
-      });
+      const response = await fetchWithAuth(
+        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.media}/upload`,
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
 
       if (!response.url) {
         throw new Error('Invalid response from server: missing URL');
@@ -110,31 +113,44 @@ export const mediaService = {
   },
 
   async addUsage(mediaId: string, usage: Omit<MediaUsage, 'usedAt'>): Promise<Media> {
-    const response = await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.media}/${mediaId}/usage`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(usage),
-    });
+    const response = await fetchWithAuth(
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.media}/${mediaId}/usage`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(usage),
+      }
+    );
     return response;
   },
 
   async removeUsage(mediaId: string, entityId: string): Promise<Media> {
-    const response = await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.media}/${mediaId}/usage/${entityId}`, {
-      method: 'DELETE',
-    });
+    const response = await fetchWithAuth(
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.media}/${mediaId}/usage/${entityId}`,
+      {
+        method: 'DELETE',
+      }
+    );
     return response;
   },
 
-  async updateUsageEntityName(type: MediaUsage['type'], entityId: string, entityName: string): Promise<void> {
-    await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.media}/usage/${type}/${entityId}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ entityName }),
-    });
+  async updateUsageEntityName(
+    type: MediaUsage['type'],
+    entityId: string,
+    entityName: string
+  ): Promise<void> {
+    await fetchWithAuth(
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.media}/usage/${type}/${entityId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ entityName }),
+      }
+    );
   },
 
   async updateMetadata(_id: string, metadata: MediaItem['metadata']): Promise<MediaItem> {
@@ -149,13 +165,16 @@ export const mediaService = {
 
   async uploadFromUrl(url: string): Promise<UploadResponse> {
     try {
-      const response = await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.media}/upload-url`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url }),
-      });
+      const response = await fetchWithAuth(
+        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.media}/upload-url`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ url }),
+        }
+      );
 
       if (!response.url) {
         throw new Error('Invalid response from server: missing URL');

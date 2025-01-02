@@ -10,22 +10,22 @@ const instance = axios.create({
 
 // Intercepteur pour ajouter le token d'authentification
 instance.interceptors.request.use(
-  (config) => {
+  config => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
+  error => {
     return Promise.reject(error);
   }
 );
 
 // Intercepteur pour gérer les erreurs de réponse
 instance.interceptors.response.use(
-  (response) => response,
-  async (error) => {
+  response => response,
+  async error => {
     if (error.response?.status === 401) {
       // Gérer la déconnexion ou le rafraîchissement du token ici
       localStorage.removeItem('token');

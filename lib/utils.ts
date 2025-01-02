@@ -1,29 +1,30 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
-import { getAuthToken, getApiUrl } from './auth';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+import { getApiUrl, getAuthToken } from './auth';
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export async function fetchWithAuth(url: string, options: RequestInit = {}) {
   const token = getAuthToken();
   const apiUrl = getApiUrl();
-  
+
   // Ensure URL is properly formatted with API base URL
   const fullUrl = url.startsWith('http') ? url : `${apiUrl}${url}`;
-  
+
   if (!token) {
     console.warn('No auth token available for request:', {
       url: fullUrl,
-      method: options.method || 'GET'
+      method: options.method || 'GET',
     });
     throw new Error('Authentication required');
   }
 
   const headers = {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`,
+    Authorization: `Bearer ${token}`,
     ...(options.headers || {}),
   };
 
@@ -53,10 +54,13 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
   }
 }
 
-export async function apiRequest<T>(url: string, options: RequestInit = {}): Promise<{ status: number; data: T }> {
+export async function apiRequest<T>(
+  url: string,
+  options: RequestInit = {}
+): Promise<{ status: number; data: T }> {
   try {
     const response = await fetchWithAuth(url, options);
-    
+
     // Log response details
     console.log('API Response:', {
       url,
@@ -69,7 +73,7 @@ export async function apiRequest<T>(url: string, options: RequestInit = {}): Pro
       if (response.status === 401) {
         throw new Error('Authentication required');
       }
-      
+
       // Try to get error details from response
       let errorDetails = '';
       try {
@@ -79,7 +83,9 @@ export async function apiRequest<T>(url: string, options: RequestInit = {}): Pro
         errorDetails = response.statusText;
       }
 
-      throw new Error(`HTTP error! status: ${response.status}${errorDetails ? ` - ${errorDetails}` : ''}`);
+      throw new Error(
+        `HTTP error! status: ${response.status}${errorDetails ? ` - ${errorDetails}` : ''}`
+      );
     }
 
     const data = await response.json();

@@ -1,22 +1,28 @@
 'use client';
 
 import { useEffect } from 'react';
+import { getAuthHeaders } from '@/services/api/utils';
+import { useAuthStore } from '@/store/auth-store';
 import { useRoomStore } from '@/store/room.store';
+
 import { Room, RoomSettings } from '@/types/room';
 import { useToast } from '@/components/ui/use-toast';
-import { useAuthStore } from '@/store/auth-store';
-import { getAuthHeaders } from '@/services/api/utils';
 
 interface UseRoomsResult {
   rooms: Room[];
   isLoading: boolean;
   error: Error | null;
-  createRoom: (eventId: string, name: string, settings: RoomSettings, options: {
-    description?: string;
-    thumbnail?: string;
-    startTime: string;
-    endTime: string;
-  }) => Promise<Room>;
+  createRoom: (
+    eventId: string,
+    name: string,
+    settings: RoomSettings,
+    options: {
+      description?: string;
+      thumbnail?: string;
+      startTime: string;
+      endTime: string;
+    }
+  ) => Promise<Room>;
   updateRoom: (roomId: string, data: Partial<Room>) => Promise<void>;
   deleteRoom: (roomId: string) => Promise<void>;
   endRoom: (roomId: string) => Promise<void>;
@@ -52,9 +58,9 @@ export function useRooms(eventId?: string): UseRoomsResult {
   const handleError = (error: any, message: string) => {
     console.error(message, error);
     toast({
-      title: "Error",
+      title: 'Error',
       description: message,
-      variant: "destructive",
+      variant: 'destructive',
     });
   };
 
@@ -81,13 +87,13 @@ export function useRooms(eventId?: string): UseRoomsResult {
           ...settings,
           maxParticipants: settings.maxParticipants || 100,
           originalLanguage: settings.originalLanguage || 'en',
-          availableLanguages: settings.availableLanguages || []
-        }
+          availableLanguages: settings.availableLanguages || [],
+        },
       });
-      
+
       toast({
-        title: "Success",
-        description: "Room created successfully",
+        title: 'Success',
+        description: 'Room created successfully',
       });
 
       return newRoom;
@@ -174,7 +180,6 @@ export function useRooms(eventId?: string): UseRoomsResult {
 
       // Force revalidation and update the cache with fresh data
       await fetchEventRooms(eventId!);
-
     } catch (error) {
       handleError(error, 'Failed to join room');
     }
@@ -193,7 +198,6 @@ export function useRooms(eventId?: string): UseRoomsResult {
 
       // Force revalidation and update the cache with fresh data
       await fetchEventRooms(eventId!);
-
     } catch (error) {
       handleError(error, 'Failed to leave room');
     }

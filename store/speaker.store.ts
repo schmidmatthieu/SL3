@@ -1,6 +1,7 @@
-import { create } from 'zustand';
-import { Speaker, CreateSpeakerDto, UpdateSpeakerDto } from '@/types/speaker';
 import { speakerService } from '@/services/api/speakers';
+import { create } from 'zustand';
+
+import { CreateSpeakerDto, Speaker, UpdateSpeakerDto } from '@/types/speaker';
 
 interface SpeakerStore {
   speakers: Speaker[];
@@ -33,7 +34,7 @@ export const useSpeakerStore = create<SpeakerStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const speaker = await speakerService.create(eventId, data);
-      set((state) => ({
+      set(state => ({
         speakers: [...state.speakers, speaker],
         isLoading: false,
       }));
@@ -48,10 +49,8 @@ export const useSpeakerStore = create<SpeakerStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const updatedSpeaker = await speakerService.update(eventId, speakerId, data);
-      set((state) => ({
-        speakers: state.speakers.map((s) =>
-          s.id === speakerId ? updatedSpeaker : s
-        ),
+      set(state => ({
+        speakers: state.speakers.map(s => (s.id === speakerId ? updatedSpeaker : s)),
         isLoading: false,
       }));
       return updatedSpeaker;
@@ -65,8 +64,8 @@ export const useSpeakerStore = create<SpeakerStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       await speakerService.delete(eventId, speakerId);
-      set((state) => ({
-        speakers: state.speakers.filter((s) => s.id !== speakerId),
+      set(state => ({
+        speakers: state.speakers.filter(s => s.id !== speakerId),
         isLoading: false,
       }));
     } catch (error) {
@@ -79,10 +78,8 @@ export const useSpeakerStore = create<SpeakerStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const { imageUrl } = await speakerService.uploadImage(eventId, speakerId, file);
-      set((state) => ({
-        speakers: state.speakers.map((s) =>
-          s.id === speakerId ? { ...s, imageUrl } : s
-        ),
+      set(state => ({
+        speakers: state.speakers.map(s => (s.id === speakerId ? { ...s, imageUrl } : s)),
         isLoading: false,
       }));
       return imageUrl;

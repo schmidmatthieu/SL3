@@ -1,13 +1,15 @@
 # SL3 Beta
 
 ## Description
+
 SL3 Beta est une application de gestion d'événements et de salles en temps réel, construite avec Next.js et NestJS.
 
 ## Fonctionnalités
 
 ### Gestion des Utilisateurs
+
 - **Authentification** : Système complet de connexion/inscription
-- **Rôles Utilisateurs** : 
+- **Rôles Utilisateurs** :
   - `ADMIN` : Accès complet à toutes les fonctionnalités
   - `EVENT_ADMIN` : Gestion des événements
   - `ROOM_MODERATOR` : Modération des salles
@@ -21,6 +23,7 @@ SL3 Beta est une application de gestion d'événements et de salles en temps ré
   - Préférences de thème (Clair/Sombre/Système)
 
 ### Gestion des Événements
+
 - Création et modification d'événements
 - Gestion des participants
 - Configuration des salles
@@ -28,6 +31,7 @@ SL3 Beta est une application de gestion d'événements et de salles en temps ré
 ## Architecture Technique
 
 ### Frontend (Next.js)
+
 - Framework UI : Shadcn/ui
 - Gestion d'état : Zustand
 - Validation des formulaires : Zod
@@ -35,6 +39,7 @@ SL3 Beta est une application de gestion d'événements et de salles en temps ré
 - Thème : Theme Provider (Light/Dark/System)
 
 ### Backend (NestJS)
+
 - Base de données : MongoDB avec Mongoose
 - Authentication : JWT
 - Upload de fichiers : Multer
@@ -43,26 +48,31 @@ SL3 Beta est une application de gestion d'événements et de salles en temps ré
 ## Installation
 
 1. Cloner le repository :
+
 ```bash
 git clone [repository-url]
 ```
 
 2. Installer les dépendances :
+
 ```bash
 pnpm install
 ```
 
 3. Configurer les variables d'environnement :
+
 ```bash
 cp .env.example .env
 ```
 
 4. Démarrer les services :
+
 ```bash
 docker-compose up -d
 ```
 
 5. Lancer l'application :
+
 ```bash
 pnpm dev
 ```
@@ -70,6 +80,7 @@ pnpm dev
 ## Développement
 
 ### Structure du Projet
+
 ```
 SL3_beta/
 ├── apps/
@@ -81,9 +92,11 @@ SL3_beta/
 ```
 
 ## Contribution
+
 1. Créer une branche pour votre fonctionnalité
 2. Commiter vos changements
 3. Créer une Pull Request
 
 ## License
+
 [License Type]

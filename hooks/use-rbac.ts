@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { useAuth } from '@/hooks/use-auth';
+
 import type { Database } from '@/types/supabase';
+import { useAuth } from '@/hooks/use-auth';
 
 type Role = Database['public']['Enums']['user_role'];
 
@@ -42,11 +43,12 @@ export function useRBAC() {
   ) => {
     if (!user) return false;
 
-    const table = type === 'event_moderator'
-      ? 'event_moderators'
-      : type === 'room_moderator'
-      ? 'room_moderators'
-      : 'room_speakers';
+    const table =
+      type === 'event_moderator'
+        ? 'event_moderators'
+        : type === 'room_moderator'
+          ? 'room_moderators'
+          : 'room_speakers';
 
     const column = type === 'event_moderator' ? 'event_id' : 'room_id';
 

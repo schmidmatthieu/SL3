@@ -3,28 +3,31 @@
 ## Vue d'Ensemble
 
 ### 🎨 Frontend
+
 - **Framework** : Next.js 15
 - **Language** : TypeScript
-- **Styling** : 
+- **Styling** :
   - Tailwind CSS
   - shadcn/ui
 - **State Management** : Zustand
-- **Data Fetching** : 
+- **Data Fetching** :
   - SWR/TanStack Query
   - Socket.IO client
 - **Internationalisation** : i18next
 
 ### 🔧 Backend
+
 - **Runtime** : Node.js 22.10.2
 - **Framework** : NestJS
 - **Language** : TypeScript
-- **Database** : 
+- **Database** :
   - MongoDB avec Mongoose
   - Redis (cache & real-time)
 - **WebSocket** : Socket.IO
 - **Streaming** : HLS
 
 ### 🏗️ Infrastructure
+
 - **CI/CD** : GitHub Actions
 - **Containerisation** : Docker
 - **Base de données** :
@@ -60,6 +63,7 @@
 ## Stratégies Techniques
 
 ### 🔄 Architecture Temps Réel
+
 - Communication basée sur WebSocket
 - Connexions par salle
 - Reconnexion automatique
@@ -68,12 +72,15 @@
 - Mécanismes de fallback
 
 ### 📦 Stratégie de Cache
+
 1. **Redis**
+
    - Données de session
    - État temps réel
    - File d'attente de messages
 
 2. **MongoDB**
+
    - Cache d'agrégation
    - Résultats de requêtes fréquentes
 
@@ -83,12 +90,15 @@
    - Service Worker (offline)
 
 ### 🔒 Sécurité
+
 1. **Authentication**
+
    - JWT avec rotation
    - Sessions Redis
    - Refresh tokens
 
 2. **API**
+
    - Rate limiting
    - CORS configuré
    - Validation des entrées
@@ -100,12 +110,15 @@
    - CSRF tokens
 
 ### 📊 Monitoring
+
 1. **Performance**
+
    - Métriques serveur
    - Web Vitals
    - Temps de réponse API
 
 2. **Erreurs**
+
    - Logging structuré
    - Stack traces
    - Error boundaries React
@@ -118,6 +131,7 @@
 ## Standards de Développement
 
 ### 🔧 Configuration
+
 - ESLint pour le linting
 - Prettier pour le formatting
 - Husky pour les git hooks
@@ -125,12 +139,14 @@
 - TypeScript strict mode
 
 ### 📝 Documentation
+
 - TSDoc pour les interfaces
 - Swagger pour l'API
 - Storybook pour les composants
 - README par module
 
 ### 🧪 Tests
+
 - Tests unitaires Jest
 - Tests E2E Cypress
 - Tests d'intégration

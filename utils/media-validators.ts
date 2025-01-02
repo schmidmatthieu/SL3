@@ -5,7 +5,7 @@ export interface MediaValidationOptions {
 
 const defaultOptions: MediaValidationOptions = {
   maxSize: 20 * 1024 * 1024, // 20MB
-  allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml']
+  allowedTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'],
 };
 
 export const validateMediaFile = (file: File, options: MediaValidationOptions = defaultOptions) => {

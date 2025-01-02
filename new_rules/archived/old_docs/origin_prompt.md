@@ -3,8 +3,9 @@
 Créer une plateforme SaaS de streaming événementiel avec les spécifications suivantes :
 
 ## 1. Configuration Initiale
+
 - Utiliser Next.js 15 pour le frontend avec TypeScript et Tailwind CSS
-- Implémenter NestJS pour le backend avec Node.js 
+- Implémenter NestJS pour le backend avec Node.js
 - Configurer MongoDB comme base de données principale
 - Mettre en place Redis pour le cache et les fonctionnalités temps réel
 - Utiliser pnpm comme gestionnaire de paquets
@@ -13,19 +14,23 @@ Créer une plateforme SaaS de streaming événementiel avec les spécifications 
 ## 2. Création des Fonctionnalités Principales
 
 ### Frontend
+
 1. Créer quatre tableaux de bord distincts :
+
    - Dashboard administrateur général
    - Dashboard administrateur d'événement
    - Dashboard modérateur
    - Dashboard intervenant
 
 2. Développer un lecteur vidéo personnalisé avec :
+
    - Support HLS
    - Sélection de qualité automatique
    - Sélection de pistes audio pour les langues
    - Contrôles de base (play/pause, volume, plein écran)
 
 3. Implémenter un système de chat en temps réel avec :
+
    - Support de la modération
    - Filtrage automatique du contenu inapproprié
    - Gestion des messages privés
@@ -37,13 +42,16 @@ Créer une plateforme SaaS de streaming événementiel avec les spécifications 
    - Réponses des intervenants
 
 ### Backend
+
 1. Mettre en place l'API RESTful pour :
+
    - Gestion des utilisateurs
    - Gestion des événements
    - Gestion des sessions
    - Analytics
 
 2. Implémenter les WebSockets pour :
+
    - Chat en temps réel
    - Mises à jour du statut de streaming
    - Notifications en temps réel
@@ -58,24 +66,28 @@ Créer une plateforme SaaS de streaming événementiel avec les spécifications 
 ## 3. Points Critiques à Respecter
 
 ### Sécurité
+
 - Authentification JWT avec refresh tokens
 - Autorisations basées sur les rôles (RBAC)
 - Protection contre les attaques courantes
 - Validation des entrées utilisateur
 
 ### Performance
+
 - Optimisation des images et assets
 - Mise en cache efficace
 - Chargement différé des composants
 - Optimisation des requêtes base de données
 
 ### Internationalisation
+
 - Support minimum : Français, Anglais, Espagnol, Allemand et Italien
 - Interface utilisateur multilingue
 - Messages d'erreur traduits
 - Support des fuseaux horaires
 
 ### Design
+
 - Interface responsive
 - Support thème clair/sombre
 - Composants UI cohérents

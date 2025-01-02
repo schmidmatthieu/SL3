@@ -1,4 +1,5 @@
 import { Profile } from '@/types/profile';
+
 import { API_CONFIG } from './config';
 import { getAuthHeaders, handleApiResponse } from './utils';
 
@@ -21,8 +22,7 @@ export const profileService = {
 
   update: async (data: Partial<Profile>): Promise<Profile> => {
     const cleanedData = Object.fromEntries(
-      Object.entries(data)
-        .filter(([_, value]) => value !== undefined && value !== '')
+      Object.entries(data).filter(([_, value]) => value !== undefined && value !== '')
     );
 
     if (Object.keys(cleanedData).length === 0) {

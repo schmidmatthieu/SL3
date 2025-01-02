@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Room } from '@/types/room';
+import { useEffect, useState } from 'react';
 import { useEventStore } from '@/store/event.store';
+
+import { Room } from '@/types/room';
 
 interface StreamInfo {
   viewerCount: number;

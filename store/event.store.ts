@@ -1,8 +1,9 @@
+import { eventService } from '@/services/api/events';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
+
 import { Event } from '@/types/event';
 import { Room } from '@/types/room';
-import { eventService } from '@/services/api/events';
 
 interface EventState {
   events: Event[];
@@ -79,18 +80,20 @@ export const useEventStore = create<EventState>()(
         try {
           set({ isLoading: true, error: null });
           const updatedEvent = await eventService.update(eventId, data);
-          
+
           // Mettre à jour à la fois events et currentEvent
-          set((state) => ({
-            events: state.events.map((event) =>
+          set(state => ({
+            events: state.events.map(event =>
               event.id === eventId || event._id === eventId ? { ...event, ...updatedEvent } : event
             ),
-            currentEvent: state.currentEvent && (state.currentEvent.id === eventId || state.currentEvent._id === eventId)
-              ? { ...state.currentEvent, ...updatedEvent }
-              : state.currentEvent,
-            isLoading: false
+            currentEvent:
+              state.currentEvent &&
+              (state.currentEvent.id === eventId || state.currentEvent._id === eventId)
+                ? { ...state.currentEvent, ...updatedEvent }
+                : state.currentEvent,
+            isLoading: false,
           }));
-          
+
           return updatedEvent;
         } catch (error) {
           console.error('Error updating event:', error);
@@ -103,18 +106,20 @@ export const useEventStore = create<EventState>()(
         try {
           set({ isLoading: true, error: null });
           const updatedEvent = await eventService.updateStatus(eventId, status);
-          
+
           // Mettre à jour à la fois events et currentEvent
-          set((state) => ({
-            events: state.events.map((event) =>
+          set(state => ({
+            events: state.events.map(event =>
               event.id === eventId || event._id === eventId ? { ...event, ...updatedEvent } : event
             ),
-            currentEvent: state.currentEvent && (state.currentEvent.id === eventId || state.currentEvent._id === eventId)
-              ? { ...state.currentEvent, ...updatedEvent }
-              : state.currentEvent,
-            isLoading: false
+            currentEvent:
+              state.currentEvent &&
+              (state.currentEvent.id === eventId || state.currentEvent._id === eventId)
+                ? { ...state.currentEvent, ...updatedEvent }
+                : state.currentEvent,
+            isLoading: false,
           }));
-          
+
           return updatedEvent;
         } catch (error) {
           console.error('Error updating event status:', error);
@@ -140,10 +145,10 @@ export const useEventStore = create<EventState>()(
         try {
           set({ isLoading: true, error: null });
           const newRoom = await eventService.createRoom(eventId, roomData);
-          
+
           // Rafraîchir l'événement complet pour avoir les données à jour
           await get().fetchEvent(eventId);
-          
+
           set({ isLoading: false });
           return newRoom;
         } catch (error) {

@@ -7,6 +7,7 @@ L'architecture de SL3 est conçue pour être modulaire, performante et maintenab
 ## Structure des Modules
 
 ### Organisation Standard
+
 ```
 components/
 ├── [feature]/
@@ -47,21 +48,26 @@ types/                      # Types globaux
 ## Principes Fondamentaux
 
 ### Modularisation
+
 La modularisation est un principe FONDAMENTAL de notre architecture. Tout fichier dépassant 300 lignes DOIT être divisé en modules plus petits.
 
 #### Règles de Modularisation
+
 1. **Limite de Taille**
+
    - Maximum 300 lignes par fichier
    - Inclut les imports et exports
    - Exclut les commentaires et documentation
 
 2. **Stratégie de Division**
+
    - Séparer par responsabilité
    - Un module = une fonction principale
    - Maintenir la cohésion fonctionnelle
    - Éviter les dépendances circulaires
 
 3. **Exemple de Modularisation**
+
 ```typescript
 // Avant: event-settings.tsx (400+ lignes)
 
@@ -82,6 +88,7 @@ event-settings/
 ```
 
 4. **Process de Refactoring**
+
    - Identifier les responsabilités distinctes
    - Créer une structure de dossiers appropriée
    - Extraire les composants logiques
@@ -89,6 +96,7 @@ event-settings/
    - Documenter les dépendances
 
 5. **Bonnes Pratiques**
+
    ```typescript
    // ❌ À éviter
    function BigComponent() {
@@ -117,12 +125,13 @@ event-settings/
 ## Gestion d'État
 
 ### Stores Zustand
+
 ```typescript
 interface FeatureState {
   items: Item[];
   isLoading: boolean;
   error: Error | null;
-  
+
   // Actions
   fetchItems: () => Promise<void>;
   createItem: (data: CreateItemDTO) => Promise<void>;
@@ -130,12 +139,13 @@ interface FeatureState {
   deleteItem: (id: string) => Promise<void>;
 }
 
-export const useFeatureStore = create<FeatureState>((set) => ({
+export const useFeatureStore = create<FeatureState>(set => ({
   // Implémentation
 }));
 ```
 
 ### Patterns de State
+
 - Stores atomiques par feature
 - Actions asynchrones avec gestion d'erreur
 - Persistance sélective
@@ -144,6 +154,7 @@ export const useFeatureStore = create<FeatureState>((set) => ({
 ## Composants
 
 ### Structure Standard
+
 ```typescript
 interface FeatureProps {
   // Props typées
@@ -153,12 +164,12 @@ export function Feature({ prop1, prop2 }: FeatureProps) {
   // Hooks en haut
   const { t } = useTranslation(['common', 'components/feature']);
   const store = useFeatureStore();
-  
+
   // Handlers
   const handleAction = async () => {
     // Implementation
   };
-  
+
   // JSX
   return (
     // Template
@@ -167,6 +178,7 @@ export function Feature({ prop1, prop2 }: FeatureProps) {
 ```
 
 ### Bonnes Pratiques
+
 - Composants fonctionnels uniquement
 - Props typées obligatoires
 - Séparation logique/présentation
@@ -176,6 +188,7 @@ export function Feature({ prop1, prop2 }: FeatureProps) {
 ## API Backend
 
 ### Controllers
+
 ```typescript
 @Controller('api/v1/feature')
 export class FeatureController {
@@ -183,7 +196,7 @@ export class FeatureController {
   async findAll(): Promise<Feature[]> {
     // Implementation
   }
-  
+
   @Post()
   @UseGuards(AuthGuard)
   async create(@Body() dto: CreateFeatureDTO): Promise<Feature> {
@@ -193,14 +206,15 @@ export class FeatureController {
 ```
 
 ### Services
+
 ```typescript
 @Injectable()
 export class FeatureService {
   constructor(
     @InjectModel(Feature.name)
-    private featureModel: Model<Feature>,
+    private featureModel: Model<Feature>
   ) {}
-  
+
   async findAll(): Promise<Feature[]> {
     // Implementation
   }
@@ -208,12 +222,13 @@ export class FeatureService {
 ```
 
 ### Validation
+
 ```typescript
 export class CreateFeatureDTO {
   @IsString()
   @MinLength(2)
   name: string;
-  
+
   @IsOptional()
   @IsString()
   description?: string;
@@ -223,12 +238,14 @@ export class CreateFeatureDTO {
 ## Sécurité
 
 ### Authentication
+
 - JWT pour l'API
 - Sessions Redis
 - Guards NestJS
 - Middleware Next.js
 
 ### Authorization
+
 - RBAC (Role Based Access Control)
 - Guards par route
 - Validation côté client et serveur
@@ -236,6 +253,7 @@ export class CreateFeatureDTO {
 ## Tests
 
 ### Frontend
+
 ```typescript
 describe('Feature', () => {
   it('should render correctly', () => {
@@ -246,6 +264,7 @@ describe('Feature', () => {
 ```
 
 ### Backend
+
 ```typescript
 describe('FeatureService', () => {
   it('should create a feature', async () => {
@@ -258,11 +277,13 @@ describe('FeatureService', () => {
 ## Logging
 
 ### Frontend
+
 - Console structuré
 - Error Boundaries
 - Analytics events
 
 ### Backend
+
 - Winston logger
 - Request logging
 - Error tracking
@@ -271,12 +292,14 @@ describe('FeatureService', () => {
 ## Performance
 
 ### Optimisations Frontend
+
 - Code splitting
 - Image optimization
 - Bundle analysis
 - Lazy loading
 
 ### Optimisations Backend
+
 - Query optimization
 - Caching Redis
 - Rate limiting
@@ -285,18 +308,22 @@ describe('FeatureService', () => {
 ## Standards de Code
 
 ### Organisation du Code
+
 - Fichiers limités à 300 lignes
 - Modules autonomes et cohésifs
 - Séparation claire des responsabilités
 - Documentation des interfaces publiques
 
 ### Modularisation Progressive
+
 1. **Identification**
+
    - Monitorer la taille des fichiers
    - Identifier les responsabilités
    - Noter les dépendances
 
 2. **Planification**
+
    ```
    component/
    ├── README.md              # Documentation du découpage
@@ -305,6 +332,7 @@ describe('FeatureService', () => {
    ```
 
 3. **Exécution**
+
    - Créer la nouvelle structure
    - Migrer le code progressivement
    - Maintenir les tests
@@ -317,12 +345,14 @@ describe('FeatureService', () => {
    - Approbation de l'équipe
 
 ### TypeScript
+
 - Strict mode activé
 - Types explicites
 - Interfaces pour les objets
 - Enums pour les constantes
 
 ### Style
+
 - ESLint config stricte
 - Prettier
 - Import ordering

@@ -34,6 +34,7 @@ Notre application utilise une approche modulaire pour les traductions, organisé
 ### 1. Pour un Nouveau Composant
 
 1. Créer un nouveau fichier de traduction pour chaque langue dans le dossier `components/`:
+
    ```bash
    touch app/i18n/locales/fr/components/mon-composant.json
    touch app/i18n/locales/en/components/mon-composant.json
@@ -71,7 +72,7 @@ export function MonComposant() {
       {/* Utiliser les traductions spécifiques au composant */}
       <h1>{t('components/mon-composant:title')}</h1>
       <p>{t('components/mon-composant:description')}</p>
-      
+
       {/* Utiliser les traductions communes */}
       <button>{t('common:buttons.save')}</button>
     </div>
@@ -106,16 +107,19 @@ Le fichier `common.json` contient les traductions partagées:
 ## Bonnes Pratiques
 
 1. **Organisation**
+
    - Créer un fichier de traduction par composant
    - Utiliser des clés descriptives et cohérentes
    - Grouper les traductions par contexte
 
 2. **Nommage des Clés**
+
    - Utiliser des noms explicites
    - Suivre une structure hiérarchique
    - Éviter les espaces et caractères spéciaux
 
 3. **Maintenance**
+
    - Maintenir tous les fichiers de langue synchronisés
    - Documenter les changements importants
    - Supprimer les clés non utilisées
@@ -135,6 +139,7 @@ Le fichier `common.json` contient les traductions partagées:
 ## Exemple Complet
 
 ### Structure de Fichiers
+
 ```
 /app/i18n/locales/
   ├── fr/
@@ -149,6 +154,7 @@ Le fichier `common.json` contient les traductions partagées:
 ```
 
 ### Implémentation
+
 ```typescript
 import { useTranslation } from 'react-i18next';
 
@@ -158,11 +164,11 @@ export function EventSettings() {
   return (
     <div>
       <h1>{t('components/event-settings:title')}</h1>
-      
+
       <form>
         <label>{t('components/event-settings:form.name')}</label>
         <input type="text" />
-        
+
         <div className="actions">
           <button type="submit">
             {t('common:buttons.save')}

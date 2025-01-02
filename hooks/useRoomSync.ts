@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import { useRoomStore } from '../store/room.store';
+
 import { useEventStore } from '../store/event.store';
+import { useRoomStore } from '../store/room.store';
 
 export const useRoomSync = (eventId: string) => {
   const roomStore = useRoomStore();
@@ -24,6 +25,6 @@ export const useRoomSync = (eventId: string) => {
   return {
     rooms,
     createRoom,
-    ...roomStore // Retourner toutes les autres fonctions du store
+    ...roomStore, // Retourner toutes les autres fonctions du store
   };
 };

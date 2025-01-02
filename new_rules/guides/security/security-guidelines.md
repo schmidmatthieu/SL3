@@ -3,12 +3,14 @@
 ## Principes Fondamentaux
 
 ### Authentication
+
 - JWT pour l'API
 - Sessions Redis
 - Refresh tokens
 - Protection CSRF
 
 ### Authorization
+
 - RBAC (Role Based Access Control)
 - Permissions granulaires
 - Validation côté serveur
@@ -16,6 +18,7 @@
 ## Implémentation
 
 ### JWT Configuration
+
 ```typescript
 // config/jwt.config.ts
 export const jwtConfig = {
@@ -27,6 +30,7 @@ export const jwtConfig = {
 ```
 
 ### Middleware d'Authentication
+
 ```typescript
 // middleware/auth.middleware.ts
 @Injectable()
@@ -36,7 +40,7 @@ export class AuthMiddleware implements NestMiddleware {
     if (!token) {
       throw new UnauthorizedException();
     }
-    
+
     try {
       const decoded = verify(token, jwtConfig.secret);
       req.user = decoded;
@@ -49,18 +53,16 @@ export class AuthMiddleware implements NestMiddleware {
 ```
 
 ### Guards RBAC
+
 ```typescript
 // guards/roles.guard.ts
 @Injectable()
 export class RolesGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.get<string[]>(
-      'roles',
-      context.getHandler()
-    );
-    
+    const requiredRoles = this.reflector.get<string[]>('roles', context.getHandler());
+
     const { user } = context.switchToHttp().getRequest();
-    return requiredRoles.some((role) => user.roles.includes(role));
+    return requiredRoles.some(role => user.roles.includes(role));
   }
 }
 ```
@@ -68,13 +70,14 @@ export class RolesGuard implements CanActivate {
 ## Protection des Données
 
 ### Encryption
+
 ```typescript
 // utils/encryption.ts
 export class Encryption {
   static async hash(data: string): Promise<string> {
     return bcrypt.hash(data, 12);
   }
-  
+
   static async compare(data: string, hash: string): Promise<boolean> {
     return bcrypt.compare(data, hash);
   }
@@ -82,6 +85,7 @@ export class Encryption {
 ```
 
 ### Validation des Données
+
 ```typescript
 // dto/user.dto.ts
 export class CreateUserDTO {
@@ -89,7 +93,7 @@ export class CreateUserDTO {
   @MinLength(8)
   @Matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
   password: string;
-  
+
   @IsEmail()
   email: string;
 }
@@ -98,6 +102,7 @@ export class CreateUserDTO {
 ## Sécurité Frontend
 
 ### XSS Protection
+
 ```typescript
 // utils/sanitize.ts
 export const sanitizeHtml = (html: string): string => {
@@ -109,6 +114,7 @@ export const sanitizeHtml = (html: string): string => {
 ```
 
 ### CSRF Protection
+
 ```typescript
 // middleware/csrf.middleware.ts
 app.use(csurf());
@@ -116,7 +122,7 @@ app.use(csurf());
 // Dans les composants
 function Form() {
   const csrfToken = useCsrfToken();
-  
+
   return (
     <form>
       <input type="hidden" name="_csrf" value={csrfToken} />
@@ -128,6 +134,7 @@ function Form() {
 ## Sécurité API
 
 ### Rate Limiting
+
 ```typescript
 // middleware/rate-limit.middleware.ts
 app.use(
@@ -139,6 +146,7 @@ app.use(
 ```
 
 ### Validation Headers
+
 ```typescript
 // middleware/security-headers.middleware.ts
 app.use(helmet());
@@ -154,16 +162,12 @@ app.use(
 ## Audit et Logging
 
 ### Audit Logs
+
 ```typescript
 // services/audit.service.ts
 @Injectable()
 export class AuditService {
-  async log(
-    userId: string,
-    action: string,
-    resource: string,
-    details: any
-  ): Promise<void> {
+  async log(userId: string, action: string, resource: string, details: any): Promise<void> {
     await this.auditModel.create({
       userId,
       action,
@@ -177,6 +181,7 @@ export class AuditService {
 ```
 
 ### Error Logging
+
 ```typescript
 // middleware/error.middleware.ts
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
@@ -187,7 +192,7 @@ app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
     method: req.method,
     timestamp: new Date(),
   });
-  
+
   res.status(500).json({
     message: 'Internal server error',
   });
@@ -197,29 +202,27 @@ app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
 ## Tests de Sécurité
 
 ### Tests d'Authentication
+
 ```typescript
 describe('Authentication', () => {
   it('should prevent unauthorized access', async () => {
-    const response = await request(app)
-      .get('/api/protected')
-      .set('Authorization', 'invalid-token');
-    
+    const response = await request(app).get('/api/protected').set('Authorization', 'invalid-token');
+
     expect(response.status).toBe(401);
   });
 });
 ```
 
 ### Tests de Validation
+
 ```typescript
 describe('Input Validation', () => {
   it('should validate user input', async () => {
-    const response = await request(app)
-      .post('/api/users')
-      .send({
-        email: 'invalid-email',
-        password: 'weak',
-      });
-    
+    const response = await request(app).post('/api/users').send({
+      email: 'invalid-email',
+      password: 'weak',
+    });
+
     expect(response.status).toBe(400);
   });
 });
@@ -228,13 +231,12 @@ describe('Input Validation', () => {
 ## Monitoring
 
 ### Alerting
+
 ```typescript
 // services/monitoring.service.ts
 @Injectable()
 export class MonitoringService {
-  async alertSecurityEvent(
-    event: SecurityEvent
-  ): Promise<void> {
+  async alertSecurityEvent(event: SecurityEvent): Promise<void> {
     if (event.severity === 'high') {
       await this.notificationService.alert({
         type: 'security',
@@ -247,11 +249,12 @@ export class MonitoringService {
 ```
 
 ### Métriques
+
 ```typescript
 // middleware/metrics.middleware.ts
 app.use((req, res, next) => {
   const start = Date.now();
-  
+
   res.on('finish', () => {
     const duration = Date.now() - start;
     metrics.recordHttpRequest({
@@ -261,7 +264,7 @@ app.use((req, res, next) => {
       duration,
     });
   });
-  
+
   next();
 });
 ```

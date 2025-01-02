@@ -1,8 +1,9 @@
-import { create } from 'zustand';
-import { Room } from '@/types/room';
-import { getAuthHeaders } from '@/services/api/utils';
 import { API_CONFIG } from '@/services/api/config';
+import { getAuthHeaders } from '@/services/api/utils';
 import { useEventStore } from '@/store/event.store';
+import { create } from 'zustand';
+
+import { Room } from '@/types/room';
 
 interface RoomState {
   rooms: Room[];
@@ -46,12 +47,12 @@ export const useRoomStore = create<RoomState>((set, get) => ({
   rooms: [],
   isLoading: false,
   error: null,
-  
-  setRooms: (rooms) => set({ rooms }),
-  setLoading: (loading) => set({ isLoading: loading }),
-  setError: (error) => set({ error }),
 
-  fetchEventRooms: async (eventId) => {
+  setRooms: rooms => set({ rooms }),
+  setLoading: loading => set({ isLoading: loading }),
+  setError: error => set({ error }),
+
+  fetchEventRooms: async eventId => {
     const { setLoading, setError, setRooms } = get();
     try {
       setLoading(true);
@@ -72,12 +73,12 @@ export const useRoomStore = create<RoomState>((set, get) => ({
     }
   },
 
-  createRoom: async (data) => {
+  createRoom: async data => {
     const { setLoading, setError, setRooms, rooms } = get();
     try {
       setLoading(true);
       setError(null);
-      
+
       // Validate required fields
       if (!data.name) {
         throw new Error('Room name is required');
@@ -106,7 +107,7 @@ export const useRoomStore = create<RoomState>((set, get) => ({
         moderators: [],
         __v: 0,
       };
-      
+
       setRooms([...rooms, optimisticRoom]);
 
       const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}`, {
@@ -126,10 +127,10 @@ export const useRoomStore = create<RoomState>((set, get) => ({
       }
 
       const newRoom = await response.json();
-      
+
       // Remplacer la room optimiste par la vraie room
-      setRooms(prevRooms => prevRooms.map(r => r._id === optimisticRoom._id ? newRoom : r));
-      
+      setRooms(prevRooms => prevRooms.map(r => (r._id === optimisticRoom._id ? newRoom : r)));
+
       // Refetch les rooms pour s'assurer d'avoir les données à jour
       await get().fetchEventRooms(data.eventId);
 
@@ -163,12 +164,12 @@ export const useRoomStore = create<RoomState>((set, get) => ({
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to update room');
       }
-      
+
       // Mettre à jour la room dans le state local
       const updatedRoom = await response.json();
       console.log('Received updated room:', updatedRoom);
-      
-      const updatedRooms = rooms.map(room => 
+
+      const updatedRooms = rooms.map(room =>
         room._id === roomId ? { ...room, ...updatedRoom } : room
       );
       setRooms(updatedRooms);
@@ -200,17 +201,20 @@ export const useRoomStore = create<RoomState>((set, get) => ({
     }
   },
 
-  startStream: async (roomId) => {
+  startStream: async roomId => {
     const { setLoading, setError, fetchEventRooms, rooms } = get();
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}/stream`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-      });
+      const response = await fetch(
+        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}/stream`,
+        {
+          method: 'POST',
+          headers: getAuthHeaders(),
+        }
+      );
       if (!response.ok) throw new Error('Failed to start stream');
-      
+
       // Mettre à jour localement le statut de la room
       const room = rooms.find(r => r._id === roomId);
       if (room) {
@@ -224,17 +228,20 @@ export const useRoomStore = create<RoomState>((set, get) => ({
     }
   },
 
-  stopStream: async (roomId) => {
+  stopStream: async roomId => {
     const { setLoading, setError, fetchEventRooms, rooms } = get();
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}/stream/stop`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-      });
+      const response = await fetch(
+        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}/stream/stop`,
+        {
+          method: 'POST',
+          headers: getAuthHeaders(),
+        }
+      );
       if (!response.ok) throw new Error('Failed to stop stream');
-      
+
       // Mettre à jour localement le statut de la room
       const room = rooms.find(r => r._id === roomId);
       if (room) {
@@ -248,17 +255,20 @@ export const useRoomStore = create<RoomState>((set, get) => ({
     }
   },
 
-  pauseStream: async (roomId) => {
+  pauseStream: async roomId => {
     const { setLoading, setError, fetchEventRooms, rooms } = get();
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}/stream/pause`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-      });
+      const response = await fetch(
+        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}/stream/pause`,
+        {
+          method: 'POST',
+          headers: getAuthHeaders(),
+        }
+      );
       if (!response.ok) throw new Error('Failed to pause stream');
-      
+
       // Mettre à jour localement le statut de la room
       const room = rooms.find(r => r._id === roomId);
       if (room) {
@@ -272,17 +282,20 @@ export const useRoomStore = create<RoomState>((set, get) => ({
     }
   },
 
-  endStream: async (roomId) => {
+  endStream: async roomId => {
     const { setLoading, setError, fetchEventRooms, rooms } = get();
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}/stream/stop`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-      });
+      const response = await fetch(
+        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}/stream/stop`,
+        {
+          method: 'POST',
+          headers: getAuthHeaders(),
+        }
+      );
       if (!response.ok) throw new Error('Failed to end stream');
-      
+
       // Mettre à jour localement le statut de la room
       const room = rooms.find(r => r._id === roomId);
       if (room) {
@@ -296,17 +309,20 @@ export const useRoomStore = create<RoomState>((set, get) => ({
     }
   },
 
-  cancelRoom: async (roomId) => {
+  cancelRoom: async roomId => {
     const { setLoading, setError, fetchEventRooms, rooms } = get();
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}/cancel`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-      });
+      const response = await fetch(
+        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}/cancel`,
+        {
+          method: 'POST',
+          headers: getAuthHeaders(),
+        }
+      );
       if (!response.ok) throw new Error('Failed to cancel room');
-      
+
       // Mettre à jour localement le statut de la room
       const room = rooms.find(r => r._id === roomId);
       if (room) {
@@ -320,17 +336,20 @@ export const useRoomStore = create<RoomState>((set, get) => ({
     }
   },
 
-  reactivateRoom: async (roomId) => {
+  reactivateRoom: async roomId => {
     const { setLoading, setError, fetchEventRooms, rooms } = get();
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}/reactivate`, {
-        method: 'POST',
-        headers: getAuthHeaders(),
-      });
+      const response = await fetch(
+        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}/reactivate`,
+        {
+          method: 'POST',
+          headers: getAuthHeaders(),
+        }
+      );
       if (!response.ok) throw new Error('Failed to reactivate room');
-      
+
       // Mettre à jour localement le statut de la room
       const room = rooms.find(r => r._id === roomId);
       if (room) {

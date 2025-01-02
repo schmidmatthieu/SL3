@@ -1,12 +1,16 @@
-import { create } from 'zustand';
 import { mediaService } from '@/services/api/media';
+import { create } from 'zustand';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 const getAuthHeaders = () => {
-  const token = typeof window !== 'undefined' ? 
-    document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1] : 
-    null;
+  const token =
+    typeof window !== 'undefined'
+      ? document.cookie
+          .split('; ')
+          .find(row => row.startsWith('token='))
+          ?.split('=')[1]
+      : null;
   console.log('Token:', token); // Debug log
   return {
     'Content-Type': 'application/json',
@@ -36,7 +40,7 @@ interface ProfileState {
   updateAvatar: (file: File) => Promise<void>;
 }
 
-export const useProfileStore = create<ProfileState>((set) => ({
+export const useProfileStore = create<ProfileState>(set => ({
   user: null,
   isLoading: false,
   error: null,
@@ -47,10 +51,10 @@ export const useProfileStore = create<ProfileState>((set) => ({
       console.log('Fetching user data...');
       const headers = getAuthHeaders();
       console.log('Headers:', headers);
-      
+
       const response = await fetch(`${API_URL}/api/auth/me`, {
         headers,
-        credentials: 'include'
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -59,7 +63,7 @@ export const useProfileStore = create<ProfileState>((set) => ({
 
       const data = await response.json();
       console.log('Profile data:', data);
-      
+
       set({ user: data, isLoading: false });
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -67,7 +71,7 @@ export const useProfileStore = create<ProfileState>((set) => ({
     }
   },
 
-  updateProfile: async (data) => {
+  updateProfile: async data => {
     set({ isLoading: true, error: null });
     try {
       const response = await fetch(`${API_URL}/api/auth/me`, {
@@ -76,15 +80,15 @@ export const useProfileStore = create<ProfileState>((set) => ({
         credentials: 'include',
         body: JSON.stringify(data),
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to update user data');
       }
-      
+
       const updatedUser = await response.json();
-      set((state) => ({ 
+      set(state => ({
         user: { ...state.user, ...updatedUser },
-        isLoading: false 
+        isLoading: false,
       }));
     } catch (error) {
       set({ error: 'Failed to update user data', isLoading: false });
@@ -92,7 +96,7 @@ export const useProfileStore = create<ProfileState>((set) => ({
     }
   },
 
-  updatePassword: async (data) => {
+  updatePassword: async data => {
     set({ isLoading: true, error: null });
     try {
       const response = await fetch(`${API_URL}/api/auth/password`, {
@@ -109,7 +113,7 @@ export const useProfileStore = create<ProfileState>((set) => ({
     }
   },
 
-  updateAvatar: async (file) => {
+  updateAvatar: async file => {
     set({ isLoading: true, error: null });
     try {
       // Utiliser le service media pour l'upload
@@ -129,7 +133,7 @@ export const useProfileStore = create<ProfileState>((set) => ({
       }
 
       const userData = await updateResponse.json();
-      set((state) => ({
+      set(state => ({
         user: state.user ? { ...state.user, ...userData } : null,
         isLoading: false,
       }));

@@ -29,9 +29,9 @@ export const handleApiResponse = async (response: Response) => {
     status: response.status,
     statusText: response.statusText,
     contentType,
-    headers: Object.fromEntries(response.headers.entries())
+    headers: Object.fromEntries(response.headers.entries()),
   });
-  
+
   if (!response.ok) {
     let errorMessage = `HTTP error! status: ${response.status} ${response.statusText}`;
     try {
@@ -41,7 +41,7 @@ export const handleApiResponse = async (response: Response) => {
           status: response.status,
           statusText: response.statusText,
           data: errorData,
-          headers: Object.fromEntries(response.headers.entries())
+          headers: Object.fromEntries(response.headers.entries()),
         });
         errorMessage = errorData.message || errorMessage;
         throw new ApiError(errorMessage, response.status, errorData);
@@ -51,7 +51,7 @@ export const handleApiResponse = async (response: Response) => {
           status: response.status,
           statusText: response.statusText,
           text: textError,
-          headers: Object.fromEntries(response.headers.entries())
+          headers: Object.fromEntries(response.headers.entries()),
         });
         throw new ApiError(textError || errorMessage, response.status);
       }
@@ -67,7 +67,7 @@ export const handleApiResponse = async (response: Response) => {
       const data = await response.json();
       console.log('API Success Response:', {
         status: response.status,
-        data
+        data,
       });
       return data;
     } else if (response.status === 204) {
@@ -77,7 +77,7 @@ export const handleApiResponse = async (response: Response) => {
       console.warn('Unexpected response type:', {
         contentType,
         text,
-        status: response.status
+        status: response.status,
       });
       return text;
     }

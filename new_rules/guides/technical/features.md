@@ -3,6 +3,7 @@
 ## 👥 Gestion des Rôles & Permissions
 
 ### 1. Platform Admin
+
 - Accès système complet
 - Gestion des utilisateurs
 - Configuration plateforme
@@ -10,6 +11,7 @@
 - Gestion des événements
 
 ### 2. Event Admin
+
 - Gestion des événements
 - Planification des sessions
 - Gestion des participants
@@ -17,6 +19,7 @@
 - Configuration stream
 
 ### 3. Moderator
+
 - Gestion des streams
 - Modération du chat
 - Gestion Q&A
@@ -24,6 +27,7 @@
 - Contrôle des participants
 
 ### 4. Speaker
+
 - Gestion de session
 - Contrôles présentation
 - Interaction Q&A
@@ -31,6 +35,7 @@
 - Gestion des supports
 
 ### 5. Participant
+
 - Visionnage streams
 - Participation chat
 - Questions Q&A
@@ -40,6 +45,7 @@
 ## 🎥 Fonctionnalités Streaming
 
 ### Streaming HLS
+
 - Support multi-qualité
 - Adaptation automatique
 - Tracks audio multiples
@@ -47,6 +53,7 @@
 - Fallback automatique
 
 ### Chat Temps Réel
+
 - Messages instantanés
 - Modération en direct
 - Filtres automatiques
@@ -54,6 +61,7 @@
 - Historique messages
 
 ### Système Q&A
+
 - Questions modérées
 - Votes et likes
 - Triage automatique
@@ -61,6 +69,7 @@
 - Export des questions
 
 ### Partage de Fichiers
+
 - Upload sécurisé
 - Prévisualisation
 - Gestion versions
@@ -70,6 +79,7 @@
 ## 🗳️ Système de Vote
 
 ### Fonctionnalités
+
 - Votes en temps réel
 - Multiple types de votes :
   - Sondages simples
@@ -80,6 +90,7 @@
 - Exportation des résultats
 
 ### Caractéristiques
+
 - Interface intuitive
 - Visualisation des résultats
 - Modération des votes
@@ -87,6 +98,7 @@
 - Statistiques détaillées
 
 ### Administration
+
 - Création de votes
 - Gestion des participants
 - Contrôle des accès
@@ -94,6 +106,7 @@
 - Rapports analytiques
 
 ### Intégration
+
 - WebSocket temps réel
 - Persistance MongoDB
 - Cache Redis
@@ -101,6 +114,7 @@
 - API dédiée
 
 ### Sécurité
+
 - Vérification des votants
 - Prévention double vote
 - Anonymisation données
@@ -110,6 +124,7 @@
 ## 🔄 Architecture Temps Réel
 
 ### WebSocket
+
 - Connexions persistantes
 - Rooms dynamiques
 - Reconnexion auto
@@ -117,6 +132,7 @@
 - Heartbeat system
 
 ### Message Queue
+
 - File prioritaire
 - Retry automatique
 - Dead letter queue
@@ -124,6 +140,7 @@
 - Rate limiting
 
 ### État Global
+
 - Synchronisation Redis
 - Invalidation cache
 - État transitoire
@@ -133,6 +150,7 @@
 ## 📊 Analytics & Monitoring
 
 ### Métriques Utilisateurs
+
 - Sessions actives
 - Engagement temps réel
 - Parcours utilisateur
@@ -140,6 +158,7 @@
 - Rétention
 
 ### Métriques Techniques
+
 - Performance serveur
 - Qualité stream
 - Latence réseau
@@ -147,6 +166,7 @@
 - Utilisation ressources
 
 ### Rapports
+
 - Export données
 - Visualisations
 - Tableaux de bord
@@ -156,6 +176,7 @@
 ## 🔒 Sécurité & Conformité
 
 ### Authentication
+
 - JWT sécurisé
 - 2FA optionnel
 - SSO entreprise
@@ -163,6 +184,7 @@
 - Session management
 
 ### Protection Données
+
 - Chiffrement E2E
 - Anonymisation
 - Rétention configurable
@@ -170,6 +192,7 @@
 - GDPR compliant
 
 ### Contrôle Accès
+
 - RBAC granulaire
 - IP whitelisting
 - Rate limiting
@@ -179,6 +202,7 @@
 ## 📱 Support Multi-Device
 
 ### Responsive Design
+
 - Mobile first
 - Tablette optimisé
 - Desktop adaptatif
@@ -186,6 +210,7 @@
 - PWA support
 
 ### Fonctionnalités Spécifiques
+
 - Touch controls
 - Offline mode
 - Push notifications
@@ -193,6 +218,7 @@
 - Media controls
 
 ### Performance
+
 - Code splitting
 - Lazy loading
 - Image optimization

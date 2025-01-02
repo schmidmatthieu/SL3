@@ -3,6 +3,7 @@
 ## Principes de Base
 
 ### Objectifs
+
 - First Contentful Paint < 1.8s
 - Time to Interactive < 3.8s
 - Total Blocking Time < 200ms
@@ -11,6 +12,7 @@
 ## Frontend
 
 ### Code Splitting
+
 ```typescript
 // Lazy loading des routes
 const EventPage = lazy(() => import('@/pages/event'));
@@ -20,6 +22,7 @@ const HeavyComponent = lazy(() => import('@/components/heavy'));
 ```
 
 ### Image Optimization
+
 ```typescript
 // next.config.js
 module.exports = {
@@ -45,6 +48,7 @@ function OptimizedImage() {
 ```
 
 ### Bundle Optimization
+
 ```typescript
 // next.config.js
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
@@ -57,6 +61,7 @@ module.exports = withBundleAnalyzer({
 ```
 
 ### State Management
+
 ```typescript
 // Zustand store optimisé
 interface Store {
@@ -67,24 +72,19 @@ interface Store {
 
 const useStore = create<Store>((set, get) => ({
   data: [],
-  filteredData: (filter) => 
-    useMemo(() => 
-      get().data.filter(filterFn),
-      [get().data, filter]
-    ),
+  filteredData: filter => useMemo(() => get().data.filter(filterFn), [get().data, filter]),
 }));
 ```
 
 ## Backend
 
 ### Caching Redis
+
 ```typescript
 // services/cache.service.ts
 @Injectable()
 export class CacheService {
-  constructor(
-    private readonly redis: Redis,
-  ) {}
+  constructor(private readonly redis: Redis) {}
 
   async get<T>(key: string): Promise<T | null> {
     const cached = await this.redis.get(key);
@@ -92,17 +92,13 @@ export class CacheService {
   }
 
   async set(key: string, value: any, ttl?: number): Promise<void> {
-    await this.redis.set(
-      key,
-      JSON.stringify(value),
-      'EX',
-      ttl || 3600
-    );
+    await this.redis.set(key, JSON.stringify(value), 'EX', ttl || 3600);
   }
 }
 ```
 
 ### Query Optimization
+
 ```typescript
 // repositories/event.repository.ts
 @Injectable()
@@ -121,25 +117,19 @@ export class EventRepository {
 ```
 
 ### WebSocket Optimization
+
 ```typescript
 // gateways/event.gateway.ts
 @WebSocketGateway()
 export class EventGateway {
   @SubscribeMessage('joinRoom')
-  handleJoinRoom(
-    @MessageBody() roomId: string,
-    @ConnectedSocket() client: Socket
-  ): void {
+  handleJoinRoom(@MessageBody() roomId: string, @ConnectedSocket() client: Socket): void {
     // Joindre une room spécifique
     client.join(roomId);
   }
 
   // Broadcast optimisé
-  async broadcastToRoom(
-    roomId: string,
-    event: string,
-    data: any
-  ): Promise<void> {
+  async broadcastToRoom(roomId: string, event: string, data: any): Promise<void> {
     this.server.to(roomId).emit(event, data);
   }
 }
@@ -148,11 +138,12 @@ export class EventGateway {
 ## Monitoring
 
 ### Performance Metrics
+
 ```typescript
 // middleware/performance.middleware.ts
 app.use((req, res, next) => {
   const start = performance.now();
-  
+
   res.on('finish', () => {
     const duration = performance.now() - start;
     metrics.recordLatency({
@@ -161,12 +152,13 @@ app.use((req, res, next) => {
       duration,
     });
   });
-  
+
   next();
 });
 ```
 
 ### Error Tracking
+
 ```typescript
 // services/error-tracking.service.ts
 @Injectable()
@@ -185,6 +177,7 @@ export class ErrorTrackingService {
 ## Optimisations Avancées
 
 ### Virtual Scrolling
+
 ```typescript
 // components/virtual-list.tsx
 function VirtualList({ items }: Props) {
@@ -206,6 +199,7 @@ function VirtualList({ items }: Props) {
 ```
 
 ### Debounce & Throttle
+
 ```typescript
 // hooks/use-debounce.ts
 function useDebounce<T>(value: T, delay: number): T {
@@ -226,6 +220,7 @@ function useDebounce<T>(value: T, delay: number): T {
 ```
 
 ### Memoization
+
 ```typescript
 // components/expensive-component.tsx
 const ExpensiveComponent = memo(
@@ -246,6 +241,7 @@ const ExpensiveComponent = memo(
 ## Tests de Performance
 
 ### Lighthouse CI
+
 ```yaml
 # .github/workflows/lighthouse.yml
 name: Lighthouse CI
@@ -264,6 +260,7 @@ jobs:
 ```
 
 ### Load Testing
+
 ```typescript
 // tests/load/event-stream.test.ts
 import { LoadTest } from 'k6';

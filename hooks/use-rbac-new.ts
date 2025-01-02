@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+
 import { useAuth } from '@/hooks/use-auth';
 
 type Role = 'admin' | 'event_admin' | 'moderator' | 'speaker' | 'participant';
@@ -21,7 +22,7 @@ export function useRBAC() {
       const token = localStorage.getItem('token');
       const response = await fetch(`http://localhost:3001/roles/check/${type}/${id}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 

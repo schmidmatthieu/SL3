@@ -7,6 +7,6 @@ export const API_CONFIG = {
     speakers: '/api/speakers',
     media: '/api/media',
     rooms: '/api/rooms',
-    stream: '/api/stream'
-  }
+    stream: '/api/stream',
+  },
 };

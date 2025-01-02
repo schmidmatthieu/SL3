@@ -1,8 +1,9 @@
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
-import { Profile } from '@/types/profile';
 import { profileService } from '@/services/api/profiles';
 import { useAuthStore } from '@/store/auth-store';
+import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
+
+import { Profile } from '@/types/profile';
 
 interface ProfileState {
   profile: Profile | null;
@@ -16,7 +17,7 @@ interface ProfileState {
 
 export const useProfileStore = create<ProfileState>()(
   devtools(
-    (set) => ({
+    set => ({
       profile: null,
       isLoading: false,
       error: null,
@@ -70,10 +71,10 @@ export const useProfileStore = create<ProfileState>()(
             ...currentProfile,
             ...updatedProfile,
           };
-          
+
           // Mettre à jour le profile store
           set({ profile: mergedProfile, isLoading: false });
-          
+
           // Mettre à jour le auth store avec le user minimal et le profil complet
           const authStore = useAuthStore.getState();
           authStore.setProfile(mergedProfile);

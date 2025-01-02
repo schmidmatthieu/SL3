@@ -48,11 +48,11 @@ const defaultTheme = {
 
 export const useThemeStore = create<ThemeState>()(
   persist(
-    (set) => ({
+    set => ({
       ...defaultTheme,
 
-      updateTheme: (updates) => set((state) => ({ ...state, ...updates })),
-      
+      updateTheme: updates => set(state => ({ ...state, ...updates })),
+
       resetTheme: () => set(defaultTheme),
     }),
     {

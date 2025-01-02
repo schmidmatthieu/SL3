@@ -3,6 +3,7 @@
 ## Technology Stack
 
 ### Frontend
+
 - Next.js 15
 - TypeScript
 - Tailwind CSS
@@ -11,7 +12,8 @@
 - Socket.IO client for real-time features
 
 ### Backend
-- Node.js 22.10.2 
+
+- Node.js 22.10.2
 - NestJS
 - TypeScript
 - MongoDB with Mongoose
@@ -19,12 +21,14 @@
 - Socket.IO for WebSocket
 
 ### Infrastructure
+
 - GitHub Actions for CI/CD
 - MongoDB for primary database
 - Redis for caching and real-time features
 - HLS for video streaming
 
 ## Project Structure
+
 ```
 /
 ├── apps/
@@ -49,22 +53,27 @@
 ## Core Features
 
 ### User Roles & Permissions
+
 1. Platform Admin
+
    - Full system access
    - User management
    - Platform configuration
 
 2. Event Admin
+
    - Event management
    - Session scheduling
    - Participant management
 
 3. Moderator
+
    - Stream management
    - Chat moderation
    - Q&A management
 
 4. Speaker
+
    - Session management
    - Presentation controls
    - Q&A interaction
@@ -75,6 +84,7 @@
    - Ask questions
 
 ### Streaming Features
+
 - HLS streaming with multi-quality support
 - Multiple audio track support
 - Real-time chat
@@ -83,6 +93,7 @@
 - Analytics and monitoring
 
 ### Real-time Architecture
+
 - WebSocket-based communication
 - Room-based connections
 - Automatic reconnection
@@ -91,6 +102,7 @@
 - Fallback mechanisms
 
 ### Caching Strategy
+
 - Redis for session data
 - MongoDB aggregation caching
 - Static asset caching
@@ -98,6 +110,7 @@
 - Proper cache invalidation
 
 ### Security
+
 - JWT authentication
 - Role-based access control
 - Rate limiting
@@ -110,6 +123,7 @@
 Essential environment variables are categorized as follows:
 
 ### Application
+
 ```env
 NODE_ENV=development
 APP_URL=http://localhost:3000
@@ -118,6 +132,7 @@ PORT=3000
 ```
 
 ### Security
+
 ```env
 JWT_SECRET=your-secret-key
 JWT_EXPIRATION=1h
@@ -126,6 +141,7 @@ CORS_ORIGINS=http://localhost:3000
 ```
 
 ### Databases
+
 ```env
 MONGODB_URI=mongodb://localhost:27017/event_platform
 REDIS_HOST=localhost
@@ -133,6 +149,7 @@ REDIS_PORT=6379
 ```
 
 ### Streaming
+
 ```env
 STREAM_SERVER_URL=rtmp://localhost/live
 HLS_SERVER_URL=http://localhost:8080/hls
@@ -140,6 +157,7 @@ MAX_BITRATE=5000000
 ```
 
 ### WebSocket
+
 ```env
 WS_PORT=8080
 WS_PATH=/ws
@@ -149,6 +167,7 @@ MAX_CONNECTIONS_PER_IP=100
 ## Performance Optimizations
 
 ### Frontend
+
 - Code splitting
 - Image optimization
 - Lazy loading
@@ -156,6 +175,7 @@ MAX_CONNECTIONS_PER_IP=100
 - Proper caching strategies
 
 ### Backend
+
 - Database indexing
 - Query optimization
 - Caching layers
@@ -163,6 +183,7 @@ MAX_CONNECTIONS_PER_IP=100
 - Rate limiting
 
 ### WebSocket
+
 - Message batching
 - Compression
 - Connection pooling
@@ -172,17 +193,20 @@ MAX_CONNECTIONS_PER_IP=100
 ## Testing Strategy
 
 ### Frontend
+
 - Jest for unit testing
 - React Testing Library
 - Cypress for E2E testing
 
 ### Backend
+
 - Jest for unit testing
 - Supertest for API testing
 - Integration tests
 - Load testing
 
 ## Monitoring & Logging
+
 - Health checks
 - Performance metrics
 - Error tracking

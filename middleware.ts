@@ -7,9 +7,7 @@ export async function middleware(req: NextRequest) {
 
   // Protected routes
   const protectedPaths = ['/admin', '/profile'];
-  const isProtectedPath = protectedPaths.some(path => 
-    req.nextUrl.pathname.startsWith(path)
-  );
+  const isProtectedPath = protectedPaths.some(path => req.nextUrl.pathname.startsWith(path));
 
   // Check if it's an event management page
   const eventManageMatch = req.nextUrl.pathname.match(/^\/events\/([^\/]+)\/manage$/);
@@ -48,4 +46,4 @@ export const config = {
      */
     '/((?!_next/static|_next/image|favicon.ico|public/|api/).*)',
   ],
-}
+};

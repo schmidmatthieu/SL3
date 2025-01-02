@@ -9,7 +9,7 @@ export const rooms: Room[] = [
     participants: 150,
     startTime: '09:00',
     endTime: '18:00',
-    languages: ['en', 'fr', 'de']
+    languages: ['en', 'fr', 'de'],
   },
   {
     id: '2',
@@ -19,7 +19,7 @@ export const rooms: Room[] = [
     participants: 45,
     startTime: '10:30',
     endTime: '12:30',
-    languages: ['en', 'fr']
+    languages: ['en', 'fr'],
   },
   {
     id: '3',
@@ -29,7 +29,7 @@ export const rooms: Room[] = [
     participants: 80,
     startTime: '09:00',
     endTime: '11:00',
-    languages: ['en', 'de']
+    languages: ['en', 'de'],
   },
   {
     id: '4',
@@ -39,6 +39,6 @@ export const rooms: Room[] = [
     participants: 0,
     startTime: '14:00',
     endTime: '16:00',
-    languages: ['en', 'fr', 'de', 'it']
-  }
+    languages: ['en', 'fr', 'de', 'it'],
+  },
 ];

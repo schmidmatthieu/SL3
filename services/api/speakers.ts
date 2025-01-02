@@ -1,4 +1,5 @@
-import { Speaker, CreateSpeakerDto, UpdateSpeakerDto } from '@/types/speaker';
+import { CreateSpeakerDto, Speaker, UpdateSpeakerDto } from '@/types/speaker';
+
 import { API_CONFIG } from './config';
 import { getAuthHeaders, handleApiResponse } from './utils';
 
@@ -16,9 +17,7 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
 
 export const speakerService = {
   getAll: async (eventId: string): Promise<Speaker[]> => {
-    return fetchWithAuth(
-      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/speakers`
-    );
+    return fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/speakers`);
   },
 
   getById: async (eventId: string, speakerId: string): Promise<Speaker> => {
@@ -46,11 +45,7 @@ export const speakerService = {
     );
   },
 
-  update: async (
-    eventId: string,
-    speakerId: string,
-    data: UpdateSpeakerDto
-  ): Promise<Speaker> => {
+  update: async (eventId: string, speakerId: string, data: UpdateSpeakerDto): Promise<Speaker> => {
     return fetchWithAuth(
       `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/speakers/${speakerId}`,
       {
@@ -77,7 +72,11 @@ export const speakerService = {
     );
   },
 
-  uploadImage: async (eventId: string, speakerId: string, file: File): Promise<{ imageUrl: string }> => {
+  uploadImage: async (
+    eventId: string,
+    speakerId: string,
+    file: File
+  ): Promise<{ imageUrl: string }> => {
     const formData = new FormData();
     formData.append('image', file);
 

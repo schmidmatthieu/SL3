@@ -3,6 +3,7 @@
 ## Principes de Base
 
 ### 1. Modularité
+
 - Limite stricte de 300 lignes par fichier
 - Séparation des responsabilités
 - Composants atomiques et réutilisables
@@ -11,6 +12,7 @@
 ### 2. Organisation du Code
 
 #### Structure des Modules
+
 ```
 module-name/
 ├── components/          # Composants React
@@ -22,6 +24,7 @@ module-name/
 ```
 
 #### Conventions de Nommage
+
 ```typescript
 // Composants
 ComponentName.tsx
@@ -42,12 +45,15 @@ feature-name/
 ### 3. Développement par Fonctionnalité
 
 #### Process
+
 1. **Planification**
+
    - Définir les responsabilités
    - Identifier les composants nécessaires
    - Planifier la structure des modules
 
 2. **Implémentation**
+
    - Créer la structure de base
    - Développer les composants atomiques
    - Intégrer les modules
@@ -62,6 +68,7 @@ feature-name/
 ### 4. Gestion des États
 
 #### Zustand Store
+
 ```typescript
 // stores/feature.store.ts
 interface FeatureState {
@@ -71,21 +78,22 @@ interface FeatureState {
 }
 
 // Séparation en petits stores
-const useFeatureStore = create<FeatureState>((set) => ({
+const useFeatureStore = create<FeatureState>(set => ({
   data: [],
   isLoading: false,
   error: null,
-  
+
   // Actions atomiques
-  setData: (data) => set({ data }),
-  setLoading: (isLoading) => set({ isLoading }),
-  setError: (error) => set({ error })
+  setData: data => set({ data }),
+  setLoading: isLoading => set({ isLoading }),
+  setError: error => set({ error }),
 }));
 ```
 
 ### 5. Composants
 
 #### Structure Type
+
 ```typescript
 // components/feature-component/index.tsx
 interface Props {
@@ -96,17 +104,17 @@ export function FeatureComponent({ prop1, prop2 }: Props) {
   // 1. Hooks
   const { t } = useTranslation();
   const store = useFeatureStore();
-  
+
   // 2. Dérivations
   const computed = useMemo(() => {
     // Calculs
   }, [dependencies]);
-  
+
   // 3. Handlers
   const handleAction = useCallback(() => {
     // Actions
   }, [dependencies]);
-  
+
   // 4. Render
   return (
     // JSX
@@ -117,6 +125,7 @@ export function FeatureComponent({ prop1, prop2 }: Props) {
 ### 6. Tests
 
 #### Structure des Tests
+
 ```typescript
 // components/feature-component/feature.test.tsx
 describe('FeatureComponent', () => {
@@ -126,7 +135,7 @@ describe('FeatureComponent', () => {
       // Test
     });
   });
-  
+
   describe('when interacting', () => {
     it('should handle actions', () => {
       // Test
@@ -138,26 +147,28 @@ describe('FeatureComponent', () => {
 ### 7. Documentation
 
 #### JSDoc
-```typescript
+
+````typescript
 /**
  * @component FeatureComponent
  * @description Description du composant
- * 
+ *
  * @modularization
  * - Composant divisé en sous-modules :
  *   - FeatureList : Liste des éléments
  *   - FeatureItem : Item individuel
- * 
+ *
  * @example
  * ```tsx
  * <FeatureComponent data={data} />
  * ```
  */
-```
+````
 
 ### 8. Performance
 
 #### Optimisations
+
 - Utilisation de `useMemo` et `useCallback`
 - Lazy loading des composants lourds
 - Pagination des listes
@@ -179,6 +190,7 @@ function App() {
 ### 9. Accessibilité
 
 #### Checklist
+
 - Labels explicites
 - Rôles ARIA appropriés
 - Support clavier
@@ -188,6 +200,7 @@ function App() {
 ### 10. Internationalisation
 
 #### Structure
+
 ```
 locales/
 ├── fr/
@@ -203,6 +216,7 @@ locales/
 ### 11. Git
 
 #### Commits
+
 ```bash
 # Format
 type(scope): description
@@ -219,6 +233,7 @@ test: ajout/modification de tests
 ### 12. Review de Code
 
 #### Checklist
+
 - Taille des fichiers < 300 lignes
 - Tests unitaires présents
 - Documentation à jour

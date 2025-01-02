@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { apiRequest } from '@/lib/utils';
+import { useCallback, useEffect, useState } from 'react';
+
 import { Event } from '@/types/event';
 import { Room } from '@/types/room';
+import { apiRequest } from '@/lib/utils';
 
 const fetchEvent = async (eventId: string): Promise<Event> => {
   try {
@@ -50,10 +51,7 @@ export function useEvent(eventId?: string) {
       setIsError(false);
       setError(null);
 
-      const [eventData, roomsData] = await Promise.all([
-        fetchEvent(eventId),
-        fetchRooms(eventId)
-      ]);
+      const [eventData, roomsData] = await Promise.all([fetchEvent(eventId), fetchRooms(eventId)]);
 
       const eventWithRooms = { ...eventData, rooms: roomsData };
       console.log('useEvent: Setting combined event data:', eventWithRooms);

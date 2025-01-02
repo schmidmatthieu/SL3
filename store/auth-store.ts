@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+
 import type { User } from '@/types/auth';
 import type { Profile } from '@/types/profile';
 
@@ -14,15 +15,15 @@ interface AuthState {
   signOut: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>(set => ({
   user: null,
   profile: null,
   loading: true,
   token: null,
-  setUser: (user) => set({ user }),
-  setProfile: (profile) => set({ profile }),
-  setLoading: (loading) => set({ loading }),
-  setToken: (token) => {
+  setUser: user => set({ user }),
+  setProfile: profile => set({ profile }),
+  setLoading: loading => set({ loading }),
+  setToken: token => {
     if (token) {
       document.cookie = `token=${token}; path=/`;
     }

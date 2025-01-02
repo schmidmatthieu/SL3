@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -40,9 +40,9 @@ const defaultConfig: StreamConfig = {
 
 export const useStreamStore = create<StreamState>()(
   persist(
-    (set) => ({
+    set => ({
       config: null,
-      updateConfig: (config) => set({ config }),
+      updateConfig: config => set({ config }),
       resetConfig: () => set({ config: defaultConfig }),
     }),
     {

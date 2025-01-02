@@ -1,6 +1,7 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
+
 import type { Database } from '@/types/supabase';
 
 export async function middleware(req: NextRequest) {
@@ -14,11 +15,7 @@ export async function middleware(req: NextRequest) {
   if (req.nextUrl.pathname.startsWith('/admin')) {
     const {
       data: { role },
-    } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', session?.user?.id)
-      .single();
+    } = await supabase.from('profiles').select('role').eq('id', session?.user?.id).single();
 
     if (role !== 'admin') {
       return NextResponse.redirect(new URL('/login', req.url));
@@ -28,9 +25,7 @@ export async function middleware(req: NextRequest) {
   // Protect event moderator routes
   if (req.nextUrl.pathname.startsWith('/events/manage')) {
     const eventId = req.nextUrl.pathname.split('/')[3];
-    const {
-      data: isEventModerator,
-    } = await supabase
+    const { data: isEventModerator } = await supabase
       .from('event_moderators')
       .select()
       .eq('event_id', eventId)
@@ -45,9 +40,7 @@ export async function middleware(req: NextRequest) {
   // Protect room moderator routes
   if (req.nextUrl.pathname.includes('/rooms') && req.nextUrl.pathname.endsWith('/mod')) {
     const roomId = req.nextUrl.pathname.split('/')[5];
-    const {
-      data: isRoomModerator,
-    } = await supabase
+    const { data: isRoomModerator } = await supabase
       .from('room_moderators')
       .select()
       .eq('room_id', roomId)
@@ -62,18 +55,14 @@ export async function middleware(req: NextRequest) {
   // Check access for private/paid events
   if (req.nextUrl.pathname.startsWith('/events/')) {
     const eventId = req.nextUrl.pathname.split('/')[2];
-    const {
-      data: event,
-    } = await supabase
+    const { data: event } = await supabase
       .from('events')
       .select('access_type')
       .eq('id', eventId)
       .single();
 
     if (event?.access_type !== 'public') {
-      const {
-        data: hasAccess,
-      } = await supabase
+      const { data: hasAccess } = await supabase
         .from('event_access')
         .select()
         .eq('event_id', eventId)

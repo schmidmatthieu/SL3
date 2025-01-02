@@ -8,7 +8,7 @@ export function getAuthHeaders(): HeadersInit {
   const token = getAuthToken();
   return {
     'Content-Type': 'application/json',
-    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 }
 
@@ -30,7 +30,7 @@ export function getAuthToken(): string | null {
   if (typeof window === 'undefined') {
     return null;
   }
-  
+
   const token = document.cookie
     .split('; ')
     .find(row => row.startsWith('token='))
@@ -40,7 +40,7 @@ export function getAuthToken(): string | null {
     console.warn('No auth token found in cookies');
     return null;
   }
-  
+
   return token;
 }
 

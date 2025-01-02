@@ -5,32 +5,32 @@ export const ROOM_STATUS_TRANSLATIONS = {
     en: 'Upcoming',
     fr: 'À venir',
     de: 'Kommend',
-    it: 'In arrivo'
+    it: 'In arrivo',
   },
   live: {
     en: 'Live',
     fr: 'En direct',
     de: 'Live',
-    it: 'In diretta'
+    it: 'In diretta',
   },
   paused: {
     en: 'Paused',
     fr: 'En pause',
     de: 'Pausiert',
-    it: 'In pausa'
+    it: 'In pausa',
   },
   ended: {
     en: 'Ended',
     fr: 'Terminé',
     de: 'Beendet',
-    it: 'Terminato'
+    it: 'Terminato',
   },
   cancelled: {
     en: 'Cancelled',
     fr: 'Annulé',
     de: 'Abgesagt',
-    it: 'Annullato'
-  }
+    it: 'Annullato',
+  },
 } as const;
 
 export interface RoomSettings {
@@ -39,8 +39,8 @@ export interface RoomSettings {
   recordingEnabled: boolean;
   maxParticipants?: number;
   allowQuestions: boolean;
-  originalLanguage: string;  // Langue originale (VO)
-  availableLanguages: string[];  // Langues disponibles pour le multicanal
+  originalLanguage: string; // Langue originale (VO)
+  availableLanguages: string[]; // Langues disponibles pour le multicanal
 }
 
 export interface Room {
@@ -50,8 +50,8 @@ export interface Room {
   description?: string;
   thumbnail?: string;
   status: RoomStatus;
-  startTime: string;  // Format ISO: "2024-12-31T09:00:00Z"
-  endTime: string;    // Format ISO: "2024-12-31T10:00:00Z"
+  startTime: string; // Format ISO: "2024-12-31T09:00:00Z"
+  endTime: string; // Format ISO: "2024-12-31T10:00:00Z"
   streamKey?: string;
   streamUrl?: string;
   settings: RoomSettings;

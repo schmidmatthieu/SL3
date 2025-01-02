@@ -21,13 +21,7 @@ module.exports = {
       jsx: true,
     },
   },
-  plugins: [
-    '@typescript-eslint',
-    'react',
-    'react-hooks',
-    'jsx-a11y',
-    'import',
-  ],
+  plugins: ['@typescript-eslint', 'react', 'react-hooks', 'jsx-a11y', 'import'],
   settings: {
     react: {
       version: 'detect',
@@ -35,20 +29,26 @@ module.exports = {
   },
   rules: {
     // Règle pour la taille maximale des fichiers (300 lignes)
-    'max-lines': ['warn', {
-      max: 300,
-      skipBlankLines: true,
-      skipComments: true,
-    }],
+    'max-lines': [
+      'warn',
+      {
+        max: 300,
+        skipBlankLines: true,
+        skipComments: true,
+      },
+    ],
 
     // Règles TypeScript
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'warn',
-    '@typescript-eslint/no-unused-vars': ['warn', {
-      argsIgnorePattern: '^_',
-      varsIgnorePattern: '^_',
-    }],
+    '@typescript-eslint/no-unused-vars': [
+      'warn',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+      },
+    ],
 
     // Règles React
     'react/react-in-jsx-scope': 'off',
@@ -57,18 +57,17 @@ module.exports = {
     'react-hooks/exhaustive-deps': 'warn',
 
     // Règles d'import
-    'import/order': ['warn', {
-      groups: [
-        ['builtin', 'external'],
-        'internal',
-        ['parent', 'sibling', 'index'],
-      ],
-      'newlines-between': 'always',
-      alphabetize: {
-        order: 'asc',
-        caseInsensitive: true,
+    'import/order': [
+      'warn',
+      {
+        groups: [['builtin', 'external'], 'internal', ['parent', 'sibling', 'index']],
+        'newlines-between': 'always',
+        alphabetize: {
+          order: 'asc',
+          caseInsensitive: true,
+        },
       },
-    }],
+    ],
 
     // Règles générales
     'no-console': ['warn', { allow: ['warn', 'error'] }],

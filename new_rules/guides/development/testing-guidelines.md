@@ -3,6 +3,7 @@
 ## Principes de Base
 
 ### Structure Modulaire
+
 - Tests unitaires par module < 300 lignes
 - Tests d'intégration par feature
 - Tests E2E pour les flows critiques
@@ -10,6 +11,7 @@
 ## Tests Unitaires
 
 ### Structure
+
 ```typescript
 // component.test.tsx
 describe('ComponentName', () => {
@@ -33,6 +35,7 @@ describe('ComponentName', () => {
 ```
 
 ### Bonnes Pratiques
+
 - Un fichier de test par module
 - Tests isolés et indépendants
 - Mocks pour les dépendances externes
@@ -41,6 +44,7 @@ describe('ComponentName', () => {
 ## Tests d'Intégration
 
 ### Structure
+
 ```typescript
 // feature.integration.test.tsx
 describe('FeatureIntegration', () => {
@@ -59,6 +63,7 @@ describe('FeatureIntegration', () => {
 ```
 
 ### Patterns
+
 - Tests de flux complets
 - Intégration avec l'API
 - Tests de state management
@@ -67,6 +72,7 @@ describe('FeatureIntegration', () => {
 ## Tests E2E
 
 ### Configuration
+
 ```typescript
 // playwright.config.ts
 export default defineConfig({
@@ -79,6 +85,7 @@ export default defineConfig({
 ```
 
 ### Structure
+
 ```typescript
 // feature.spec.ts
 test('complete user flow', async ({ page }) => {
@@ -92,12 +99,14 @@ test('complete user flow', async ({ page }) => {
 ## Tests de Performance
 
 ### Métriques
+
 - First Contentful Paint < 1.8s
 - Time to Interactive < 3.8s
 - Total Blocking Time < 200ms
 - Cumulative Layout Shift < 0.1
 
 ### Outils
+
 ```typescript
 // lighthouse.config.js
 module.exports = {
@@ -111,6 +120,7 @@ module.exports = {
 ## Tests API
 
 ### Structure
+
 ```typescript
 // endpoint.test.ts
 describe('API Endpoint', () => {
@@ -118,7 +128,7 @@ describe('API Endpoint', () => {
     const response = await request(app)
       .get('/api/endpoint')
       .set('Authorization', `Bearer ${token}`);
-    
+
     expect(response.status).toBe(200);
     expect(response.body).toMatchSchema(schema);
   });
@@ -128,6 +138,7 @@ describe('API Endpoint', () => {
 ## Tests de State
 
 ### Zustand Store
+
 ```typescript
 // store.test.ts
 describe('FeatureStore', () => {
@@ -142,13 +153,14 @@ describe('FeatureStore', () => {
 ## Tests de Composants
 
 ### Composants Isolés
+
 ```typescript
 // component.test.tsx
 describe('Component', () => {
   it('should handle props correctly', () => {
     const { rerender } = render(<Component prop={value} />);
     expect(screen.getByText(value)).toBeInTheDocument();
-    
+
     rerender(<Component prop={newValue} />);
     expect(screen.getByText(newValue)).toBeInTheDocument();
   });
@@ -158,6 +170,7 @@ describe('Component', () => {
 ## Mocks et Stubs
 
 ### API Mocks
+
 ```typescript
 // api.mock.ts
 export const mockApi = {
@@ -167,6 +180,7 @@ export const mockApi = {
 ```
 
 ### Store Mocks
+
 ```typescript
 // store.mock.ts
 export const mockStore = {
@@ -181,6 +195,7 @@ export const mockStore = {
 ## CI/CD Integration
 
 ### GitHub Actions
+
 ```yaml
 # .github/workflows/test.yml
 name: Tests
@@ -199,6 +214,7 @@ jobs:
 ## Documentation des Tests
 
 ### JSDoc
+
 ```typescript
 /**
  * @jest-environment jsdom
@@ -213,6 +229,7 @@ describe('Feature', () => {
 ## Monitoring et Reporting
 
 ### Jest Configuration
+
 ```javascript
 // jest.config.js
 module.exports = {
