@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect, use, useState } from 'react';
-import { useEvent } from '@/hooks/useEvent';
-import { notFound } from 'next/navigation';
-import { EventDetails } from '@/components/events/event-details';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
+import { use, useEffect, useState } from 'react';
+import { notFound, useRouter } from 'next/navigation';
+
 import { getAuthToken } from '@/lib/auth';
+import { useEvent } from '@/hooks/useEvent';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EventDetails } from '@/components/events/event-details';
 
 interface EventPageProps {
   params: Promise<{ eventId: string }>;
@@ -18,7 +18,7 @@ export default function EventPage({ params }: EventPageProps) {
   const resolvedParams = use(params);
   const eventId = resolvedParams.eventId;
   const [isAuthenticated, setIsAuthenticated] = useState(true);
-  
+
   const { event, isLoading, isError, error } = useEvent(eventId);
 
   useEffect(() => {
@@ -41,10 +41,7 @@ export default function EventPage({ params }: EventPageProps) {
       <div className="container py-6">
         <div className="flex flex-col items-center space-y-4">
           <div className="text-red-500">Please log in to view this event</div>
-          <Button 
-            onClick={() => router.push('/login')}
-            variant="default"
-          >
+          <Button onClick={() => router.push('/login')} variant="default">
             Log In
           </Button>
         </div>
