@@ -2,7 +2,7 @@
 
 ## État du Projet
 
-- **Dernière mise à jour** : 2025-01-02
+- **Dernière mise à jour** : 2025-01-05
 - **Version** : Beta
 - **État Global** : En développement actif
 
@@ -16,6 +16,7 @@
 - [x] Mise en place i18n et language switcher
 - [x] Configuration ESLint et TypeScript
 - [x] Setup des stores Zustand
+- [x] Configuration Prettier et formatage du code
 
 ### Authentification & Utilisateurs (Phase 2)
 
@@ -32,6 +33,7 @@
 - [x] Gestion des salles
 - [x] Événements mis en avant
 - [x] Traductions des événements
+- [x] Amélioration de la gestion des dates (validation ISO 8601)
 
 ### Gestion des Intervenants (Phase 4)
 
