@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional, IsEnum, IsDateString } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsEnum, IsDate, IsBoolean } from 'class-validator';
 import { EventStatus } from '../schemas/event.schema';
 
 export class CreateEventDto {
@@ -10,22 +10,25 @@ export class CreateEventDto {
   @IsNotEmpty()
   description: string;
 
-  @IsDateString()
+  @IsDate()
   @IsNotEmpty()
-  startDateTime: string;
+  startDateTime: Date;
 
-  @IsDateString()
+  @IsDate()
   @IsNotEmpty()
-  endDateTime: string;
+  endDateTime: Date;
 
   @IsString()
   @IsOptional()
   imageUrl?: string;
 
-  @IsEnum(['active', 'scheduled', 'ended'])
-  @IsNotEmpty()
-  status: EventStatus;
-
+  @IsEnum(EventStatus, {
+    message: 'Status must be one of: active, scheduled, ended, cancelled'
+  })
   @IsOptional()
-  rooms?: string[];
+  status?: EventStatus = EventStatus.SCHEDULED;
+
+  @IsBoolean()
+  @IsOptional()
+  featured?: boolean = false;
 }

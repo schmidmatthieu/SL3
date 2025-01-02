@@ -2,9 +2,14 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { Room } from '../../rooms/room.schema';
 
-export type EventDocument = Event & Document;
+export enum EventStatus {
+  ACTIVE = 'active',
+  SCHEDULED = 'scheduled',
+  ENDED = 'ended',
+  CANCELLED = 'cancelled',
+}
 
-export type EventStatus = 'active' | 'scheduled' | 'ended' | 'cancelled';
+export type EventDocument = Event & Document;
 
 @Schema({
   timestamps: true,
@@ -35,10 +40,13 @@ export class Event extends Document {
   @Prop({ type: String })
   imageUrl?: string;
 
+  @Prop({ type: Boolean, default: false })
+  featured: boolean;
+
   @Prop({ 
     type: String, 
-    enum: ['active', 'scheduled', 'ended', 'cancelled'],
-    default: 'scheduled'
+    enum: Object.values(EventStatus),
+    default: EventStatus.SCHEDULED
   })
   status: EventStatus;
 

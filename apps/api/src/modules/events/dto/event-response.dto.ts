@@ -9,6 +9,7 @@ export class EventResponseDto {
   endDateTime: Date;
   imageUrl?: string;
   status: EventStatus;
+  featured?: boolean;
   rooms: Room[];
   createdBy: string;
   createdAt?: Date;
