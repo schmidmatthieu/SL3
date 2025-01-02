@@ -683,6 +683,7 @@
     "description": "Begin your journey with Swiss Live Event management platform."
   },
   "events": {
+    "featured": "Featured",
     "title": "Events",
     "createButton": "Create Event",
     "createDialog": {
@@ -698,6 +699,7 @@
       "active": "Live"
     },
     "card": {
+      "featured": "Featured",
       "startDate": "Start Date",
       "endDate": "End Date",
       "rooms": {

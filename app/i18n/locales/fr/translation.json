@@ -496,7 +496,7 @@
       "cancel": "Annuler",
       "delete": "Supprimer",
       "saving": "Enregistrement...",
-      "saveChanges": "Enregistrer les modifications"
+      "saveChanges":"Enregistrer les modifications"
     }
   },
   "theme": {
@@ -703,6 +703,7 @@
       "title": "Créer un nouvel événement"
     },
     "status": {
+      "featured": "En vedette",
       "live": "En direct",
       "scheduled": "Planifié",
       "ended": "Terminé",
@@ -712,6 +713,7 @@
       "active": "En direct"
     },
     "card": {
+      "featured": "En vedette",
       "startDate": "Date de début",
       "endDate": "Date de fin",
       "rooms": {
@@ -915,7 +917,7 @@
         "description": "Afficher la liste des participants inscrits"
       },
       "contactSharing": {
-        "label": "Partage des contacts",
+        "label": "Partage des informations de contact",
         "description": "Autoriser les participants à voir les informations de contact des autres"
       },
       "socialMedia": {

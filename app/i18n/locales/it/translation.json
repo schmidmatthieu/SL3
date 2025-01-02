@@ -698,6 +698,7 @@
       "active": "In diretta"
     },
     "card": {
+      "featured": "In evidenza",
       "startDate": "Data inizio",
       "endDate": "Data fine",
       "rooms": {
@@ -927,7 +928,7 @@
     },
     "charts": {
       "attendanceOverTime": {
-        "title": "Presenze nel tempo",
+        "title": "Partecipazione nel tempo",
         "yAxis": "Numero di partecipanti",
         "xAxis": "Tempo"
       },
