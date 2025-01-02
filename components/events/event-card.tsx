@@ -80,7 +80,8 @@ export function EventCard({ event }: EventCardProps) {
     card: {
       startDate: t('events.card.startDate'),
       endDate: t('events.card.endDate'),
-      manageEvent: t('events.card.manage')
+      manageEvent: t('events.card.manage'),
+      featured: t('events.card.featured')
     }
   };
 
@@ -98,13 +99,32 @@ export function EventCard({ event }: EventCardProps) {
   return (
     <Card
       className={cn(
-        "group relative overflow-hidden transition-all card-hover-effect",
-        "bg-background/40 backdrop-blur-[12px]",
-        "border-primary-100/30 dark:border-primary-800/30",
-        "hover:bg-primary-50/30 dark:hover:bg-primary-950/30",
-        displayEvent.status === 'cancelled' && "opacity-50"
+        "group relative overflow-hidden",
+        "bg-background transition-all duration-300",
+        "border border-primary-100/30 dark:border-primary-800/30",
+        "hover:border-primary-200/50 dark:hover:border-primary-700/50",
+        "hover:shadow-lg dark:hover:shadow-primary-950/10",
+        displayEvent.status === 'cancelled' && "opacity-50",
+        displayEvent.featured && [
+          "border-2 border-primary hover:border-primary/80",
+          "shadow-md hover:shadow-xl",
+          "dark:shadow-primary-950/20",
+          "scale-[1.02]",
+          "bg-gradient-to-br from-primary-50/50 to-background/50",
+          "dark:from-primary-950/50 dark:to-background/50"
+        ]
       )}
     >
+      {displayEvent.featured && (
+        <div className="absolute top-4 left-4 z-20">
+          <Badge 
+            variant="default" 
+            className="bg-primary text-white font-medium shadow-sm"
+          >
+            {t('events.card.featured')}
+          </Badge>
+        </div>
+      )}
       {displayEvent.status !== 'cancelled' && (
         <Link 
           href={`/events/${displayEvent.id || displayEvent._id}`}
@@ -114,17 +134,18 @@ export function EventCard({ event }: EventCardProps) {
       )}
       <CardContent className="p-0">
         <div className="relative w-full h-48 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent transition-opacity duration-300 group-hover:opacity-0" />
+          <div 
+            className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent z-10" 
+          />
           <img
             src={displayEvent.imageUrl || DEFAULT_EVENT_IMAGE}
             alt={displayEvent.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
           />
           <Badge
             className={cn(
-              "absolute top-4 right-4",
-              "transition-all duration-300",
-              "group-hover:scale-105 font-medium",
+              "absolute top-4 right-4 z-10",
+              "font-medium",
               getStatusColor(displayEvent.status)
             )}
           >
@@ -134,7 +155,7 @@ export function EventCard({ event }: EventCardProps) {
             
         <div className="p-6">
           <div className="space-y-2 mb-6">
-            <h3 className="text-xl font-semibold tracking-tight transition-colors group-hover:text-primary-700 dark:group-hover:text-primary-300">
+            <h3 className="text-xl font-semibold tracking-tight">
               {displayEvent.title}
             </h3>
             <p className="text-primary-600/70 dark:text-primary-300/70 line-clamp-2">
@@ -147,9 +168,15 @@ export function EventCard({ event }: EventCardProps) {
               <Calendar className="h-4 w-4 text-primary-600 dark:text-primary-400" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-primary-900 dark:text-primary-100">{content.card.startDate}</p>
-                <p className="text-sm text-primary-600/70 dark:text-primary-300/70 truncate">
-                  {format(new Date(displayEvent.startDateTime), 'PPP')}
-                </p>
+                <div className="flex items-center space-x-2">
+                  <p className="text-sm text-primary-600/70 dark:text-primary-300/70 truncate">
+                    {format(new Date(displayEvent.startDateTime), 'PPP')}
+                  </p>
+                  <span className="text-sm text-primary-600/50 dark:text-primary-300/50">•</span>
+                  <p className="text-sm font-medium text-primary-600/90 dark:text-primary-300/90">
+                    {format(new Date(displayEvent.startDateTime), 'HH:mm')}
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -157,9 +184,15 @@ export function EventCard({ event }: EventCardProps) {
               <Clock className="h-4 w-4 text-primary-600 dark:text-primary-400" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-primary-900 dark:text-primary-100">{content.card.endDate}</p>
-                <p className="text-sm text-primary-600/70 dark:text-primary-300/70 truncate">
-                  {format(new Date(displayEvent.endDateTime), 'PPP')}
-                </p>
+                <div className="flex items-center space-x-2">
+                  <p className="text-sm text-primary-600/70 dark:text-primary-300/70 truncate">
+                    {format(new Date(displayEvent.endDateTime), 'PPP')}
+                  </p>
+                  <span className="text-sm text-primary-600/50 dark:text-primary-300/50">•</span>
+                  <p className="text-sm font-medium text-primary-600/90 dark:text-primary-300/90">
+                    {format(new Date(displayEvent.endDateTime), 'HH:mm')}
+                  </p>
+                </div>
               </div>
             </div>
 

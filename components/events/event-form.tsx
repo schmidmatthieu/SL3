@@ -4,6 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import { useEventStore } from '@/store/event.store';
+import { useMediaStore } from '@/store/media.store';
 import { EventStatus } from '@/types/event';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,23 +24,42 @@ import {
 import { Input } from '@/components/ui/input';
 import { ImageUploader } from '@/components/ui/image-uploader';
 
-const formSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
-  description: z.string().min(1, 'Description is required'),
-  startDateTime: z.date({
-    required_error: 'Start date and time is required',
-  }),
-  endDateTime: z.date({
-    required_error: 'End date and time is required',
-  }),
-  imageUrl: z.string().optional(),
-});
+const formSchema = z
+  .object({
+    title: z.string().min(1, 'Title is required'),
+    description: z.string().min(1, 'Description is required'),
+    startDateTime: z.date({
+      required_error: 'Start date and time is required',
+    }),
+    endDateTime: z.date({
+      required_error: 'End date and time is required',
+    }),
+    imageUrl: z.string().optional(),
+  })
+  .refine((data) => data.endDateTime > data.startDateTime, {
+    message: "La date de fin doit être postérieure à la date de début",
+    path: ["endDateTime"],
+  });
 
 type FormValues = z.infer<typeof formSchema>;
 
+// Fonction pour arrondir à l'heure suivante
+const roundToNextHour = (date: Date): Date => {
+  const roundedDate = new Date(date);
+  roundedDate.setMinutes(0);
+  roundedDate.setSeconds(0);
+  roundedDate.setMilliseconds(0);
+  // Si nous avons déjà dépassé les minutes dans l'heure actuelle, on passe à l'heure suivante
+  if (date.getMinutes() > 0) {
+    roundedDate.setHours(date.getHours() + 1);
+  }
+  return roundedDate;
+};
+
 export function EventForm({ onComplete }: { onComplete?: () => void }) {
   const now = new Date();
-  const tomorrow = new Date(now);
+  const roundedNow = roundToNextHour(now);
+  const tomorrow = new Date(roundedNow);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
   const form = useForm<FormValues>({
@@ -47,7 +67,7 @@ export function EventForm({ onComplete }: { onComplete?: () => void }) {
     defaultValues: {
       title: '',
       description: '',
-      startDateTime: now,
+      startDateTime: roundedNow,
       endDateTime: tomorrow,
       imageUrl: '',
     },
@@ -56,6 +76,7 @@ export function EventForm({ onComplete }: { onComplete?: () => void }) {
   const router = useRouter();
   const { user } = useAuth();
   const createEvent = useEventStore(state => state.createEvent);
+  const { addUsage, items } = useMediaStore();
 
   const onSubmit = async (data: FormValues) => {
     try {
@@ -88,6 +109,18 @@ export function EventForm({ onComplete }: { onComplete?: () => void }) {
         status,
         rooms: 1,
       });
+
+      // Ajouter l'utilisation de l'image après la création de l'événement
+      if (data.imageUrl) {
+        const mediaId = items.find(item => item.url === data.imageUrl)?._id;
+        if (mediaId) {
+          await addUsage(mediaId, {
+            type: 'event',
+            entityId: event._id || event.id,
+            entityName: data.title
+          });
+        }
+      }
 
       if (onComplete) {
         onComplete();
@@ -145,7 +178,13 @@ export function EventForm({ onComplete }: { onComplete?: () => void }) {
                   <FormControl>
                     <DateTimePicker
                       value={field.value}
-                      onChange={field.onChange}
+                      onChange={(date) => {
+                        field.onChange(date);
+                        // Mettre à jour automatiquement la date de fin à +1 jour
+                        const endDate = new Date(date);
+                        endDate.setDate(endDate.getDate() + 1);
+                        form.setValue('endDateTime', endDate);
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -163,6 +202,7 @@ export function EventForm({ onComplete }: { onComplete?: () => void }) {
                     <DateTimePicker
                       value={field.value}
                       onChange={field.onChange}
+                      minDate={form.getValues('startDateTime')}
                     />
                   </FormControl>
                   <FormMessage />
@@ -178,9 +218,10 @@ export function EventForm({ onComplete }: { onComplete?: () => void }) {
                   <FormLabel>Image de couverture</FormLabel>
                   <FormControl>
                     <ImageUploader
-                      onImageSelect={(url) => field.onChange(url)}
                       currentImage={field.value}
+                      onImageSelect={(url) => field.onChange(url)}
                       mediaType="event"
+                      entityName={form.getValues('title')}
                     />
                   </FormControl>
                   <FormDescription>
