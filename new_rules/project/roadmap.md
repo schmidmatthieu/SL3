@@ -2,7 +2,7 @@
 
 ## État du Projet
 
-- **Dernière mise à jour** : 2025-01-05
+- **Dernière mise à jour** : 2025-01-02
 - **Version** : Beta
 - **État Global** : En développement actif
 
@@ -25,6 +25,9 @@
 - [x] Protection des routes API
 - [x] Profil utilisateur
 - [x] Déconnexion sécurisée
+- [x] Tests unitaires du module auth (100% coverage)
+- [x] Tests d'intégration du module auth
+- [x] Refactoring pour utiliser l'enum UserRole
 
 ### Gestion des Événements (Phase 3)
 
@@ -34,6 +37,7 @@
 - [x] Événements mis en avant
 - [x] Traductions des événements
 - [x] Amélioration de la gestion des dates (validation ISO 8601)
+- [x] Tests unitaires et d'intégration du module events
 
 ### Gestion des Intervenants (Phase 4)
 
@@ -47,6 +51,7 @@
 - [x] Édition des métadonnées
 - [x] Interface de gestion des médias
 - [x] Correction des bugs d'upload
+- [x] Amélioration de l'UI de gestion des médias
 
 ### UI/UX (Continu)
 
@@ -60,6 +65,13 @@
 ## Objectifs MVP - En Cours
 
 ### Priorité Haute (Sprint Actuel)
+
+#### Tests et Qualité
+
+- [ ] Tests E2E pour tous les modules
+  - Status : En cours
+  - PR : -
+  - Notes : Commencé avec auth et events
 
 #### Streaming
 
@@ -120,7 +132,10 @@
 
 ### Qualité Code
 
-- **Coverage** : 75%
+- **Coverage** : 
+  - Auth Module : 100%
+  - Events Module : 85%
+  - Global : 75%
 - **TypeScript** : Strict mode
 - **Lint** : 0 erreurs
 
@@ -129,7 +144,7 @@
 - **Niveau** : Moyen
 - **Points d'attention** :
   - Optimisation des requêtes MongoDB
-  - Tests E2E à implémenter
+  - Tests E2E à implémenter pour les modules restants
   - Documentation API à compléter
 
 ## Process de Mise à Jour
@@ -144,6 +159,7 @@ Types :
 - refactor : Refactoring
 - style : Modifications UI
 - chore : Maintenance
+- test : Ajout ou modification de tests
 
 ### Review
 
