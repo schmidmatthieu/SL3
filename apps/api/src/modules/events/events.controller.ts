@@ -30,8 +30,8 @@ export class EventsController {
   }
 
   @Get()
-  findAll(@Query('status') status?: string, @Query('date') date?: string) {
-    return this.eventsService.findAll({ status, date });
+  findAll(@Query() query: { status?: string; date?: string }) {
+    return this.eventsService.findAll(query);
   }
 
   @Get('my')

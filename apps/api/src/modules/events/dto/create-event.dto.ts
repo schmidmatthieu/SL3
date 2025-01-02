@@ -4,12 +4,16 @@ import {
   IsOptional,
   IsEnum,
   Matches,
+  MinLength,
+  IsBoolean,
+  IsUrl,
 } from 'class-validator';
 import { EventStatus } from '../schemas/event.schema';
 
 export class CreateEventDto {
   @IsString()
   @IsNotEmpty()
+  @MinLength(3, { message: 'Title must be at least 3 characters long' })
   title: string;
 
   @IsString()
@@ -30,16 +34,17 @@ export class CreateEventDto {
   })
   endDateTime: string;
 
-  @IsString()
+  @IsUrl({}, { message: 'imageUrl must be a valid URL' })
   @IsOptional()
   imageUrl?: string;
 
+  @IsBoolean()
   @IsOptional()
   featured?: boolean = false;
 
   @IsEnum(EventStatus, {
     message: 'Status must be one of: active, scheduled, ended, cancelled',
   })
-  @IsOptional()
-  status?: EventStatus = EventStatus.SCHEDULED;
+  @IsNotEmpty()
+  status: EventStatus = EventStatus.SCHEDULED;
 }

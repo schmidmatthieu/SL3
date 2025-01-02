@@ -4,12 +4,15 @@ import {
   IsEnum,
   IsBoolean,
   Matches,
+  MinLength,
+  IsUrl,
 } from 'class-validator';
 import { EventStatus } from '../schemas/event.schema';
 
 export class UpdateEventDto {
   @IsString()
   @IsOptional()
+  @MinLength(3, { message: 'Title must be at least 3 characters long' })
   title?: string;
 
   @IsString()
@@ -32,7 +35,7 @@ export class UpdateEventDto {
   })
   endDateTime?: string;
 
-  @IsString()
+  @IsUrl({}, { message: 'imageUrl must be a valid URL' })
   @IsOptional()
   imageUrl?: string;
 

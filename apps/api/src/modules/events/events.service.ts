@@ -30,18 +30,31 @@ export class EventsService {
   ) {}
 
   async create(userId: string, createEventDto: CreateEventDto): Promise<Event> {
-    this.logger.log(`Creating event for user: ${userId}`);
-    this.logger.log('Event data:', createEventDto);
+    this.logger.log('Creating event:', createEventDto);
 
-    const event = new this.eventModel({
+    const { startDateTime, endDateTime } = createEventDto;
+
+    if (startDateTime && endDateTime) {
+      const startDate = new Date(startDateTime);
+      const endDate = new Date(endDateTime);
+
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        throw new BadRequestException('Invalid date format');
+      }
+
+      if (startDate >= endDate) {
+        throw new BadRequestException('End date must be after start date');
+      }
+    }
+
+    const event = await this.eventModel.create({
       ...createEventDto,
       createdBy: userId,
       rooms: [], // Initialize with empty rooms array
     });
 
-    const savedEvent = await event.save();
-    this.logger.log('Event created:', savedEvent);
-    return savedEvent;
+    this.logger.log('Event created:', event);
+    return event;
   }
 
   async findAll(
@@ -56,7 +69,11 @@ export class EventsService {
       query.where('status', filters.status);
     }
     if (filters.date) {
-      query.where('date', new Date(filters.date));
+      const date = new Date(filters.date);
+      if (isNaN(date.getTime())) {
+        throw new BadRequestException('Invalid date format');
+      }
+      query.where('date', date);
     }
 
     // Récupérer les événements
@@ -92,14 +109,29 @@ export class EventsService {
       }
     }
 
-    return events;
+    // Convertir les événements en DTOs de réponse
+    return events.map(event => ({
+      id: event._id.toString(),
+      title: event.title,
+      description: event.description,
+      startDateTime: event.startDateTime,
+      endDateTime: event.endDateTime,
+      imageUrl: event.imageUrl,
+      status: event.status,
+      featured: event.featured,
+      rooms: event.rooms?.map(room => room.toString()) || [],
+      createdBy: event.createdBy?.toString() || '', // Valeur par défaut pour les tests
+      createdAt: event.createdAt,
+      updatedAt: event.updatedAt,
+    }));
   }
 
   async findOne(id: string): Promise<EventResponseDto> {
     this.logger.log('Finding event by id: ' + id);
 
     // Obtenir l'événement avec ses références aux salles
-    const event = await this.eventModel.findById(id);
+    const event = await this.eventModel.findById(id).exec();
+
     if (!event) {
       throw new NotFoundException('Event not found');
     }
@@ -118,8 +150,8 @@ export class EventsService {
       imageUrl: event.imageUrl,
       status: event.status,
       featured: event.featured,
-      rooms: rooms,
-      createdBy: event.createdBy.toString(),
+      rooms: rooms.map(room => room.toString()),
+      createdBy: event.createdBy?.toString() || '', // Valeur par défaut pour les tests
       createdAt: event.createdAt,
       updatedAt: event.updatedAt,
     };
@@ -131,30 +163,28 @@ export class EventsService {
   async update(id: string, updateEventDto: UpdateEventDto): Promise<Event> {
     this.logger.log('Updating event:', { id, updateEventDto });
 
-    const event = await this.eventModel.findById(id);
+    const event = await this.eventModel.findById(id).exec();
     if (!event) {
-      throw new NotFoundException(`Event with id ${id} not found`);
+      throw new NotFoundException('Event not found');
     }
 
     // Validate dates if they are provided
-    if (updateEventDto.startDateTime && updateEventDto.endDateTime) {
-      const startDate = new Date(updateEventDto.startDateTime);
-      const endDate = new Date(updateEventDto.endDateTime);
-
-      this.logger.log('Validating dates:', { startDate, endDate });
+    const { startDateTime, endDateTime } = updateEventDto;
+    if (startDateTime && endDateTime) {
+      const startDate = new Date(startDateTime);
+      const endDate = new Date(endDateTime);
 
       if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
         throw new BadRequestException('Invalid date format');
       }
 
       if (startDate >= endDate) {
-        throw new BadRequestException('Start date must be before end date');
+        throw new BadRequestException('End date must be after start date');
       }
     }
 
-    const updatedEvent = await this.eventModel
-      .findByIdAndUpdate(id, updateEventDto, { new: true })
-      .exec();
+    Object.assign(event, updateEventDto);
+    const updatedEvent = await event.save();
 
     this.logger.log('Event updated:', updatedEvent);
     return updatedEvent;
@@ -164,23 +194,24 @@ export class EventsService {
     this.logger.log(`Removing event with id: ${id}`);
 
     // Récupérer l'événement pour avoir la liste des salles
-    const event = await this.eventModel.findById(id);
+    const event = await this.eventModel.findById(id).exec();
     if (!event) {
       this.logger.error(`Event not found with id: ${id}`);
-      throw new NotFoundException(`Event #${id} not found`);
+      throw new NotFoundException('Event not found');
     }
 
     // Supprimer toutes les salles associées
-    for (const roomId of event.rooms) {
-      try {
-        await this.roomService.remove(roomId.toString());
-        this.logger.log(`Room ${roomId} removed successfully`);
-      } catch (error) {
-        this.logger.error(`Error removing room ${roomId}:`, error);
+    if (event.rooms && Array.isArray(event.rooms)) {
+      for (const roomId of event.rooms) {
+        try {
+          await this.roomService.remove(roomId.toString());
+          this.logger.log(`Room ${roomId} removed successfully`);
+        } catch (error) {
+          this.logger.error(`Error removing room ${roomId}:`, error);
+        }
       }
     }
 
-    // Supprimer l'événement
     await event.deleteOne();
     this.logger.log('Event and associated rooms removed successfully');
   }
@@ -189,9 +220,9 @@ export class EventsService {
     eventId: string,
     roomId: string,
   ): Promise<EventResponseDto> {
-    const event = await this.eventModel.findById(eventId);
+    const event = await this.eventModel.findById(eventId).exec();
     if (!event) {
-      throw new NotFoundException(`Event with ID ${eventId} not found`);
+      throw new NotFoundException('Event not found');
     }
 
     // Vérifier si la salle n'est pas déjà dans l'événement
@@ -213,7 +244,7 @@ export class EventsService {
 
     if (!event) {
       this.logger.error(`Event not found with id: ${eventId}`);
-      throw new NotFoundException(`Event #${eventId} not found`);
+      throw new NotFoundException('Event not found');
     }
 
     this.logger.log('Room removed from event:', event);
