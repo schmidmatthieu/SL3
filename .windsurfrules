@@ -13,3 +13,4 @@
 13. Use the i18next library
 14. Never write hard text in the component, always use the translation keys
 15. When a file is more than 300 lines suggest to split in in multiple clean and functional files
+16. Never write my URL in the code but use my .env variables

@@ -13,11 +13,13 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test": "pnpm jest --config jest.config.ts",
+    "test:watch": "pnpm jest --watch --config jest.config.ts",
+    "test:cov": "pnpm jest --coverage --config jest.config.ts",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand --config jest.config.ts",
+    "test:e2e": "pnpm jest --config ./test/jest-e2e.json",
+    "test:events": "pnpm jest src/modules/events/__tests__/events.service.spec.ts --config jest.config.ts",
+    "test:events:integration": "pnpm jest src/modules/events/__tests__/events.integration.spec.ts --config jest.config.ts",
     "migrate:up": "ts-node -r tsconfig-paths/register src/scripts/migrate.ts up",
     "migrate:down": "ts-node -r tsconfig-paths/register src/scripts/migrate.ts down"
   },
@@ -70,22 +72,5 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.2"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
   }
 }
