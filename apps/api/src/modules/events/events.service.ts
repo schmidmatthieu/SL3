@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, Logger, forwardRef, Inject } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger, forwardRef, Inject, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types, Query, Document } from 'mongoose';
 import { Event, EventDocument } from './schemas/event.schema';
@@ -107,6 +107,7 @@ export class EventsService {
       endDateTime: event.endDateTime,
       imageUrl: event.imageUrl,
       status: event.status,
+      featured: event.featured,
       rooms: rooms,
       createdBy: event.createdBy.toString(),
       createdAt: event.createdAt,
@@ -118,29 +119,60 @@ export class EventsService {
   }
 
   async update(id: string, updateEventDto: UpdateEventDto): Promise<Event> {
-    this.logger.log(`Updating event with id: ${id}`);
-    this.logger.log('Update data:', updateEventDto);
+    this.logger.log('Updating event:', { id, updateEventDto });
+    
+    const event = await this.eventModel.findById(id);
+    if (!event) {
+      throw new NotFoundException(`Event with id ${id} not found`);
+    }
 
-    const event = await this.eventModel
+    // Validate dates if they are provided
+    if (updateEventDto.startDateTime && updateEventDto.endDateTime) {
+      const startDate = new Date(updateEventDto.startDateTime);
+      const endDate = new Date(updateEventDto.endDateTime);
+      
+      this.logger.log('Validating dates:', { startDate, endDate });
+      
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        throw new BadRequestException('Invalid date format');
+      }
+      
+      if (startDate >= endDate) {
+        throw new BadRequestException('Start date must be before end date');
+      }
+    }
+
+    const updatedEvent = await this.eventModel
       .findByIdAndUpdate(id, updateEventDto, { new: true })
       .exec();
-    if (!event) {
-      this.logger.error(`Event not found with id: ${id}`);
-      throw new NotFoundException(`Event #${id} not found`);
-    }
-    this.logger.log('Updated event:', event);
-    return event;
+
+    this.logger.log('Event updated:', updatedEvent);
+    return updatedEvent;
   }
 
   async remove(id: string): Promise<void> {
     this.logger.log(`Removing event with id: ${id}`);
 
-    const event = await this.eventModel.findByIdAndDelete(id).exec();
+    // Récupérer l'événement pour avoir la liste des salles
+    const event = await this.eventModel.findById(id);
     if (!event) {
       this.logger.error(`Event not found with id: ${id}`);
       throw new NotFoundException(`Event #${id} not found`);
     }
-    this.logger.log('Event removed successfully');
+
+    // Supprimer toutes les salles associées
+    for (const roomId of event.rooms) {
+      try {
+        await this.roomService.remove(roomId.toString());
+        this.logger.log(`Room ${roomId} removed successfully`);
+      } catch (error) {
+        this.logger.error(`Error removing room ${roomId}:`, error);
+      }
+    }
+
+    // Supprimer l'événement
+    await event.deleteOne();
+    this.logger.log('Event and associated rooms removed successfully');
   }
 
   async addRoomToEvent(eventId: string, roomId: string): Promise<EventResponseDto> {
