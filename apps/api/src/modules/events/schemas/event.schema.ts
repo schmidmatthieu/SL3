@@ -43,14 +43,17 @@ export class Event extends Document {
   @Prop({ type: Boolean, default: false })
   featured: boolean;
 
-  @Prop({ 
-    type: String, 
+  @Prop({
+    type: String,
     enum: Object.values(EventStatus),
-    default: EventStatus.SCHEDULED
+    default: EventStatus.SCHEDULED,
   })
   status: EventStatus;
 
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Room' }], default: [] })
+  @Prop({
+    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Room' }],
+    default: [],
+  })
   rooms: string[];
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })

@@ -1,4 +1,10 @@
-import { IsString, IsOptional, IsEnum, IsBoolean, Matches } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsEnum,
+  IsBoolean,
+  Matches,
+} from 'class-validator';
 import { EventStatus } from '../schemas/event.schema';
 
 export class UpdateEventDto {
@@ -13,14 +19,16 @@ export class UpdateEventDto {
   @IsString()
   @IsOptional()
   @Matches(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/, {
-    message: 'startDateTime must be a valid ISO 8601 date string (YYYY-MM-DDTHH:mm:ss.sssZ)'
+    message:
+      'startDateTime must be a valid ISO 8601 date string (YYYY-MM-DDTHH:mm:ss.sssZ)',
   })
   startDateTime?: string;
 
   @IsString()
   @IsOptional()
   @Matches(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$/, {
-    message: 'endDateTime must be a valid ISO 8601 date string (YYYY-MM-DDTHH:mm:ss.sssZ)'
+    message:
+      'endDateTime must be a valid ISO 8601 date string (YYYY-MM-DDTHH:mm:ss.sssZ)',
   })
   endDateTime?: string;
 
@@ -29,7 +37,7 @@ export class UpdateEventDto {
   imageUrl?: string;
 
   @IsEnum(EventStatus, {
-    message: 'Status must be one of: active, scheduled, ended, cancelled'
+    message: 'Status must be one of: active, scheduled, ended, cancelled',
   })
   @IsOptional()
   status?: EventStatus;

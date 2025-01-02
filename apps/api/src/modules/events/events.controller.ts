@@ -21,7 +21,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 @UseGuards(JwtAuthGuard)
 export class EventsController {
   private readonly logger = new Logger(EventsController.name);
-  
+
   constructor(private readonly eventsService: EventsService) {}
 
   @Post()
@@ -45,10 +45,7 @@ export class EventsController {
   }
 
   @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateEventDto: UpdateEventDto,
-  ) {
+  update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto) {
     return this.eventsService.update(id, updateEventDto);
   }
 
