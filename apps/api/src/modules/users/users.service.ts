@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { User, UserDocument } from './schemas/user.schema';
+import { User, UserDocument, UserRole } from './schemas/user.schema';
 import { MediaService } from '../media/media.service';
 import { MediaDocument } from '../media/schemas/media.schema';
 
@@ -25,13 +25,13 @@ export class UsersService {
     imageUrl?: string;
     preferredLanguage?: string;
     theme?: string;
-    role?: string;
+    role?: UserRole;
   }): Promise<UserDocument> {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
-    // Définir le rôle par défaut comme 'user', sauf pour le premier utilisateur qui sera admin
+    // Définir le rôle par défaut comme participant, sauf pour le premier utilisateur qui sera admin
     const userCount = await this.userModel.countDocuments();
-    const role = userCount === 0 ? 'admin' : 'user';
+    const role = userCount === 0 ? UserRole.ADMIN : UserRole.PARTICIPANT;
 
     const createdUser = new this.userModel({
       ...createUserDto,

@@ -2,6 +2,7 @@ import { Injectable, Logger, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { RolesService } from '../roles/roles.service';
+import { UserRole } from '../users/schemas/user.schema';
 
 @Injectable()
 export class AuthService {
@@ -59,7 +60,7 @@ export class AuthService {
 
     // Vérifier si c'est le premier utilisateur
     const userCount = await this.usersService.count();
-    const role = userCount === 0 ? 'admin' : 'participant';
+    const role = userCount === 0 ? UserRole.ADMIN : UserRole.PARTICIPANT;
 
     const user = await this.usersService.create({
       ...signupDto,
