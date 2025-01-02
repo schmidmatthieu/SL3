@@ -1,14 +1,11 @@
 'use client';
 
-import { redirect } from 'next/navigation';
-import { useRBAC } from '@/hooks/use-rbac-new';
 import { useEffect } from 'react';
+import { redirect } from 'next/navigation';
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+import { useRBAC } from '@/hooks/use-rbac-new';
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { role, loading } = useRBAC();
 
   useEffect(() => {

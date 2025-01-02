@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+
 import { db } from '@/lib/db';
 
 const speakerSchema = z.object({
@@ -10,10 +11,7 @@ const speakerSchema = z.object({
   eventId: z.string(),
 });
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { eventId: string } }
-) {
+export async function GET(req: NextRequest, { params }: { params: { eventId: string } }) {
   try {
     const speakers = await db.speaker.findMany({
       where: {
@@ -24,17 +22,11 @@ export async function GET(
     return NextResponse.json(speakers);
   } catch (error) {
     console.error('Failed to fetch speakers:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch speakers' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch speakers' }, { status: 500 });
   }
 }
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { eventId: string } }
-) {
+export async function POST(req: NextRequest, { params }: { params: { eventId: string } }) {
   try {
     const body = await req.json();
     const validatedData = speakerSchema.parse(body);
@@ -56,9 +48,6 @@ export async function POST(
     }
 
     console.error('Failed to create speaker:', error);
-    return NextResponse.json(
-      { error: 'Failed to create speaker' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create speaker' }, { status: 500 });
   }
 }

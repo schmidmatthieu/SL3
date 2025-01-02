@@ -39,7 +39,7 @@
     --ring: 240 5.9% 10%;
     --radius: 0.5rem;
   }
- 
+
   .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
@@ -105,15 +105,13 @@
     position: absolute;
     inset: 0;
     background-size: 50px 50px;
-    background-image: 
-      linear-gradient(to right, rgb(var(--primary) / 0.2) 1px, transparent 1px),
+    background-image: linear-gradient(to right, rgb(var(--primary) / 0.2) 1px, transparent 1px),
       linear-gradient(to bottom, rgb(var(--primary) / 0.2) 1px, transparent 1px);
     opacity: 0.7;
   }
 
   .dark .bg-grid {
-    background-image: 
-      linear-gradient(to right, rgb(var(--primary) / 0.3) 1px, transparent 1px),
+    background-image: linear-gradient(to right, rgb(var(--primary) / 0.3) 1px, transparent 1px),
       linear-gradient(to bottom, rgb(var(--primary) / 0.3) 1px, transparent 1px);
     opacity: 0.8;
   }
@@ -143,13 +141,8 @@
   .bg-glow {
     position: absolute;
     inset: 0;
-    background: 
-      radial-gradient(circle at 50% 0%, 
-        rgb(var(--primary) / 0.2),
-        transparent 40%),
-      radial-gradient(circle at 0% 100%, 
-        rgb(var(--primary) / 0.2),
-        transparent 40%);
+    background: radial-gradient(circle at 50% 0%, rgb(var(--primary) / 0.2), transparent 40%),
+      radial-gradient(circle at 0% 100%, rgb(var(--primary) / 0.2), transparent 40%);
     transform-origin: center;
     animation: glow 7s ease-in-out infinite alternate;
   }
@@ -169,15 +162,11 @@
 
   .bg-particles::before,
   .bg-particles::after {
-    content: "";
+    content: '';
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: radial-gradient(
-      circle at center,
-      rgb(var(--primary)) 0%,
-      transparent 70%
-    );
+    background: radial-gradient(circle at center, rgb(var(--primary)) 0%, transparent 70%);
     opacity: 0.4;
     border-radius: 50%;
     filter: blur(40px);
@@ -217,7 +206,7 @@
   }
 
   .bg-waves::before {
-    content: "";
+    content: '';
     position: absolute;
     inset: 0;
     background: repeating-linear-gradient(
@@ -232,8 +221,7 @@
   .bg-energy {
     position: absolute;
     inset: 0;
-    background: 
-      radial-gradient(circle at 20% 20%, rgb(var(--primary)) 0%, transparent 50%),
+    background: radial-gradient(circle at 20% 20%, rgb(var(--primary)) 0%, transparent 50%),
       radial-gradient(circle at 80% 80%, rgb(var(--primary)) 0%, transparent 50%);
     opacity: 0.15;
     filter: blur(30px);
@@ -297,7 +285,8 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.8;
   }
   50% {
@@ -368,7 +357,8 @@
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) scale(1);
   }
   50% {

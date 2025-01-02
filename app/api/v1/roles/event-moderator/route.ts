@@ -1,6 +1,6 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 
 export async function POST(request: Request) {
   try {
@@ -29,9 +29,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to assign event moderator' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to assign event moderator' }, { status: 500 });
   }
 }

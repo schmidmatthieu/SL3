@@ -1,14 +1,16 @@
-"use client";
+'use client';
 
-import { EventSettings } from "@/components/management/settings/event-settings";
-import { BackButton } from "@/components/ui/back-button";
-import { Badge } from "@/components/ui/badge"; // Added Badge import
-import { useEvents } from "@/hooks/useEvents";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Skeleton } from "@/components/ui/skeleton";
-import cn from "classnames"; // Added classnames import
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import cn from 'classnames'; // Added classnames import
+
+import { useEvents } from '@/hooks/useEvents';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { BackButton } from '@/components/ui/back-button';
+import { Badge } from '@/components/ui/badge'; // Added Badge import
+
+import { Skeleton } from '@/components/ui/skeleton';
+import { EventSettings } from '@/components/management/settings/event-settings';
 
 export default function SettingsPage() {
   const params = useParams();
@@ -78,11 +80,11 @@ export default function SettingsPage() {
               </p>
             </div>
           </div>
-          <Badge 
+          <Badge
             variant={currentEvent.status === 'cancelled' ? 'destructive' : 'default'}
             className={cn(
-              "text-sm font-medium",
-              currentEvent.status === 'active' ? "bg-third text-black" : ""
+              'text-sm font-medium',
+              currentEvent.status === 'active' ? 'bg-third text-black' : ''
             )}
           >
             {currentEvent.status}

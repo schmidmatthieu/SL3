@@ -1,8 +1,10 @@
 'use server';
 
 import { Suspense } from 'react';
-import { RoomContent } from './room-content';
+
 import { Skeleton } from '@/components/ui/skeleton';
+
+import { RoomContent } from './room-content';
 
 interface RoomPageProps {
   params: {

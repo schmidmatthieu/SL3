@@ -1,4 +1,5 @@
 import Link from 'next/link';
+
 import { Button } from '@/components/ui/button';
 
 export default function NotFound() {
@@ -7,9 +8,7 @@ export default function NotFound() {
       <h2 className="text-2xl font-bold">Événement non trouvé</h2>
       <p>L&apos;événement que vous recherchez n&apos;existe pas ou a été supprimé.</p>
       <Button asChild>
-        <Link href="/events">
-          Retour aux événements
-        </Link>
+        <Link href="/events">Retour aux événements</Link>
       </Button>
     </div>
   );

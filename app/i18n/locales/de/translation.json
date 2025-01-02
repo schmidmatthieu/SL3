@@ -296,7 +296,7 @@
       "delete": "Löschen",
       "edit": {
         "title": "Medien bearbeiten",
-         "title": {
+        "title": {
           "label": "Titel"
         },
         "description": {
@@ -475,7 +475,7 @@
         "capacity": "Kapazität",
         "deleteRoom": "Raum löschen"
       }
-    },   
+    },
     "common": {
       "success": "Erfolg",
       "error": "Fehler",
@@ -531,31 +531,19 @@
         "name": "Basic",
         "price": "CHF 99",
         "description": "Perfekt für kleine Veranstaltungen",
-        "features": [
-          "Bis zu 3 Veranstaltungen/Monat",
-          "Grundlegende Analysen",
-          "E-Mail-Support"
-        ]
+        "features": ["Bis zu 3 Veranstaltungen/Monat", "Grundlegende Analysen", "E-Mail-Support"]
       },
       "professional": {
         "name": "Professionell",
         "price": "CHF 299",
         "description": "Für wachsende Organisationen",
-        "features": [
-          "Unbegrenzte Veranstaltungen",
-          "Erweiterte Analysen",
-          "Prioritärer Support"
-        ]
+        "features": ["Unbegrenzte Veranstaltungen", "Erweiterte Analysen", "Prioritärer Support"]
       },
       "enterprise": {
         "name": "Unternehmen",
         "price": "Benutzerdefiniert",
         "description": "Für große Organisationen",
-        "features": [
-          "Benutzerdefinierte Lösungen",
-          "Dedizierter Support",
-          "SLA-Garantie"
-        ]
+        "features": ["Benutzerdefinierte Lösungen", "Dedizierter Support", "SLA-Garantie"]
       }
     },
     "buttons": {
@@ -972,397 +960,397 @@
     }
   },
   "rooms": {
+    "title": "Raumverwaltung",
+    "description": "Veranstaltungsräume verwalten und konfigurieren",
+    "actions": {
+      "addRoom": "Raum hinzufügen",
+      "editRoom": "Raum bearbeiten",
+      "deleteRoom": "Raum löschen"
+    },
+    "form": {
+      "name": "Raumname",
+      "capacity": "Kapazität",
+      "type": "Raumtyp",
+      "description": "Beschreibung",
+      "startTime": "Startzeit",
+      "endTime": "Endzeit",
+      "moderators": "Moderatoren"
+    },
+    "types": {
+      "presentation": "Präsentation",
+      "workshop": "Workshop",
+      "panel": "Podiumsdiskussion",
+      "networking": "Networking"
+    },
+    "status": {
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "full": "Voll",
+      "upcoming": "Bevorstehend"
+    },
+    "messages": {
+      "createSuccess": "Raum erfolgreich erstellt",
+      "updateSuccess": "Raum erfolgreich aktualisiert",
+      "deleteSuccess": "Raum erfolgreich gelöscht",
+      "error": "Ein Fehler ist aufgetreten",
+      "confirmDelete": "Sind Sie sicher, dass Sie diesen Raum löschen möchten?"
+    },
+    "manage": {
       "title": "Raumverwaltung",
-      "description": "Veranstaltungsräume verwalten und konfigurieren",
-      "actions": {
-        "addRoom": "Raum hinzufügen",
-        "editRoom": "Raum bearbeiten",
-        "deleteRoom": "Raum löschen"
-      },
-      "form": {
-        "name": "Raumname",
-        "capacity": "Kapazität",
-        "type": "Raumtyp",
-        "description": "Beschreibung",
-        "startTime": "Startzeit",
-        "endTime": "Endzeit",
-        "moderators": "Moderatoren"
-      },
-      "types": {
-        "presentation": "Präsentation",
-        "workshop": "Workshop",
-        "panel": "Podiumsdiskussion",
-        "networking": "Networking"
-      },
-      "status": {
-        "active": "Aktiv",
-        "inactive": "Inaktiv",
-        "full": "Voll",
-        "upcoming": "Bevorstehend"
-      },
-      "messages": {
-        "createSuccess": "Raum erfolgreich erstellt",
-        "updateSuccess": "Raum erfolgreich aktualisiert",
-        "deleteSuccess": "Raum erfolgreich gelöscht",
-        "error": "Ein Fehler ist aufgetreten",
-        "confirmDelete": "Sind Sie sicher, dass Sie diesen Raum löschen möchten?"
-      },
-      "manage": {
-        "title": "Raumverwaltung",
-        "description": "Verwalten und konfigurieren Sie Räume für Ihre Veranstaltung",
-        "roomNamePlaceholder": "Raumnamen eingeben",
-        "capacityPlaceholder": "Raumkapazität eingeben",
-        "addRoom": "Raum hinzufügen"
-      }
+      "description": "Verwalten und konfigurieren Sie Räume für Ihre Veranstaltung",
+      "roomNamePlaceholder": "Raumnamen eingeben",
+      "capacityPlaceholder": "Raumkapazität eingeben",
+      "addRoom": "Raum hinzufügen"
+    }
+  },
+  "moderators": {
+    "title": "Moderatorenverwaltung",
+    "description": "Veranstaltungsmoderatoren und ihre Berechtigungen verwalten",
+    "actions": {
+      "addModerator": "Moderator hinzufügen",
+      "removeModerator": "Moderator entfernen",
+      "updatePermissions": "Berechtigungen aktualisieren"
     },
-    "moderators": {
-      "title": "Moderatorenverwaltung",
-      "description": "Veranstaltungsmoderatoren und ihre Berechtigungen verwalten",
-      "actions": {
-        "addModerator": "Moderator hinzufügen",
-        "removeModerator": "Moderator entfernen",
-        "updatePermissions": "Berechtigungen aktualisieren"
-      },
-      "form": {
-        "email": "E-Mail-Adresse",
-        "name": "Vollständiger Name",
-        "role": "Rolle",
-        "rooms": "Zugewiesene Räume"
-      },
-      "roles": {
-        "admin": "Administrator",
-        "moderator": "Moderator",
-        "assistant": "Assistent"
-      },
-      "permissions": {
-        "manageUsers": "Benutzer verwalten",
-        "manageContent": "Inhalte verwalten",
-        "viewAnalytics": "Analysen anzeigen"
-      },
-      "messages": {
-        "addSuccess": "Moderator erfolgreich hinzugefügt",
-        "updateSuccess": "Berechtigungen erfolgreich aktualisiert",
-        "removeSuccess": "Moderator erfolgreich entfernt",
-        "error": "Ein Fehler ist aufgetreten"
-      }
+    "form": {
+      "email": "E-Mail-Adresse",
+      "name": "Vollständiger Name",
+      "role": "Rolle",
+      "rooms": "Zugewiesene Räume"
     },
-    "common": {
-      "success": "Erfolg",
-      "error": "Fehler",
-      "save": "Speichern",
-      "cancel": "Abbrechen",
-      "delete": "Löschen",
-      "edit": "Bearbeiten",
-      "update": "Aktualisieren",
-      "add": "Hinzufügen",
-      "remove": "Entfernen",
-      "search": "Suchen",
-      "filter": "Filtern",
-      "loading": "Laden...",
-      "noResults": "Keine Ergebnisse gefunden",
-      "retry": "Wiederholen",
-      "confirm": "Bestätigen",
-      "back": "Zurück",
-      "next": "Weiter",
-      "finish": "Fertigstellen",
-      "submit": "Absenden",
-      "required": "Erforderlich",
-      "saveChanges":"Änderungen speichern"
+    "roles": {
+      "admin": "Administrator",
+      "moderator": "Moderator",
+      "assistant": "Assistent"
     },
-    "eventManagement": {
-      "title": "Veranstaltungsmanagement",
-      "description": "Verwalten und organisieren Sie Ihre Veranstaltungen",
-      "tabs": {
-        "overview": "Übersicht",
-        "settings": "Einstellungen",
-        "rooms": "Räume",
-        "speakers": "Referenten",
-        "analytics": "Analysen",
-        "security": "Sicherheit"
-      },
-      "status": {
-        "draft": "Entwurf",
-        "published": "Veröffentlicht",
-        "cancelled": "Abgesagt",
-        "completed": "Abgeschlossen",
-        "upcoming": "Bevorstehend",
-        "inProgress": "In Bearbeitung"
-      },
-      "actions": {
-        "createEvent": "Veranstaltung erstellen",
-        "editEvent": "Veranstaltung bearbeiten",
-        "deleteEvent": "Veranstaltung löschen",
-        "publishEvent": "Veranstaltung veröffentlichen",
-        "unpublishEvent": "Veröffentlichung der Veranstaltung aufheben",
-        "cancelEvent": "Veranstaltung absagen"
-      },
-      "filters": {
-        "status": "Status",
-        "date": "Datum",
-        "type": "Veranstaltungstyp",
-        "location": "Ort"
-      },
-      "messages": {
-        "createSuccess": "Veranstaltung erfolgreich erstellt",
-        "updateSuccess": "Veranstaltung erfolgreich aktualisiert",
-        "deleteSuccess": "Veranstaltung erfolgreich gelöscht",
-        "publishSuccess": "Veranstaltung erfolgreich veröffentlicht",
-        "unpublishSuccess": "Veröffentlichung der Veranstaltung erfolgreich aufgehoben",
-        "cancelSuccess": "Veranstaltung erfolgreich abgesagt",
-        "error": "Ein Fehler ist aufgetreten",
-        "confirmDelete": "Sind Sie sicher, dass Sie diese Veranstaltung löschen möchten?"
-      }
+    "permissions": {
+      "manageUsers": "Benutzer verwalten",
+      "manageContent": "Inhalte verwalten",
+      "viewAnalytics": "Analysen anzeigen"
     },
-    "manageRooms": {
-      "title": "Raumverwaltung",
-      "description": "Verwalten und konfigurieren Sie Veranstaltungsräume",
-      "filters": {
-        "capacity": "Kapazität",
-        "type": "Raumtyp",
-        "availability": "Verfügbarkeit"
-      },
-      "form": {
-        "basicInfo": {
-          "title": "Grundlegende Informationen",
-          "name": "Raumname",
-          "description": "Raumbeschreibung",
-          "capacity": "Raumkapazität",
-          "type": "Raumtyp"
-        },
-        "schedule": {
-          "title": "Zeitplan",
-          "startTime": "Startzeit",
-          "endTime": "Endzeit",
-          "timezone": "Zeitzone"
-        },
-        "settings": {
-          "title": "Raumeinstellungen",
-          "isPublic": "Öffentlicher Raum",
-          "isModerated": "Moderierter Raum",
-          "allowQuestions": "Fragen erlauben",
-          "allowChat": "Chat erlauben"
-        }
-      },
-      "validation": {
-        "nameRequired": "Raumname ist erforderlich",
-        "capacityMin": "Kapazität muss mindestens 1 betragen",
-        "endTimeAfterStart": "Endzeit muss nach Startzeit liegen"
-      },
-      "messages": {
-        "createSuccess": "Raum erfolgreich erstellt",
-        "updateSuccess": "Raum erfolgreich aktualisiert",
-        "deleteSuccess": "Raum erfolgreich gelöscht",
-        "error": "Bei der Bearbeitung Ihrer Anfrage ist ein Fehler aufgetreten",
-        "confirmDelete": "Sind Sie sicher, dass Sie diesen Raum löschen möchten?"
-      }
+    "messages": {
+      "addSuccess": "Moderator erfolgreich hinzugefügt",
+      "updateSuccess": "Berechtigungen erfolgreich aktualisiert",
+      "removeSuccess": "Moderator erfolgreich entfernt",
+      "error": "Ein Fehler ist aufgetreten"
+    }
+  },
+  "common": {
+    "success": "Erfolg",
+    "error": "Fehler",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "update": "Aktualisieren",
+    "add": "Hinzufügen",
+    "remove": "Entfernen",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "loading": "Laden...",
+    "noResults": "Keine Ergebnisse gefunden",
+    "retry": "Wiederholen",
+    "confirm": "Bestätigen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "finish": "Fertigstellen",
+    "submit": "Absenden",
+    "required": "Erforderlich",
+    "saveChanges": "Änderungen speichern"
+  },
+  "eventManagement": {
+    "title": "Veranstaltungsmanagement",
+    "description": "Verwalten und organisieren Sie Ihre Veranstaltungen",
+    "tabs": {
+      "overview": "Übersicht",
+      "settings": "Einstellungen",
+      "rooms": "Räume",
+      "speakers": "Referenten",
+      "analytics": "Analysen",
+      "security": "Sicherheit"
     },
-    "viewAnalytics": {
-      "title": "Analyse-Dashboard",
-      "description": "Detaillierte Analysen für Ihre Veranstaltung anzeigen",
-      "metrics": {
-        "attendance": {
-          "title": "Teilnahme",
-          "total": "Gesamtzahl der Teilnehmer",
-          "current": "Aktuelle Teilnehmer",
-          "peak": "Spitzenteilnahme"
-        },
-        "engagement": {
-          "title": "Engagement",
-          "averageTime": "Durchschnittliche Verweildauer",
-          "interactionRate": "Interaktionsrate",
-          "participationScore": "Teilnahme-Score"
-        },
-        "rooms": {
-          "title": "Raumstatistiken",
-          "activeRooms": "Aktive Räume",
-          "totalCapacity": "Gesamtkapazität",
-          "utilization": "Raumauslastung"
-        }
-      },
-      "charts": {
-        "attendanceOverTime": {
-          "title": "Teilnahme im Zeitverlauf",
-          "xAxis": "Zeit",
-          "yAxis": "Anzahl der Teilnehmer"
-        },
-        "roomOccupancy": {
-          "title": "Raumauslastung",
-          "xAxis": "Raum",
-          "yAxis": "Auslastungsrate"
-        },
-        "engagementMetrics": {
-          "title": "Engagement-Metriken",
-          "xAxis": "Zeit",
-          "yAxis": "Engagement-Level"
-        }
-      },
-      "filters": {
-        "timeRange": "Zeitraum",
-        "rooms": "Räume",
-        "metrics": "Metriken"
-      },
-      "export": {
-        "title": "Daten exportieren",
-        "options": {
-          "pdf": "Als PDF exportieren",
-          "csv": "Als CSV exportieren",
-          "excel": "Als Excel exportieren"
-        }
-      },
-      "ticketSales": {
-        "title": "Ticketverkäufe im Zeitverlauf",
-        "description": "Tägliche Ticketverkäufe der letzten Woche"
-      }
+    "status": {
+      "draft": "Entwurf",
+      "published": "Veröffentlicht",
+      "cancelled": "Abgesagt",
+      "completed": "Abgeschlossen",
+      "upcoming": "Bevorstehend",
+      "inProgress": "In Bearbeitung"
     },
-    "eventSettings": {
-      "title": "Veranstaltungseinstellungen",
-      "description": "Konfigurieren Sie Ihre Veranstaltungseinstellungen",
-      "sections": {
-        "basicInfo": {
-          "title": "Grundlegende Informationen",
-          "eventName": "Veranstaltungsname",
-          "description": "Veranstaltungsbeschreibung",
-          "date": "Veranstaltungsdatum",
-          "time": "Veranstaltungszeit",
-          "timezone": "Zeitzone",
-          "location": "Ort",
-          "type": "Veranstaltungstyp",
-          "imageUrl": "Veranstaltungsbild-URL"
-        },
-        "registration": {
-          "title": "Registrierungseinstellungen",
-          "allowRegistration": "Registrierung erlauben",
-          "maxParticipants": "Maximale Teilnehmerzahl",
-          "registrationDeadline": "Anmeldeschluss",
-          "waitlist": "Warteliste aktivieren"
-        },
-        "customization": {
-          "title": "Veranstaltungsanpassung",
-          "theme": "Veranstaltungsthema",
-          "branding": "Branding-Optionen",
-          "language": "Standardsprache"
-        },
-        "notifications": {
-          "title": "Benachrichtigungseinstellungen",
-          "emailNotifications": "E-Mail-Benachrichtigungen",
-          "reminderSettings": "Erinnerungseinstellungen",
-          "customMessages": "Benutzerdefinierte Nachrichten"
-        }
-      },
-      "validation": {
-        "nameRequired": "Veranstaltungsname ist erforderlich",
-        "dateRequired": "Veranstaltungsdatum ist erforderlich",
-        "validDate": "Bitte geben Sie ein gültiges Datum ein",
-        "maxParticipants": "Maximale Teilnehmerzahl muss eine positive Zahl sein"
-      },
-      "messages": {
-        "saveSuccess": "Einstellungen erfolgreich gespeichert",
-        "saveError": "Fehler beim Speichern der Einstellungen",
-        "confirmDiscard": "Sind Sie sicher, dass Sie die Änderungen verwerfen möchten?"
-      },
-      "buttons": {
-        "save": "Einstellungen speichern",
-        "discard": "Änderungen verwerfen",
-        "preview": "Veranstaltungsvorschau"
-      },
+    "actions": {
+      "createEvent": "Veranstaltung erstellen",
+      "editEvent": "Veranstaltung bearbeiten",
+      "deleteEvent": "Veranstaltung löschen",
+      "publishEvent": "Veranstaltung veröffentlichen",
+      "unpublishEvent": "Veröffentlichung der Veranstaltung aufheben",
+      "cancelEvent": "Veranstaltung absagen"
+    },
+    "filters": {
+      "status": "Status",
+      "date": "Datum",
+      "type": "Veranstaltungstyp",
+      "location": "Ort"
+    },
+    "messages": {
+      "createSuccess": "Veranstaltung erfolgreich erstellt",
+      "updateSuccess": "Veranstaltung erfolgreich aktualisiert",
+      "deleteSuccess": "Veranstaltung erfolgreich gelöscht",
+      "publishSuccess": "Veranstaltung erfolgreich veröffentlicht",
+      "unpublishSuccess": "Veröffentlichung der Veranstaltung erfolgreich aufgehoben",
+      "cancelSuccess": "Veranstaltung erfolgreich abgesagt",
+      "error": "Ein Fehler ist aufgetreten",
+      "confirmDelete": "Sind Sie sicher, dass Sie diese Veranstaltung löschen möchten?"
+    }
+  },
+  "manageRooms": {
+    "title": "Raumverwaltung",
+    "description": "Verwalten und konfigurieren Sie Veranstaltungsräume",
+    "filters": {
+      "capacity": "Kapazität",
+      "type": "Raumtyp",
+      "availability": "Verfügbarkeit"
+    },
+    "form": {
       "basicInfo": {
         "title": "Grundlegende Informationen",
-        "description": "Aktualisieren Sie die grundlegenden Details und Einstellungen Ihrer Veranstaltung",
-        "eventTitle": "Veranstaltungstitel",
+        "name": "Raumname",
+        "description": "Raumbeschreibung",
+        "capacity": "Raumkapazität",
+        "type": "Raumtyp"
+      },
+      "schedule": {
+        "title": "Zeitplan",
+        "startTime": "Startzeit",
+        "endTime": "Endzeit",
+        "timezone": "Zeitzone"
+      },
+      "settings": {
+        "title": "Raumeinstellungen",
+        "isPublic": "Öffentlicher Raum",
+        "isModerated": "Moderierter Raum",
+        "allowQuestions": "Fragen erlauben",
+        "allowChat": "Chat erlauben"
+      }
+    },
+    "validation": {
+      "nameRequired": "Raumname ist erforderlich",
+      "capacityMin": "Kapazität muss mindestens 1 betragen",
+      "endTimeAfterStart": "Endzeit muss nach Startzeit liegen"
+    },
+    "messages": {
+      "createSuccess": "Raum erfolgreich erstellt",
+      "updateSuccess": "Raum erfolgreich aktualisiert",
+      "deleteSuccess": "Raum erfolgreich gelöscht",
+      "error": "Bei der Bearbeitung Ihrer Anfrage ist ein Fehler aufgetreten",
+      "confirmDelete": "Sind Sie sicher, dass Sie diesen Raum löschen möchten?"
+    }
+  },
+  "viewAnalytics": {
+    "title": "Analyse-Dashboard",
+    "description": "Detaillierte Analysen für Ihre Veranstaltung anzeigen",
+    "metrics": {
+      "attendance": {
+        "title": "Teilnahme",
+        "total": "Gesamtzahl der Teilnehmer",
+        "current": "Aktuelle Teilnehmer",
+        "peak": "Spitzenteilnahme"
+      },
+      "engagement": {
+        "title": "Engagement",
+        "averageTime": "Durchschnittliche Verweildauer",
+        "interactionRate": "Interaktionsrate",
+        "participationScore": "Teilnahme-Score"
+      },
+      "rooms": {
+        "title": "Raumstatistiken",
+        "activeRooms": "Aktive Räume",
+        "totalCapacity": "Gesamtkapazität",
+        "utilization": "Raumauslastung"
+      }
+    },
+    "charts": {
+      "attendanceOverTime": {
+        "title": "Teilnahme im Zeitverlauf",
+        "xAxis": "Zeit",
+        "yAxis": "Anzahl der Teilnehmer"
+      },
+      "roomOccupancy": {
+        "title": "Raumauslastung",
+        "xAxis": "Raum",
+        "yAxis": "Auslastungsrate"
+      },
+      "engagementMetrics": {
+        "title": "Engagement-Metriken",
+        "xAxis": "Zeit",
+        "yAxis": "Engagement-Level"
+      }
+    },
+    "filters": {
+      "timeRange": "Zeitraum",
+      "rooms": "Räume",
+      "metrics": "Metriken"
+    },
+    "export": {
+      "title": "Daten exportieren",
+      "options": {
+        "pdf": "Als PDF exportieren",
+        "csv": "Als CSV exportieren",
+        "excel": "Als Excel exportieren"
+      }
+    },
+    "ticketSales": {
+      "title": "Ticketverkäufe im Zeitverlauf",
+      "description": "Tägliche Ticketverkäufe der letzten Woche"
+    }
+  },
+  "eventSettings": {
+    "title": "Veranstaltungseinstellungen",
+    "description": "Konfigurieren Sie Ihre Veranstaltungseinstellungen",
+    "sections": {
+      "basicInfo": {
+        "title": "Grundlegende Informationen",
+        "eventName": "Veranstaltungsname",
         "description": "Veranstaltungsbeschreibung",
-        "startDateTime": "Startdatum und -zeit",
-        "endDateTime": "Enddatum und -zeit",
+        "date": "Veranstaltungsdatum",
+        "time": "Veranstaltungszeit",
+        "timezone": "Zeitzone",
+        "location": "Ort",
+        "type": "Veranstaltungstyp",
         "imageUrl": "Veranstaltungsbild-URL"
       },
-      "actions": {
-        "deleteEvent": "Veranstaltung löschen",
-        "cancelEvent": "Veranstaltung absagen"
+      "registration": {
+        "title": "Registrierungseinstellungen",
+        "allowRegistration": "Registrierung erlauben",
+        "maxParticipants": "Maximale Teilnehmerzahl",
+        "registrationDeadline": "Anmeldeschluss",
+        "waitlist": "Warteliste aktivieren"
       },
-      "deleteDialog": {
-        "title": "Sind Sie sicher, dass Sie löschen wollen?",
-        "description": "Diese Aktion kann nicht rückgängig gemacht werden. Dadurch werden Ihre Veranstaltung und alle zugehörigen Daten dauerhaft gelöscht."
+      "customization": {
+        "title": "Veranstaltungsanpassung",
+        "theme": "Veranstaltungsthema",
+        "branding": "Branding-Optionen",
+        "language": "Standardsprache"
       },
-      "cancelDialog": {
-        "title": "Sind Sie sicher, dass Sie abbrechen wollen?",
-        "description": "Dadurch wird die Veranstaltung für alle Teilnehmer abgesagt. Sie können sie wieder bei Bedarf wieder aktivieren.",
-        "keepActive": "Nein, aktiv lassen",
-        "confirmCancel": "Ja, Veranstaltung absagen"
+      "notifications": {
+        "title": "Benachrichtigungseinstellungen",
+        "emailNotifications": "E-Mail-Benachrichtigungen",
+        "reminderSettings": "Erinnerungseinstellungen",
+        "customMessages": "Benutzerdefinierte Nachrichten"
       }
     },
-    "eventDashboard": {
-      "actions": {
-        "viewEvent": "Veranstaltung anzeigen"
-      },
-      "stats": {
-        "status": "Status",
-        "rooms": "Räume",
-        "duration": "Dauer",
-        "activeRooms": "Aktive Räume",
-        "to": "bis"
-      },
-      "status": {
-        "ended": "Beendet",
-        "live": "Live",
-        "upcoming": "Bevorstehend"
-      },
-      "quickActions": {
-        "manageRooms": "Räume verwalten",
-        "viewAnalytics": "Analysen anzeigen",
-        "eventSettings": "Veranstaltungseinstellungen",
-        "security": "Sicherheitseinstellungen"
-      },
-      "timeline": {
-        "title": "Veranstaltungszeitachse",
-        "createdOn": "Erstellt am",
-        "startsOn": "Beginnt am",
-        "endsOn": "Endet am"
-      },
-      "speakers": {
-        "title": "Veranstaltungsreferenten",
-        "description": "Referenten und Präsentationen verwalten"
-      }
+    "validation": {
+      "nameRequired": "Veranstaltungsname ist erforderlich",
+      "dateRequired": "Veranstaltungsdatum ist erforderlich",
+      "validDate": "Bitte geben Sie ein gültiges Datum ein",
+      "maxParticipants": "Maximale Teilnehmerzahl muss eine positive Zahl sein"
+    },
+    "messages": {
+      "saveSuccess": "Einstellungen erfolgreich gespeichert",
+      "saveError": "Fehler beim Speichern der Einstellungen",
+      "confirmDiscard": "Sind Sie sicher, dass Sie die Änderungen verwerfen möchten?"
+    },
+    "buttons": {
+      "save": "Einstellungen speichern",
+      "discard": "Änderungen verwerfen",
+      "preview": "Veranstaltungsvorschau"
+    },
+    "basicInfo": {
+      "title": "Grundlegende Informationen",
+      "description": "Aktualisieren Sie die grundlegenden Details und Einstellungen Ihrer Veranstaltung",
+      "eventTitle": "Veranstaltungstitel",
+      "description": "Veranstaltungsbeschreibung",
+      "startDateTime": "Startdatum und -zeit",
+      "endDateTime": "Enddatum und -zeit",
+      "imageUrl": "Veranstaltungsbild-URL"
+    },
+    "actions": {
+      "deleteEvent": "Veranstaltung löschen",
+      "cancelEvent": "Veranstaltung absagen"
+    },
+    "deleteDialog": {
+      "title": "Sind Sie sicher, dass Sie löschen wollen?",
+      "description": "Diese Aktion kann nicht rückgängig gemacht werden. Dadurch werden Ihre Veranstaltung und alle zugehörigen Daten dauerhaft gelöscht."
+    },
+    "cancelDialog": {
+      "title": "Sind Sie sicher, dass Sie abbrechen wollen?",
+      "description": "Dadurch wird die Veranstaltung für alle Teilnehmer abgesagt. Sie können sie wieder bei Bedarf wieder aktivieren.",
+      "keepActive": "Nein, aktiv lassen",
+      "confirmCancel": "Ja, Veranstaltung absagen"
+    }
+  },
+  "eventDashboard": {
+    "actions": {
+      "viewEvent": "Veranstaltung anzeigen"
+    },
+    "stats": {
+      "status": "Status",
+      "rooms": "Räume",
+      "duration": "Dauer",
+      "activeRooms": "Aktive Räume",
+      "to": "bis"
+    },
+    "status": {
+      "ended": "Beendet",
+      "live": "Live",
+      "upcoming": "Bevorstehend"
+    },
+    "quickActions": {
+      "manageRooms": "Räume verwalten",
+      "viewAnalytics": "Analysen anzeigen",
+      "eventSettings": "Veranstaltungseinstellungen",
+      "security": "Sicherheitseinstellungen"
+    },
+    "timeline": {
+      "title": "Veranstaltungszeitachse",
+      "createdOn": "Erstellt am",
+      "startsOn": "Beginnt am",
+      "endsOn": "Endet am"
     },
     "speakers": {
-      "title": "Referentenverwaltung",
-      "description": "Verwalten Sie Referenten für Ihre Veranstaltung",
-      "dialog": {
-        "editTitle": "Referent bearbeiten",
-        "addTitle": "Neuen Referenten hinzufügen"
-      },
-      "form": {
-        "firstName": "Vorname",
-        "lastName": "Nachname",
-        "assignedRooms": "Zugewiesene Räume",
-        "selectRooms": "Räume auswählen",
-        "profileImage": "Profilbild",
-        "chooseFile": "Datei auswählen",
-        "noFileChosen": "Keine Datei ausgewählt",
-        "uploadImage": "Bild hochladen"
-      },
-      "list": {
-        "title": "Referentenliste",
-        "searchPlaceholder": "Referenten suchen...",
-        "noSpeakers": "Keine Referenten gefunden",
-        "columns": {
-          "speaker": "Referent",
-          "rooms": "Räume",
-          "actions": "Aktionen"
-        }
-      },
-      "actions": {
-        "addSpeaker": "Referent hinzufügen",
-        "update": "Referent aktualisieren",
-        "add": "Referent hinzufügen",
-        "edit": "Referent bearbeiten",
-        "delete": "Referent löschen"
-      },
-      "deleteDialog": {
-        "title": "Referent löschen",
-        "description": "Sind Sie sicher, dass Sie diesen Referenten löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
-      },
-      "validation": {
-        "firstNameMin": "Vorname muss mindestens 2 Zeichen lang sein",
-        "lastNameMin": "Nachname muss mindestens 2 Zeichen lang sein"
-      }
+      "title": "Veranstaltungsreferenten",
+      "description": "Referenten und Präsentationen verwalten"
     }
+  },
+  "speakers": {
+    "title": "Referentenverwaltung",
+    "description": "Verwalten Sie Referenten für Ihre Veranstaltung",
+    "dialog": {
+      "editTitle": "Referent bearbeiten",
+      "addTitle": "Neuen Referenten hinzufügen"
+    },
+    "form": {
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "assignedRooms": "Zugewiesene Räume",
+      "selectRooms": "Räume auswählen",
+      "profileImage": "Profilbild",
+      "chooseFile": "Datei auswählen",
+      "noFileChosen": "Keine Datei ausgewählt",
+      "uploadImage": "Bild hochladen"
+    },
+    "list": {
+      "title": "Referentenliste",
+      "searchPlaceholder": "Referenten suchen...",
+      "noSpeakers": "Keine Referenten gefunden",
+      "columns": {
+        "speaker": "Referent",
+        "rooms": "Räume",
+        "actions": "Aktionen"
+      }
+    },
+    "actions": {
+      "addSpeaker": "Referent hinzufügen",
+      "update": "Referent aktualisieren",
+      "add": "Referent hinzufügen",
+      "edit": "Referent bearbeiten",
+      "delete": "Referent löschen"
+    },
+    "deleteDialog": {
+      "title": "Referent löschen",
+      "description": "Sind Sie sicher, dass Sie diesen Referenten löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
+    },
+    "validation": {
+      "firstNameMin": "Vorname muss mindestens 2 Zeichen lang sein",
+      "lastNameMin": "Nachname muss mindestens 2 Zeichen lang sein"
+    }
+  }
 }

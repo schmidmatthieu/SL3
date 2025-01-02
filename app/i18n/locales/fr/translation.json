@@ -296,7 +296,7 @@
       "delete": "Supprimer",
       "edit": {
         "title": "Modifier le média",
-         "title": {
+        "title": {
           "label": "Titre"
         },
         "description": {
@@ -489,14 +489,14 @@
         "capacity": "Capacité",
         "deleteRoom": "Supprimer la salle"
       }
-    },   
+    },
     "common": {
       "success": "Succès",
       "error": "Erreur",
       "cancel": "Annuler",
       "delete": "Supprimer",
       "saving": "Enregistrement...",
-      "saveChanges":"Enregistrer les modifications"
+      "saveChanges": "Enregistrer les modifications"
     }
   },
   "theme": {
@@ -545,31 +545,19 @@
         "name": "Basique",
         "price": "CHF 99",
         "description": "Parfait pour les petits événements",
-        "features": [
-          "Jusqu'à 3 événements/mois",
-          "Analytique de base",
-          "Support par e-mail"
-        ]
+        "features": ["Jusqu'à 3 événements/mois", "Analytique de base", "Support par e-mail"]
       },
       "professional": {
         "name": "Professionnel",
         "price": "CHF 299",
         "description": "Pour les organisations en croissance",
-        "features": [
-          "Événements illimités",
-          "Analytique avancée",
-          "Support prioritaire"
-        ]
+        "features": ["Événements illimités", "Analytique avancée", "Support prioritaire"]
       },
       "enterprise": {
         "name": "Entreprise",
         "price": "Personnalisé",
         "description": "Pour les grandes organisations",
-        "features": [
-          "Solutions personnalisées",
-          "Support dédié",
-          "Garantie SLA"
-        ]
+        "features": ["Solutions personnalisées", "Support dédié", "Garantie SLA"]
       }
     },
     "buttons": {
@@ -986,48 +974,48 @@
     }
   },
   "rooms": {
+    "title": "Gestion des salles",
+    "description": "Gérer et configurer les salles d'événements",
+    "actions": {
+      "addRoom": "Ajouter une salle",
+      "editRoom": "Modifier la salle",
+      "deleteRoom": "Supprimer la salle"
+    },
+    "form": {
+      "name": "Nom de la salle",
+      "capacity": "Capacité",
+      "type": "Type de salle",
+      "description": "Description",
+      "startTime": "Heure de début",
+      "endTime": "Heure de fin",
+      "moderators": "Modérateurs"
+    },
+    "types": {
+      "presentation": "Présentation",
+      "workshop": "Atelier",
+      "panel": "Table ronde",
+      "networking": "Réseautage"
+    },
+    "status": {
+      "active": "Actif",
+      "inactive": "Inactif",
+      "full": "Complet",
+      "upcoming": "À venir"
+    },
+    "messages": {
+      "createSuccess": "Salle créée avec succès",
+      "updateSuccess": "Salle mise à jour avec succès",
+      "deleteSuccess": "Salle supprimée avec succès",
+      "error": "Une erreur s'est produite",
+      "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette salle ?"
+    },
+    "manage": {
       "title": "Gestion des salles",
-      "description": "Gérer et configurer les salles d'événements",
-      "actions": {
-        "addRoom": "Ajouter une salle",
-        "editRoom": "Modifier la salle",
-        "deleteRoom": "Supprimer la salle"
-      },
-      "form": {
-        "name": "Nom de la salle",
-        "capacity": "Capacité",
-        "type": "Type de salle",
-        "description": "Description",
-        "startTime": "Heure de début",
-        "endTime": "Heure de fin",
-        "moderators": "Modérateurs"
-      },
-      "types": {
-        "presentation": "Présentation",
-        "workshop": "Atelier",
-        "panel": "Table ronde",
-        "networking": "Réseautage"
-      },
-      "status": {
-        "active": "Actif",
-        "inactive": "Inactif",
-        "full": "Complet",
-        "upcoming": "À venir"
-      },
-      "messages": {
-        "createSuccess": "Salle créée avec succès",
-        "updateSuccess": "Salle mise à jour avec succès",
-        "deleteSuccess": "Salle supprimée avec succès",
-        "error": "Une erreur s'est produite",
-        "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette salle ?"
-      },
-      "manage": {
-        "title": "Gestion des salles",
-        "description": "Gérer et configurer les salles de votre événement",
-        "roomNamePlaceholder": "Saisir le nom de la salle",
-        "capacityPlaceholder": "Saisir la capacité de la salle",
-        "addRoom": "Ajouter une salle"
-      }
+      "description": "Gérer et configurer les salles de votre événement",
+      "roomNamePlaceholder": "Saisir le nom de la salle",
+      "capacityPlaceholder": "Saisir la capacité de la salle",
+      "addRoom": "Ajouter une salle"
+    }
   },
   "moderators": {
     "title": "Gestion des modérateurs",
@@ -1081,7 +1069,7 @@
     "finish": "Terminer",
     "submit": "Soumettre",
     "required": "Obligatoire",
-    "saveChanges":"Enregistrer les modifications"
+    "saveChanges": "Enregistrer les modifications"
   },
   "eventManagement": {
     "title": "Gestion des événements",
@@ -1302,7 +1290,7 @@
     "deleteDialog": {
       "title": "Supprimer l'événement",
       "description": "Êtes-vous sûr de vouloir supprimer cet événement ? Cette action est irréversible."
-    }     
+    }
   },
   "eventDashboard": {
     "actions": {

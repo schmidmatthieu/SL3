@@ -1,9 +1,10 @@
 'use client';
 
 import { PropsWithChildren, useEffect, useState } from 'react';
-import { I18nextProvider } from 'react-i18next';
-import i18next from './client';
 import { useProfileStore } from '@/store/profile';
+import { I18nextProvider } from 'react-i18next';
+
+import i18next from './client';
 
 export function I18nProvider({ children }: PropsWithChildren) {
   const [isClient, setIsClient] = useState(false);
@@ -11,7 +12,7 @@ export function I18nProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     setIsClient(true);
-    
+
     // Si l'utilisateur est connecté et a une langue préférée, l'utiliser
     if (user?.preferredLanguage) {
       i18next.changeLanguage(user.preferredLanguage);
@@ -22,9 +23,5 @@ export function I18nProvider({ children }: PropsWithChildren) {
     return <>{children}</>;
   }
 
-  return (
-    <I18nextProvider i18n={i18next}>
-      {children}
-    </I18nextProvider>
-  );
+  return <I18nextProvider i18n={i18next}>{children}</I18nextProvider>;
 }

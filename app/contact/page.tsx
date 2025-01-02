@@ -1,7 +1,14 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function ContactPage() {
   return (
@@ -9,9 +16,7 @@ export default function ContactPage() {
       <Card className="max-w-2xl mx-auto">
         <CardHeader>
           <CardTitle>Contact Us</CardTitle>
-          <CardDescription>
-            Get in touch with our team for any inquiries
-          </CardDescription>
+          <CardDescription>Get in touch with our team for any inquiries</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">

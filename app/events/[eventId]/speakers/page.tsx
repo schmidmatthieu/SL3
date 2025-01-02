@@ -1,5 +1,6 @@
-import { SpeakerManagement } from '@/components/management/speakers/speaker-management';
 import { use } from 'react';
+
+import { SpeakerManagement } from '@/components/management/speakers/speaker-management';
 
 interface Room {
   id: string;
@@ -16,11 +17,7 @@ async function getRooms(eventId: string): Promise<Room[]> {
   ];
 }
 
-export default function SpeakersPage({
-  params,
-}: {
-  params: { eventId: string };
-}) {
+export default function SpeakersPage({ params }: { params: { eventId: string } }) {
   const resolvedParams = use(params);
   const rooms = use(getRooms(resolvedParams.eventId));
 

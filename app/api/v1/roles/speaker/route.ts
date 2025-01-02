@@ -1,6 +1,6 @@
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 
 export async function POST(request: Request) {
   try {
@@ -31,28 +31,19 @@ export async function POST(request: Request) {
     }
 
     // Update user role and assign to room
-    const { error } = await supabase
-      .from('room_speakers')
-      .insert({
-        room_id: roomId,
-        user_id: userId,
-        assigned_by: (await supabase.auth.getUser()).data.user?.id,
-      });
+    const { error } = await supabase.from('room_speakers').insert({
+      room_id: roomId,
+      user_id: userId,
+      assigned_by: (await supabase.auth.getUser()).data.user?.id,
+    });
 
     if (error) throw error;
 
     // Update user role if needed
-    await supabase
-      .from('profiles')
-      .update({ role: 'speaker' })
-      .eq('id', userId)
-      .eq('role', 'user');
+    await supabase.from('profiles').update({ role: 'speaker' }).eq('id', userId).eq('role', 'user');
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to assign speaker' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to assign speaker' }, { status: 500 });
   }
 }

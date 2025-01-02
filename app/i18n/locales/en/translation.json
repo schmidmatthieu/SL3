@@ -531,31 +531,19 @@
         "name": "Basic",
         "price": "CHF 99",
         "description": "Perfect for small events",
-        "features": [
-          "Up to 3 events/month",
-          "Basic analytics",
-          "Email support"
-        ]
+        "features": ["Up to 3 events/month", "Basic analytics", "Email support"]
       },
       "professional": {
         "name": "Professional",
         "price": "CHF 299",
         "description": "For growing organizations",
-        "features": [
-          "Unlimited events",
-          "Advanced analytics",
-          "Priority support"
-        ]
+        "features": ["Unlimited events", "Advanced analytics", "Priority support"]
       },
       "enterprise": {
         "name": "Enterprise",
         "price": "Custom",
         "description": "For large organizations",
-        "features": [
-          "Custom solutions",
-          "Dedicated support",
-          "SLA guarantee"
-        ]
+        "features": ["Custom solutions", "Dedicated support", "SLA guarantee"]
       }
     },
     "buttons": {
@@ -1244,7 +1232,7 @@
         "reminderSettings": "Reminder Settings",
         "customMessages": "Custom Messages",
         "eventCancelled": "Event has been successfully cancelled"
-      }      
+      }
     },
     "validation": {
       "nameRequired": "Event name is required",
@@ -1265,7 +1253,7 @@
     "basicInfo": {
       "title": "Basic Information",
       "description": "Update your event's basic details and settings",
-      "eventTitle": "Event Title",      
+      "eventTitle": "Event Title",
       "startDateTime": "Start Date & Time",
       "endDateTime": "End Date & Time"
     },
@@ -1365,5 +1353,5 @@
       "firstNameMin": "First name must be at least 2 characters",
       "lastNameMin": "Last name must be at least 2 characters"
     }
-  }  
+  }
 }

@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
-import { SecuritySettings } from "@/components/management/security/security-settings";
-import { BackButton } from "@/components/ui/back-button";
-import { useEvents } from "@/hooks/useEvents";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+
+import { useEvents } from '@/hooks/useEvents';
+import { BackButton } from '@/components/ui/back-button';
+import { SecuritySettings } from '@/components/management/security/security-settings';
 
 export default function SecurityPage() {
   const params = useParams();

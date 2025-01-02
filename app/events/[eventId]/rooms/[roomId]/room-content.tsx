@@ -1,10 +1,11 @@
 'use client';
 
-import { RoomDetails } from '@/components/events/room-details';
-import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useEventStore } from '@/store/event.store';
+
 import { Skeleton } from '@/components/ui/skeleton';
+import { RoomDetails } from '@/components/events/room-details';
 
 interface RoomContentProps {
   eventId: string;
@@ -61,7 +62,7 @@ export function RoomContent({ eventId, roomId }: RoomContentProps) {
 
   const room = event.rooms.find(r => r.id === roomId);
   console.log('Found room:', room);
-  
+
   if (!room) {
     console.log('Room not found, redirecting...');
     router.push(`/events/${eventId}`);

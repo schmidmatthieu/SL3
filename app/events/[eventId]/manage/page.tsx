@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useEventStore } from '@/store/event.store';
 import { useAuthStore } from '@/store/auth-store';
-import { Skeleton } from '@/components/ui/skeleton';
+import { useEventStore } from '@/store/event.store';
+
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Skeleton } from '@/components/ui/skeleton';
 import { EventDashboard } from '@/components/management/event-dashboard';
 
 export default function ManageEventPage() {

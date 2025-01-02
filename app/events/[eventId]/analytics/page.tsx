@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
-import { ViewAnalytics } from "@/components/management/analytics/view-analytics";
-import { BackButton } from "@/components/ui/back-button";
-import { useEvents } from "@/hooks/useEvents";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+
+import { useEvents } from '@/hooks/useEvents';
+import { BackButton } from '@/components/ui/back-button';
+import { ViewAnalytics } from '@/components/management/analytics/view-analytics';
 
 export default function AnalyticsPage() {
   const params = useParams();

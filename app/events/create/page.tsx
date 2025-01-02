@@ -1,25 +1,26 @@
-'use client'
+'use client';
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { EventForm } from '@/components/events/event-form'
-import { useAuth } from '@/hooks/use-auth'
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+
+import { useAuth } from '@/hooks/use-auth';
+import { EventForm } from '@/components/events/event-form';
 
 export default function CreateEventPage() {
-  const router = useRouter()
-  const { user, profile, loading } = useAuth()
-  const supabase = createClientComponentClient()
+  const router = useRouter();
+  const { user, profile, loading } = useAuth();
+  const supabase = createClientComponentClient();
 
   useEffect(() => {
     if (!loading) {
       if (!user) {
-        router.push('/login')
+        router.push('/login');
       } else if (profile && !['admin', 'moderator'].includes(profile.role)) {
-        router.push('/events')
+        router.push('/events');
       }
     }
-  }, [user, profile, loading, router])
+  }, [user, profile, loading, router]);
 
   if (loading) {
     return (
@@ -34,11 +35,11 @@ export default function CreateEventPage() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (!user || (profile && !['admin', 'moderator'].includes(profile.role))) {
-    return null
+    return null;
   }
 
   return (
@@ -48,5 +49,5 @@ export default function CreateEventPage() {
         <EventForm user={user} />
       </div>
     </div>
-  )
+  );
 }

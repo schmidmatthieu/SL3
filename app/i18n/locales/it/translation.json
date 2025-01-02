@@ -296,7 +296,7 @@
       "delete": "Elimina",
       "edit": {
         "title": "Modifica media",
-         "title": {
+        "title": {
           "label": "Titolo"
         },
         "description": {
@@ -475,7 +475,7 @@
         "capacity": "Capacità",
         "deleteRoom": "Elimina stanza"
       }
-    },   
+    },
     "common": {
       "success": "Successo",
       "error": "Errore",
@@ -531,31 +531,19 @@
         "name": "Base",
         "price": "CHF 99",
         "description": "Perfetto per piccoli eventi",
-        "features": [
-          "Fino a 3 eventi/mese",
-          "Analisi di base",
-          "Supporto email"
-        ]
+        "features": ["Fino a 3 eventi/mese", "Analisi di base", "Supporto email"]
       },
       "professional": {
         "name": "Professionale",
         "price": "CHF 299",
         "description": "Per organizzazioni in crescita",
-        "features": [
-          "Eventi illimitati",
-          "Analisi avanzate",
-          "Supporto prioritario"
-        ]
+        "features": ["Eventi illimitati", "Analisi avanzate", "Supporto prioritario"]
       },
       "enterprise": {
         "name": "Enterprise",
         "price": "Personalizzato",
         "description": "Per grandi organizzazioni",
-        "features": [
-          "Soluzioni personalizzate",
-          "Supporto dedicato",
-          "Garanzia SLA"
-        ]
+        "features": ["Soluzioni personalizzate", "Supporto dedicato", "Garanzia SLA"]
       }
     },
     "buttons": {
@@ -1066,7 +1054,7 @@
     "finish": "Fine",
     "submit": "Invia",
     "required": "Obbligatorio",
-    "saveChanges":"Salva modifiche"
+    "saveChanges": "Salva modifiche"
   },
   "eventManagement": {
     "title": "Gestione eventi",
@@ -1246,7 +1234,7 @@
         "emailNotifications": "Notifiche email",
         "reminderSettings": "Impostazioni promemoria",
         "customMessages": "Messaggi personalizzati"
-      }      
+      }
     },
     "validation": {
       "nameRequired": "Il nome dell'evento è obbligatorio",

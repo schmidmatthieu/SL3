@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
-import { ManageRooms } from "@/components/management/rooms/manage-rooms";
-import { BackButton } from "@/components/ui/back-button";
-import { useEvents } from "@/hooks/useEvents";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+
+import { useEvents } from '@/hooks/useEvents';
+import { BackButton } from '@/components/ui/back-button';
+import { ManageRooms } from '@/components/management/rooms/manage-rooms';
 
 export default function RoomsPage() {
   const params = useParams();

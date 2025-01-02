@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { writeFile } from 'fs/promises';
 import { join } from 'path';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
@@ -8,10 +8,7 @@ export async function POST(req: NextRequest) {
     const file = formData.get('file') as File;
 
     if (!file) {
-      return NextResponse.json(
-        { error: 'No file uploaded' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
     }
 
     const bytes = await file.arrayBuffer();
@@ -29,9 +26,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url: `/uploads/${filename}` });
   } catch (error) {
     console.error('Failed to upload file:', error);
-    return NextResponse.json(
-      { error: 'Failed to upload file' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 });
   }
 }

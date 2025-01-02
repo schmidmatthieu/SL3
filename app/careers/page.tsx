@@ -1,22 +1,29 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 
 const positions = [
   {
-    title: "Senior Frontend Developer",
-    location: "Zürich, Switzerland",
-    type: "Full-time"
+    title: 'Senior Frontend Developer',
+    location: 'Zürich, Switzerland',
+    type: 'Full-time',
   },
   {
-    title: "Product Manager",
-    location: "Geneva, Switzerland",
-    type: "Full-time"
+    title: 'Product Manager',
+    location: 'Geneva, Switzerland',
+    type: 'Full-time',
   },
   {
-    title: "UX Designer",
-    location: "Remote, Switzerland",
-    type: "Full-time"
-  }
+    title: 'UX Designer',
+    location: 'Remote, Switzerland',
+    type: 'Full-time',
+  },
 ];
 
 export default function CareersPage() {
@@ -26,9 +33,9 @@ export default function CareersPage() {
       <p className="text-muted-foreground mb-8">
         Join our team and help shape the future of event management
       </p>
-      
+
       <div className="space-y-4">
-        {positions.map((position) => (
+        {positions.map(position => (
           <Card key={position.title}>
             <CardHeader>
               <CardTitle>{position.title}</CardTitle>

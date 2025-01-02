@@ -1,10 +1,8 @@
 import { NextResponse } from 'next/server';
+
 import prisma from '@/lib/prisma';
 
-export async function GET(
-  request: Request,
-  { params }: { params: { section: string } }
-) {
+export async function GET(request: Request, { params }: { params: { section: string } }) {
   try {
     const { section } = params;
 
@@ -31,7 +29,7 @@ export async function GET(
             '--primary-800': '210 100% 38%',
             '--primary-900': '210 100% 32%',
             '--primary-950': '210 100% 23%',
-          }
+          },
         },
         system: {
           ':root': {
@@ -75,8 +73,8 @@ export async function GET(
             '--border': '240 3.7% 15.9%',
             '--input': '240 3.7% 15.9%',
             '--ring': '240 4.9% 83.9%',
-          }
-        }
+          },
+        },
       };
 
       return NextResponse.json(hardcodedDefaults[section as keyof typeof hardcodedDefaults]);
@@ -85,9 +83,6 @@ export async function GET(
     return NextResponse.json(defaultColors.values);
   } catch (error) {
     console.error('Error fetching default colors:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch default colors' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch default colors' }, { status: 500 });
   }
 }

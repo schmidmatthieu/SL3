@@ -7,5 +7,5 @@ export default function Loading() {
         <div className="h-32 bg-muted-foreground/10 rounded"></div>
       </div>
     </div>
-  )
+  );
 }

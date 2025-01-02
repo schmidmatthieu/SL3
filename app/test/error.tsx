@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
 export default function Error({
   error,
   reset,
 }: {
-  error: Error & { digest?: string }
-  reset: () => void
+  error: Error & { digest?: string };
+  reset: () => void;
 }) {
   return (
     <div className="container py-8">
@@ -21,5 +21,5 @@ export default function Error({
         </button>
       </div>
     </div>
-  )
+  );
 }
