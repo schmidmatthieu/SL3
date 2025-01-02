@@ -188,6 +188,6 @@ export const mediaService = {
   },
 
   getImageUrl(filename: string): string {
-    return `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.media}/${filename}`;
+    return `${API_CONFIG.baseUrl}/uploads/${filename}`;
   },
 };

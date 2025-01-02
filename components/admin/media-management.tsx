@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import { useMediaStore } from '@/store/media.store';
 import cn from 'classnames';
 import { Check, Copy, Grid, Info, List, Pencil, Trash2, Upload } from 'lucide-react';
@@ -355,12 +354,10 @@ export function MediaManagement({
                   >
                     <CardContent className="p-0">
                       <div className="relative aspect-video bg-muted/30">
-                        <Image
+                        <img
                           src={item.url}
                           alt={item.alt || 'Media item'}
-                          fill
-                          className="object-contain rounded-t-lg p-2"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          className="w-full h-full object-contain rounded-t-lg p-2"
                         />
                       </div>
                       <div className="p-4 space-y-2">
@@ -426,11 +423,10 @@ export function MediaManagement({
                     <CardContent className="p-4">
                       <div className="flex items-center gap-6">
                         <div className="relative h-24 w-36 shrink-0 bg-muted/30">
-                          <Image
+                          <img
                             src={item.url}
                             alt={item.alt || 'Media item'}
-                            fill
-                            className="object-contain rounded-md p-1"
+                            className="w-full h-full object-contain rounded-md p-1"
                             sizes="(max-width: 768px) 144px, 144px"
                           />
                         </div>

@@ -23,9 +23,7 @@ export class MediaService {
     private configService: ConfigService,
   ) {
     this.uploadPath = path.join(process.cwd(), 'public', 'uploads');
-    this.apiUrl =
-      this.configService.get('API_URL') ||
-      `http://localhost:${this.configService.get('port')}`;
+    this.apiUrl = this.configService.get('API_URL') || 'http://localhost:3001';
   }
 
   async create(file: Express.Multer.File, userId: string): Promise<Media> {

@@ -144,12 +144,20 @@ export function ImageUploader({
             {currentImage || placeholder ? (
               <>
                 <div className="relative w-full h-full">
-                  <Image
-                    src={currentImage || placeholder}
-                    alt="Image preview"
-                    fill
-                    className={cn('object-cover', !currentImage && 'opacity-50 grayscale')}
-                  />
+                  {currentImage ? (
+                    <img
+                      src={currentImage}
+                      alt="Image preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Image
+                      src={placeholder}
+                      alt="Placeholder"
+                      fill
+                      className={cn('object-cover opacity-50 grayscale')}
+                    />
+                  )}
                 </div>
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center">
                   <p className="text-sm text-white font-medium px-3 py-2 bg-primary-600/80 rounded-md backdrop-blur-sm">

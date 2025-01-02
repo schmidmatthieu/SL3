@@ -11,7 +11,6 @@ import { AuthProvider } from '@/components/auth/auth-provider';
 import { Footer } from '@/components/layout/footer';
 import { Header } from '@/components/layout/header';
 import { ThemeProvider } from '@/components/providers/theme-provider';
-
 import { I18nProvider } from './i18n/I18nProvider';
 
 export const metadata: Metadata = {
@@ -51,6 +50,7 @@ export default function RootLayout({
                 <Footer />
               </div>
               <Toaster />
+              <AnimatedBackground />
             </I18nProvider>
           </AuthProvider>
         </ThemeProvider>
