@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
-import { ChatMessage } from '@/types/chat';
 import { memo } from 'react';
 import { format } from 'date-fns';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Check, CheckCheck } from 'lucide-react';
+
+import { ChatMessage } from '@/types/chat';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface MessageProps {
   message: ChatMessage;
@@ -30,11 +31,7 @@ function MessageComponent({ message, showAvatar = true }: MessageProps) {
       const [start, end] = emote.positions[0];
 
       if (start > lastIndex) {
-        parts.push(
-          <span key={`text-${index}`}>
-            {message.content.slice(lastIndex, start)}
-          </span>
-        );
+        parts.push(<span key={`text-${index}`}>{message.content.slice(lastIndex, start)}</span>);
       }
 
       parts.push(
@@ -50,11 +47,7 @@ function MessageComponent({ message, showAvatar = true }: MessageProps) {
     });
 
     if (lastIndex < message.content.length) {
-      parts.push(
-        <span key="text-end">
-          {message.content.slice(lastIndex)}
-        </span>
-      );
+      parts.push(<span key="text-end">{message.content.slice(lastIndex)}</span>);
     }
 
     return parts;
@@ -76,9 +69,7 @@ function MessageComponent({ message, showAvatar = true }: MessageProps) {
             <span style={{ color: message.color }} className="font-medium">
               {message.username}
             </span>
-            <span className="text-xs text-muted-foreground">
-              {formattedTime}
-            </span>
+            <span className="text-xs text-muted-foreground">{formattedTime}</span>
           </div>
         )}
         <div className="flex items-end gap-2">

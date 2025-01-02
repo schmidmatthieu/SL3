@@ -1,27 +1,28 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  MoreVertical,
+  Search,
+  Shield,
+  ShieldAlert,
+  ShieldCheck,
+  ShieldX,
+  UserPlus,
+} from 'lucide-react';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Shield,
-  MoreVertical,
-  Search,
-  UserPlus,
-  ShieldAlert,
-  ShieldCheck,
-  ShieldX,
-} from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface ModeratorManagementProps {
   eventId: string;
@@ -43,7 +44,10 @@ const mockModerators: Moderator[] = Array.from({ length: 10 }, (_, i) => ({
   email: `mod${i + 1}@example.com`,
   avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=mod${i}`,
   role: i === 0 ? 'admin' : 'moderator',
-  assignedRooms: Array.from({ length: Math.floor(Math.random() * 3) + 1 }, (_, j) => `Room ${j + 1}`),
+  assignedRooms: Array.from(
+    { length: Math.floor(Math.random() * 3) + 1 },
+    (_, j) => `Room ${j + 1}`
+  ),
   status: Math.random() > 0.2 ? 'active' : 'inactive',
 }));
 
@@ -51,9 +55,10 @@ export function ModeratorManagement({ eventId }: ModeratorManagementProps) {
   const [moderators, setModerators] = useState(mockModerators);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredModerators = moderators.filter(mod =>
-    mod.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    mod.email.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredModerators = moderators.filter(
+    mod =>
+      mod.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      mod.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleModeratorAction = (modId: string, action: 'promote' | 'demote' | 'remove') => {
@@ -61,9 +66,7 @@ export function ModeratorManagement({ eventId }: ModeratorManagementProps) {
       action === 'remove'
         ? prev.filter(m => m.id !== modId)
         : prev.map(m =>
-            m.id === modId
-              ? { ...m, role: action === 'promote' ? 'admin' : 'moderator' }
-              : m
+            m.id === modId ? { ...m, role: action === 'promote' ? 'admin' : 'moderator' } : m
           )
     );
   };
@@ -122,7 +125,7 @@ export function ModeratorManagement({ eventId }: ModeratorManagementProps) {
               <Input
                 placeholder="Search moderators..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={e => setSearchQuery(e.target.value)}
                 className="max-w-xs"
                 prefix={<Search className="h-4 w-4 text-muted-foreground" />}
               />
@@ -136,7 +139,7 @@ export function ModeratorManagement({ eventId }: ModeratorManagementProps) {
         <CardContent>
           <ScrollArea className="h-[500px] pr-4">
             <div className="space-y-4">
-              {filteredModerators.map((mod) => (
+              {filteredModerators.map(mod => (
                 <Card key={mod.id}>
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
@@ -158,9 +161,7 @@ export function ModeratorManagement({ eventId }: ModeratorManagementProps) {
                               </Badge>
                             )}
                           </div>
-                          <div className="text-sm text-muted-foreground">
-                            {mod.email}
-                          </div>
+                          <div className="text-sm text-muted-foreground">{mod.email}</div>
                           <div className="text-sm text-muted-foreground mt-1">
                             {mod.assignedRooms.length > 0
                               ? `Assigned to: ${mod.assignedRooms.join(', ')}`

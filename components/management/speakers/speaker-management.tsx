@@ -1,38 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { BackButton } from '@/components/ui/back-button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Plus, Pencil, Trash2, UserPlus, Loader2 } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
 import { useSpeakerStore } from '@/store/speaker.store';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2, Pencil, Plus, Trash2, UserPlus } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+
 import { Speaker } from '@/types/speaker';
 import { cn } from '@/lib/utils';
 import {
@@ -46,9 +20,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { BackButton } from '@/components/ui/back-button';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -59,6 +41,25 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { ImageUploader } from '@/components/ui/image-uploader';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { useToast } from '@/components/ui/use-toast';
 
 interface Room {
   id: string;
@@ -74,21 +75,15 @@ const speakerFormSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
   lastName: z.string().min(2, 'Last name must be at least 2 characters'),
   imageUrl: z.string().optional(),
-  rooms: z.array(z.string()).optional().default([])
+  rooms: z.array(z.string()).optional().default([]),
 });
 
 type SpeakerFormValues = z.infer<typeof speakerFormSchema>;
 
 export function SpeakerManagement({ eventId, rooms }: SpeakerManagementProps) {
   const { toast } = useToast();
-  const {
-    speakers,
-    error,
-    getSpeakers,
-    createSpeaker,
-    updateSpeaker,
-    deleteSpeaker,
-  } = useSpeakerStore();
+  const { speakers, error, getSpeakers, createSpeaker, updateSpeaker, deleteSpeaker } =
+    useSpeakerStore();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -173,7 +168,7 @@ export function SpeakerManagement({ eventId, rooms }: SpeakerManagementProps) {
   };
 
   const filteredSpeakers = speakers.filter(
-    (speaker) =>
+    speaker =>
       speaker.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       speaker.lastName.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -195,9 +190,7 @@ export function SpeakerManagement({ eventId, rooms }: SpeakerManagementProps) {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Speaker Management</h1>
-          <p className="text-muted-foreground mt-2">
-            Manage speakers for your event
-          </p>
+          <p className="text-muted-foreground mt-2">Manage speakers for your event</p>
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
@@ -208,9 +201,7 @@ export function SpeakerManagement({ eventId, rooms }: SpeakerManagementProps) {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>
-                {currentSpeaker ? 'Edit Speaker' : 'Add New Speaker'}
-              </DialogTitle>
+              <DialogTitle>{currentSpeaker ? 'Edit Speaker' : 'Add New Speaker'}</DialogTitle>
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -248,9 +239,7 @@ export function SpeakerManagement({ eventId, rooms }: SpeakerManagementProps) {
                       <FormLabel>Assigned Rooms</FormLabel>
                       <Select
                         value={field.value[0] || ''}
-                        onValueChange={(value) =>
-                          field.onChange([...field.value, value])
-                        }
+                        onValueChange={value => field.onChange([...field.value, value])}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -258,7 +247,7 @@ export function SpeakerManagement({ eventId, rooms }: SpeakerManagementProps) {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {rooms.map((room) => (
+                          {rooms.map(room => (
                             <SelectItem key={room.id} value={room.id}>
                               {room.name}
                             </SelectItem>
@@ -278,9 +267,7 @@ export function SpeakerManagement({ eventId, rooms }: SpeakerManagementProps) {
                       <FormControl>
                         <ImageUploader
                           currentImage={currentSpeaker?.imageUrl}
-                          onImageSelect={(url) =>
-                            form.setValue('imageUrl', url)
-                          }
+                          onImageSelect={url => form.setValue('imageUrl', url)}
                           mediaType="speaker"
                           entityId={currentSpeaker?._id}
                           entityName={`${currentSpeaker?.firstName} ${currentSpeaker?.lastName}`}
@@ -291,9 +278,7 @@ export function SpeakerManagement({ eventId, rooms }: SpeakerManagementProps) {
                   )}
                 />
                 <Button type="submit" disabled={isSubmitting} className="w-full">
-                  {isSubmitting && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
+                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {currentSpeaker ? 'Update' : 'Add'} Speaker
                 </Button>
               </form>
@@ -311,7 +296,7 @@ export function SpeakerManagement({ eventId, rooms }: SpeakerManagementProps) {
             <Input
               placeholder="Search speakers..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className="max-w-sm"
             />
           </div>
@@ -330,7 +315,7 @@ export function SpeakerManagement({ eventId, rooms }: SpeakerManagementProps) {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredSpeakers.map((speaker) => (
+                  {filteredSpeakers.map(speaker => (
                     <TableRow key={speaker.id}>
                       <TableCell className="flex items-center space-x-4">
                         <Avatar>
@@ -348,10 +333,7 @@ export function SpeakerManagement({ eventId, rooms }: SpeakerManagementProps) {
                       </TableCell>
                       <TableCell>
                         {speaker.rooms
-                          .map(
-                            (roomId) =>
-                              rooms.find((r) => r.id === roomId)?.name || roomId
-                          )
+                          .map(roomId => rooms.find(r => r.id === roomId)?.name || roomId)
                           .join(', ')}
                       </TableCell>
                       <TableCell>
@@ -374,21 +356,15 @@ export function SpeakerManagement({ eventId, rooms }: SpeakerManagementProps) {
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  Delete Speaker
-                                </AlertDialogTitle>
+                                <AlertDialogTitle>Delete Speaker</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Are you sure you want to delete this speaker?
-                                  This action cannot be undone.
+                                  Are you sure you want to delete this speaker? This action cannot
+                                  be undone.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() =>
-                                    handleDeleteSpeaker(speaker.id)
-                                  }
-                                >
+                                <AlertDialogAction onClick={() => handleDeleteSpeaker(speaker.id)}>
                                   Delete
                                 </AlertDialogAction>
                               </AlertDialogFooter>

@@ -1,12 +1,14 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useEffect, useState } from 'react';
+import { Layout, Paintbrush, RotateCcw, Save, Type, Upload } from 'lucide-react';
+
+import { fonts } from '@/lib/fonts';
+import { useThemeStore } from '@/lib/stores/theme-store';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -15,22 +17,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { useThemeStore } from '@/lib/stores/theme-store';
-import { fonts } from '@/lib/fonts';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
-import {
-  Paintbrush,
-  Type,
-  Layout,
-  Save,
-  RotateCcw,
-  Upload,
-} from 'lucide-react';
 
 export function StyleManagement() {
   const { toast } = useToast();
   const theme = useThemeStore();
-  
+
   // Local state for form values
   const [values, setValues] = useState({
     primaryColor: theme.primaryColor,
@@ -74,16 +68,16 @@ export function StyleManagement() {
   const handleSave = () => {
     theme.updateTheme(values);
     toast({
-      title: "Theme Updated",
-      description: "Your changes have been saved successfully.",
+      title: 'Theme Updated',
+      description: 'Your changes have been saved successfully.',
     });
   };
 
   const handleReset = () => {
     theme.resetTheme();
     toast({
-      title: "Theme Reset",
-      description: "Theme settings have been reset to defaults.",
+      title: 'Theme Reset',
+      description: 'Theme settings have been reset to defaults.',
     });
   };
 
@@ -129,48 +123,48 @@ export function StyleManagement() {
                 <div className="space-y-2">
                   <Label>Primary Color</Label>
                   <div className="flex gap-2">
-                    <Input 
-                      type="color" 
-                      className="w-16 h-10 p-1" 
+                    <Input
+                      type="color"
+                      className="w-16 h-10 p-1"
                       value={values.primaryColor}
-                      onChange={(e) => setValues(v => ({ ...v, primaryColor: e.target.value }))}
+                      onChange={e => setValues(v => ({ ...v, primaryColor: e.target.value }))}
                     />
-                    <Input 
+                    <Input
                       value={values.primaryColor}
-                      onChange={(e) => setValues(v => ({ ...v, primaryColor: e.target.value }))}
-                      placeholder="Primary color hex" 
+                      onChange={e => setValues(v => ({ ...v, primaryColor: e.target.value }))}
+                      placeholder="Primary color hex"
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label>Secondary Color</Label>
                   <div className="flex gap-2">
-                    <Input 
-                      type="color" 
-                      className="w-16 h-10 p-1" 
+                    <Input
+                      type="color"
+                      className="w-16 h-10 p-1"
                       value={values.secondaryColor}
-                      onChange={(e) => setValues(v => ({ ...v, secondaryColor: e.target.value }))}
+                      onChange={e => setValues(v => ({ ...v, secondaryColor: e.target.value }))}
                     />
-                    <Input 
+                    <Input
                       value={values.secondaryColor}
-                      onChange={(e) => setValues(v => ({ ...v, secondaryColor: e.target.value }))}
-                      placeholder="Secondary color hex" 
+                      onChange={e => setValues(v => ({ ...v, secondaryColor: e.target.value }))}
+                      placeholder="Secondary color hex"
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label>Accent Color</Label>
                   <div className="flex gap-2">
-                    <Input 
-                      type="color" 
-                      className="w-16 h-10 p-1" 
+                    <Input
+                      type="color"
+                      className="w-16 h-10 p-1"
                       value={values.accentColor}
-                      onChange={(e) => setValues(v => ({ ...v, accentColor: e.target.value }))}
+                      onChange={e => setValues(v => ({ ...v, accentColor: e.target.value }))}
                     />
-                    <Input 
+                    <Input
                       value={values.accentColor}
-                      onChange={(e) => setValues(v => ({ ...v, accentColor: e.target.value }))}
-                      placeholder="Accent color hex" 
+                      onChange={e => setValues(v => ({ ...v, accentColor: e.target.value }))}
+                      placeholder="Accent color hex"
                     />
                   </div>
                 </div>
@@ -186,29 +180,29 @@ export function StyleManagement() {
               <div className="grid gap-4">
                 <div className="space-y-2">
                   <Label>Background</Label>
-                  <Input 
-                    type="color" 
-                    className="w-16 h-10 p-1" 
+                  <Input
+                    type="color"
+                    className="w-16 h-10 p-1"
                     value={values.backgroundColor}
-                    onChange={(e) => setValues(v => ({ ...v, backgroundColor: e.target.value }))}
+                    onChange={e => setValues(v => ({ ...v, backgroundColor: e.target.value }))}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label>Foreground</Label>
-                  <Input 
-                    type="color" 
-                    className="w-16 h-10 p-1" 
+                  <Input
+                    type="color"
+                    className="w-16 h-10 p-1"
                     value={values.foregroundColor}
-                    onChange={(e) => setValues(v => ({ ...v, foregroundColor: e.target.value }))}
+                    onChange={e => setValues(v => ({ ...v, foregroundColor: e.target.value }))}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label>Border</Label>
-                  <Input 
-                    type="color" 
-                    className="w-16 h-10 p-1" 
+                  <Input
+                    type="color"
+                    className="w-16 h-10 p-1"
                     value={values.borderColor}
-                    onChange={(e) => setValues(v => ({ ...v, borderColor: e.target.value }))}
+                    onChange={e => setValues(v => ({ ...v, borderColor: e.target.value }))}
                   />
                 </div>
               </div>
@@ -225,9 +219,9 @@ export function StyleManagement() {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label>Primary Font</Label>
-                  <Select 
+                  <Select
                     value={values.primaryFont}
-                    onValueChange={(value) => setValues(v => ({ ...v, primaryFont: value }))}
+                    onValueChange={value => setValues(v => ({ ...v, primaryFont: value }))}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select font family" />
@@ -263,9 +257,9 @@ export function StyleManagement() {
             <CardContent className="grid gap-4">
               <div className="space-y-2">
                 <Label>Headings</Label>
-                <Select 
+                <Select
                   value={values.headingWeight}
-                  onValueChange={(value) => setValues(v => ({ ...v, headingWeight: value }))}
+                  onValueChange={value => setValues(v => ({ ...v, headingWeight: value }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select heading weight" />
@@ -281,9 +275,9 @@ export function StyleManagement() {
 
               <div className="space-y-2">
                 <Label>Body</Label>
-                <Select 
+                <Select
                   value={values.bodyWeight}
-                  onValueChange={(value) => setValues(v => ({ ...v, bodyWeight: value }))}
+                  onValueChange={value => setValues(v => ({ ...v, bodyWeight: value }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select body weight" />
@@ -319,9 +313,9 @@ export function StyleManagement() {
 
                 <div className="space-y-2">
                   <Label>Container Width</Label>
-                  <Select 
+                  <Select
                     value={values.containerWidth}
-                    onValueChange={(value) => setValues(v => ({ ...v, containerWidth: value }))}
+                    onValueChange={value => setValues(v => ({ ...v, containerWidth: value }))}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select max width" />
@@ -338,16 +332,20 @@ export function StyleManagement() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label>Enable Glassmorphism</Label>
-                  <Switch 
+                  <Switch
                     checked={values.enableGlassmorphism}
-                    onCheckedChange={(checked) => setValues(v => ({ ...v, enableGlassmorphism: checked }))}
+                    onCheckedChange={checked =>
+                      setValues(v => ({ ...v, enableGlassmorphism: checked }))
+                    }
                   />
                 </div>
                 <div className="flex items-center justify-between">
                   <Label>Smooth Transitions</Label>
-                  <Switch 
+                  <Switch
                     checked={values.enableTransitions}
-                    onCheckedChange={(checked) => setValues(v => ({ ...v, enableTransitions: checked }))}
+                    onCheckedChange={checked =>
+                      setValues(v => ({ ...v, enableTransitions: checked }))
+                    }
                   />
                 </div>
               </div>
@@ -366,7 +364,9 @@ export function StyleManagement() {
                     <div className="h-16 w-16 rounded border flex items-center justify-center">
                       <Upload className="h-6 w-6 text-muted-foreground" />
                     </div>
-                    <Button variant="outline" size="sm">Upload Logo</Button>
+                    <Button variant="outline" size="sm">
+                      Upload Logo
+                    </Button>
                   </div>
                 </div>
                 <div>
@@ -375,7 +375,9 @@ export function StyleManagement() {
                     <div className="h-16 w-16 rounded border flex items-center justify-center bg-slate-900">
                       <Upload className="h-6 w-6 text-slate-600" />
                     </div>
-                    <Button variant="outline" size="sm">Upload Logo</Button>
+                    <Button variant="outline" size="sm">
+                      Upload Logo
+                    </Button>
                   </div>
                 </div>
               </div>

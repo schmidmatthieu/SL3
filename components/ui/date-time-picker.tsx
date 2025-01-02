@@ -3,15 +3,12 @@
 import * as React from 'react';
 import { format } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
+
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 interface DateTimePickerProps {
   value?: Date;
@@ -46,7 +43,7 @@ export function DateTimePicker({ value, onChange, className }: DateTimePickerPro
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = e.target.value;
     setTime(newTime);
-    
+
     if (date && newTime) {
       const [hours, minutes] = newTime.split(':').map(Number);
       const updatedDate = new Date(date);
@@ -73,12 +70,7 @@ export function DateTimePicker({ value, onChange, className }: DateTimePickerPro
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            mode="single"
-            selected={date}
-            onSelect={handleDateSelect}
-            initialFocus
-          />
+          <Calendar mode="single" selected={date} onSelect={handleDateSelect} initialFocus />
         </PopoverContent>
       </Popover>
       <Input

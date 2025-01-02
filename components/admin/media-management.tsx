@@ -1,21 +1,23 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
+import { useMediaStore } from '@/store/media.store';
+import cn from 'classnames';
+import { Check, Copy, Grid, Info, List, Pencil, Trash2, Upload } from 'lucide-react';
+
+import { MediaItem, MediaUsage } from '@/types/media';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Pencil, Trash2, Upload, Copy, Check, Grid, List, Info } from 'lucide-react';
-import { MediaItem, MediaUsage } from '@/types/media';
-import { useToast } from "@/components/ui/use-toast";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import { useMediaStore } from '@/store/media.store';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Pagination,
   PaginationContent,
@@ -24,12 +26,18 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Skeleton } from "@/components/ui/skeleton";
-import Image from 'next/image';
-import cn from 'classnames';
+} from '@/components/ui/pagination';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/components/ui/use-toast';
 
 const ITEMS_PER_PAGE = 20;
 
@@ -43,13 +51,21 @@ interface MediaManagementProps {
   hideHeader?: boolean;
 }
 
-export function MediaManagement({ 
-  onSelect, 
-  mediaType, 
+export function MediaManagement({
+  onSelect,
+  mediaType,
   viewMode: initialViewMode = 'grid',
-  hideHeader = false 
+  hideHeader = false,
 }: MediaManagementProps) {
-  const { items: mediaItems, isLoading, error, fetchAll, uploadMedia, deleteMedia, updateMetadata } = useMediaStore();
+  const {
+    items: mediaItems,
+    isLoading,
+    error,
+    fetchAll,
+    uploadMedia,
+    deleteMedia,
+    updateMetadata,
+  } = useMediaStore();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [editingItem, setEditingItem] = useState<MediaItem | null>(null);
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
@@ -65,7 +81,7 @@ export function MediaManagement({
     description: '',
     altText: '',
     seoTitle: '',
-    seoDescription: ''
+    seoDescription: '',
   });
 
   useEffect(() => {
@@ -79,7 +95,7 @@ export function MediaManagement({
         description: editingItem.metadata?.description || '',
         altText: editingItem.metadata?.altText || '',
         seoTitle: editingItem.metadata?.seoTitle || '',
-        seoDescription: editingItem.metadata?.seoDescription || ''
+        seoDescription: editingItem.metadata?.seoDescription || '',
       });
     }
   }, [editingItem]);
@@ -111,14 +127,14 @@ export function MediaManagement({
       await uploadMedia(selectedFile);
       setSelectedFile(null);
       toast({
-        title: "Succès",
-        description: "Média téléchargé avec succès",
+        title: 'Succès',
+        description: 'Média téléchargé avec succès',
       });
     } catch (error) {
       toast({
-        title: "Erreur",
+        title: 'Erreur',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     }
   };
@@ -127,14 +143,14 @@ export function MediaManagement({
     try {
       await deleteMedia(id);
       toast({
-        title: "Succès",
-        description: "Média supprimé avec succès",
+        title: 'Succès',
+        description: 'Média supprimé avec succès',
       });
     } catch (error) {
       toast({
-        title: "Erreur",
-        description: "Erreur lors de la suppression du média",
-        variant: "destructive",
+        title: 'Erreur',
+        description: 'Erreur lors de la suppression du média',
+        variant: 'destructive',
       });
     }
   };
@@ -146,14 +162,14 @@ export function MediaManagement({
       await updateMetadata(editingItem._id, editForm);
       setEditingItem(null);
       toast({
-        title: "Succès",
-        description: "Métadonnées mises à jour avec succès",
+        title: 'Succès',
+        description: 'Métadonnées mises à jour avec succès',
       });
     } catch (error) {
       toast({
-        title: "Erreur",
-        description: "Erreur lors de la mise à jour des métadonnées",
-        variant: "destructive",
+        title: 'Erreur',
+        description: 'Erreur lors de la mise à jour des métadonnées',
+        variant: 'destructive',
       });
     }
   };
@@ -163,16 +179,16 @@ export function MediaManagement({
     setCopiedUrl(url);
     setTimeout(() => setCopiedUrl(null), 2000);
     toast({
-      title: "Succès",
-      description: "URL copiée dans le presse-papier",
+      title: 'Succès',
+      description: 'URL copiée dans le presse-papier',
     });
   };
 
   function renderUsageInfo(usages: MediaUsage[] = []) {
     if (!usages?.length) {
       return (
-        <Badge 
-          variant="secondary" 
+        <Badge
+          variant="secondary"
           className="mt-2 bg-secondary-300 text-secondary-900 dark:bg-secondary-800 dark:text-secondary-100"
         >
           Non utilisé
@@ -198,11 +214,17 @@ export function MediaManagement({
                 <div key={index} className="flex flex-col gap-2">
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="capitalize">
-                      {usage.type === 'profile' ? 'Profil' :
-                       usage.type === 'speaker' ? 'Intervenant' :
-                       usage.type === 'event' ? 'Événement' :
-                       usage.type === 'room' ? 'Salle' :
-                       usage.type === 'logo' ? 'Logo' : 'Autre'}
+                      {usage.type === 'profile'
+                        ? 'Profil'
+                        : usage.type === 'speaker'
+                          ? 'Intervenant'
+                          : usage.type === 'event'
+                            ? 'Événement'
+                            : usage.type === 'room'
+                              ? 'Salle'
+                              : usage.type === 'logo'
+                                ? 'Logo'
+                                : 'Autre'}
                     </Badge>
                     {usage.entityName && (
                       <span className="text-sm">{usage.entityName || 'Sans nom'}</span>
@@ -218,7 +240,7 @@ export function MediaManagement({
         </DialogContent>
       </Dialog>
     );
-  };
+  }
 
   if (error) {
     return <div className="text-red-500">Erreur: {error}</div>;
@@ -230,19 +252,14 @@ export function MediaManagement({
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
           <div className="space-y-1">
             <h2 className="text-2xl font-semibold tracking-tight">Médiathèque</h2>
-            <p className="text-sm text-muted-foreground">
-              Gérez vos images et autres médias
-            </p>
+            <p className="text-sm text-muted-foreground">Gérez vos images et autres médias</p>
           </div>
         </div>
       )}
 
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center sm:justify-between">
-          <Select 
-            value={selectedUsageType} 
-            onValueChange={setSelectedUsageType}
-          >
+          <Select value={selectedUsageType} onValueChange={setSelectedUsageType}>
             <SelectTrigger>
               <SelectValue placeholder="Filtrer par utilisation" />
             </SelectTrigger>
@@ -258,10 +275,7 @@ export function MediaManagement({
           </Select>
 
           <div className="flex items-center gap-3 w-full sm:w-auto">
-            <Select 
-              value={gridSize} 
-              onValueChange={(value: GridSize) => setGridSize(value)}
-            >
+            <Select value={gridSize} onValueChange={(value: GridSize) => setGridSize(value)}>
               <SelectTrigger className="w-full sm:w-[130px]">
                 <SelectValue placeholder="Colonnes" />
               </SelectTrigger>
@@ -278,10 +292,10 @@ export function MediaManagement({
                 size="icon"
                 onClick={() => setViewMode('grid')}
                 className={cn(
-                  "h-9 w-9",
-                  viewMode === 'grid' 
-                    ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                    : "hover:bg-primary/20 text-primary"
+                  'h-9 w-9',
+                  viewMode === 'grid'
+                    ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                    : 'hover:bg-primary/20 text-primary'
                 )}
               >
                 <Grid className="h-4 w-4" />
@@ -291,10 +305,10 @@ export function MediaManagement({
                 size="icon"
                 onClick={() => setViewMode('list')}
                 className={cn(
-                  "h-9 w-9",
-                  viewMode === 'list' 
-                    ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                    : "hover:bg-primary/20 text-primary"
+                  'h-9 w-9',
+                  viewMode === 'list'
+                    ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                    : 'hover:bg-primary/20 text-primary'
                 )}
               >
                 <List className="h-4 w-4" />
@@ -321,159 +335,159 @@ export function MediaManagement({
           </div>
         </div>
 
-        <div className={cn(
-          viewMode === 'grid' 
-            ? `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-${gridSize} gap-6`
-            : 'flex flex-col space-y-4'
-        )}>
-          {isLoading ? (
-            Array.from({ length: 6 }).map((_, index) => (
-              <Card key={index} className="aspect-video animate-pulse bg-muted" />
-            ))
-          ) : viewMode === 'grid' ? (
-            paginatedItems.map((item) => (
-              <Card
-                key={item._id}
-                className="group relative overflow-visible border hover:border-primary/50 transition-colors cursor-pointer"
-                onClick={() => onSelect && onSelect(item.url)}
-              >
-                <CardContent className="p-0">
-                  <div className="relative aspect-video bg-muted/30">
-                    <Image
-                      src={item.url}
-                      alt={item.alt || 'Media item'}
-                      fill
-                      className="object-contain rounded-t-lg p-2"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                  </div>
-                  <div className="p-4 space-y-2">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="font-medium truncate flex-1">{item.filename}</p>
-                      <div className="flex items-center gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            copyToClipboard(item.url);
-                          }}
-                        >
-                          <Copy className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEditingItem(item);
-                          }}
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(item._id);
-                          }}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <span>{formatFileSize(item.size)}</span>
-                      <span>•</span>
-                      <span>{new Date(item.createdAt).toLocaleDateString()}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      {renderUsageInfo(item.usages)}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          ) : (
-            paginatedItems.map((item) => (
-              <Card
-                key={item._id}
-                className={cn(
-                  "group relative overflow-visible hover:border-primary/50 transition-colors",
-                  onSelect && "cursor-pointer"
-                )}
-                onClick={() => onSelect && onSelect(item.url)}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-6">
-                    <div className="relative h-24 w-36 shrink-0 bg-muted/30">
-                      <Image
-                        src={item.url}
-                        alt={item.alt || 'Media item'}
-                        fill
-                        className="object-contain rounded-md p-1"
-                        sizes="(max-width: 768px) 144px, 144px"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="space-y-1 flex-1 min-w-0">
-                          <p className="font-medium truncate">{item.filename}</p>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <span>{formatFileSize(item.size)}</span>
-                            <span>•</span>
-                            <span>{new Date(item.createdAt).toLocaleDateString()}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {renderUsageInfo(item.usages)}
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-1.5">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              copyToClipboard(item.url);
-                            }}
-                          >
-                            <Copy className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setEditingItem(item);
-                            }}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDelete(item._id);
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
+        <div
+          className={cn(
+            viewMode === 'grid'
+              ? `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-${gridSize} gap-6`
+              : 'flex flex-col space-y-4'
           )}
+        >
+          {isLoading
+            ? Array.from({ length: 6 }).map((_, index) => (
+                <Card key={index} className="aspect-video animate-pulse bg-muted" />
+              ))
+            : viewMode === 'grid'
+              ? paginatedItems.map(item => (
+                  <Card
+                    key={item._id}
+                    className="group relative overflow-visible border hover:border-primary/50 transition-colors cursor-pointer"
+                    onClick={() => onSelect && onSelect(item.url)}
+                  >
+                    <CardContent className="p-0">
+                      <div className="relative aspect-video bg-muted/30">
+                        <Image
+                          src={item.url}
+                          alt={item.alt || 'Media item'}
+                          fill
+                          className="object-contain rounded-t-lg p-2"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
+                      </div>
+                      <div className="p-4 space-y-2">
+                        <div className="flex items-center justify-between gap-2">
+                          <p className="font-medium truncate flex-1">{item.filename}</p>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={e => {
+                                e.stopPropagation();
+                                copyToClipboard(item.url);
+                              }}
+                            >
+                              <Copy className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={e => {
+                                e.stopPropagation();
+                                setEditingItem(item);
+                              }}
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive"
+                              onClick={e => {
+                                e.stopPropagation();
+                                handleDelete(item._id);
+                              }}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <span>{formatFileSize(item.size)}</span>
+                          <span>•</span>
+                          <span>{new Date(item.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          {renderUsageInfo(item.usages)}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              : paginatedItems.map(item => (
+                  <Card
+                    key={item._id}
+                    className={cn(
+                      'group relative overflow-visible hover:border-primary/50 transition-colors',
+                      onSelect && 'cursor-pointer'
+                    )}
+                    onClick={() => onSelect && onSelect(item.url)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-6">
+                        <div className="relative h-24 w-36 shrink-0 bg-muted/30">
+                          <Image
+                            src={item.url}
+                            alt={item.alt || 'Media item'}
+                            fill
+                            className="object-contain rounded-md p-1"
+                            sizes="(max-width: 768px) 144px, 144px"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="space-y-1 flex-1 min-w-0">
+                              <p className="font-medium truncate">{item.filename}</p>
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <span>{formatFileSize(item.size)}</span>
+                                <span>•</span>
+                                <span>{new Date(item.createdAt).toLocaleDateString()}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {renderUsageInfo(item.usages)}
+                              </div>
+                            </div>
+                            <div className="flex items-start gap-1.5">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  copyToClipboard(item.url);
+                                }}
+                              >
+                                <Copy className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  setEditingItem(item);
+                                }}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  handleDelete(item._id);
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
         </div>
 
         {/* Pagination */}
@@ -512,7 +526,8 @@ export function MediaManagement({
             <DialogHeader>
               <DialogTitle>Modifier les métadonnées</DialogTitle>
               <p className="text-sm text-muted-foreground">
-                Modifiez les informations de votre fichier média ici. Cliquez sur enregistrer une fois terminé.
+                Modifiez les informations de votre fichier média ici. Cliquez sur enregistrer une
+                fois terminé.
               </p>
             </DialogHeader>
             <div className="space-y-4">
@@ -521,7 +536,7 @@ export function MediaManagement({
                 <Input
                   id="title"
                   value={editForm.title}
-                  onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                  onChange={e => setEditForm({ ...editForm, title: e.target.value })}
                 />
               </div>
               <div>
@@ -529,7 +544,7 @@ export function MediaManagement({
                 <Textarea
                   id="description"
                   value={editForm.description}
-                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                  onChange={e => setEditForm({ ...editForm, description: e.target.value })}
                 />
               </div>
               <div>
@@ -537,7 +552,7 @@ export function MediaManagement({
                 <Input
                   id="altText"
                   value={editForm.altText}
-                  onChange={(e) => setEditForm({ ...editForm, altText: e.target.value })}
+                  onChange={e => setEditForm({ ...editForm, altText: e.target.value })}
                 />
               </div>
               <div>
@@ -545,7 +560,7 @@ export function MediaManagement({
                 <Input
                   id="seoTitle"
                   value={editForm.seoTitle}
-                  onChange={(e) => setEditForm({ ...editForm, seoTitle: e.target.value })}
+                  onChange={e => setEditForm({ ...editForm, seoTitle: e.target.value })}
                 />
               </div>
               <div>
@@ -553,7 +568,7 @@ export function MediaManagement({
                 <Textarea
                   id="seoDescription"
                   value={editForm.seoDescription}
-                  onChange={(e) => setEditForm({ ...editForm, seoDescription: e.target.value })}
+                  onChange={e => setEditForm({ ...editForm, seoDescription: e.target.value })}
                 />
               </div>
             </div>
@@ -561,9 +576,7 @@ export function MediaManagement({
               <Button variant="outline" onClick={() => setEditingItem(null)}>
                 Annuler
               </Button>
-              <Button onClick={handleMetadataUpdate}>
-                Sauvegarder
-              </Button>
+              <Button onClick={handleMetadataUpdate}>Sauvegarder</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

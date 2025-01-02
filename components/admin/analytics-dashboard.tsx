@@ -1,7 +1,20 @@
-"use client";
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Activity, Clock, Download, MessageSquare, Users } from 'lucide-react';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
+
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -9,18 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
-import { Download, Users, Clock, Activity, MessageSquare } from 'lucide-react';
 
 interface AnalyticsDashboardProps {
   eventId: string;
@@ -122,17 +123,8 @@ export function AnalyticsDashboard({ eventId }: AnalyticsDashboardProps) {
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={viewerData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="hour" 
-                    tick={{ fontSize: 12 }}
-                    height={50}
-                    tickMargin={10}
-                  />
-                  <YAxis 
-                    tick={{ fontSize: 12 }} 
-                    width={40}
-                    tickMargin={10}
-                  />
+                  <XAxis dataKey="hour" tick={{ fontSize: 12 }} height={50} tickMargin={10} />
+                  <YAxis tick={{ fontSize: 12 }} width={40} tickMargin={10} />
                   <Tooltip />
                   <Line
                     type="monotone"
@@ -148,32 +140,17 @@ export function AnalyticsDashboard({ eventId }: AnalyticsDashboardProps) {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">
-              Engagement Breakdown
-            </CardTitle>
+            <CardTitle className="text-lg font-semibold">Engagement Breakdown</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={engagementData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="name" 
-                    tick={{ fontSize: 12 }}
-                    height={50}
-                    tickMargin={10}
-                  />
-                  <YAxis 
-                    tick={{ fontSize: 12 }} 
-                    width={40}
-                    tickMargin={10}
-                  />
+                  <XAxis dataKey="name" tick={{ fontSize: 12 }} height={50} tickMargin={10} />
+                  <YAxis tick={{ fontSize: 12 }} width={40} tickMargin={10} />
                   <Tooltip />
-                  <Bar
-                    dataKey="value"
-                    fill="hsl(var(--primary))"
-                    radius={[4, 4, 0, 0]}
-                  />
+                  <Bar dataKey="value" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

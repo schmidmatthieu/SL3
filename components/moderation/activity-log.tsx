@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
 import { useEffect, useState } from 'react';
+import { AlertCircle, Ban, MessageSquare, UserPlus } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
-import { AlertCircle, UserPlus, MessageSquare, Ban } from 'lucide-react';
 
 interface LogEntry {
   id: string;
@@ -62,12 +63,7 @@ export function ActivityLog() {
 
     // Simulate new logs
     const interval = setInterval(() => {
-      const types: ('warning' | 'user' | 'chat' | 'mod')[] = [
-        'warning',
-        'user',
-        'chat',
-        'mod',
-      ];
+      const types: ('warning' | 'user' | 'chat' | 'mod')[] = ['warning', 'user', 'chat', 'mod'];
       const type = types[Math.floor(Math.random() * types.length)];
       const newLog: LogEntry = {
         id: Math.random().toString(36).substr(2, 9),
@@ -76,7 +72,7 @@ export function ActivityLog() {
         timestamp: new Date(),
       };
 
-      setLogs((prev) => [newLog, ...prev].slice(0, 50));
+      setLogs(prev => [newLog, ...prev].slice(0, 50));
     }, 5000);
 
     return () => clearInterval(interval);
@@ -90,16 +86,9 @@ export function ActivityLog() {
       <CardContent className="p-0 flex-1 min-h-0">
         <ScrollArea className="h-full">
           <div className="divide-y">
-            {logs.map((log) => (
-              <div
-                key={log.id}
-                className="flex items-start gap-3 p-4"
-              >
-                <div
-                  className={`mt-1 h-2 w-2 shrink-0 rounded-full ${
-                    typeColors[log.type]
-                  }`}
-                />
+            {logs.map(log => (
+              <div key={log.id} className="flex items-start gap-3 p-4">
+                <div className={`mt-1 h-2 w-2 shrink-0 rounded-full ${typeColors[log.type]}`} />
                 <div className="space-y-1">
                   <p>{log.message}</p>
                   <p className="text-xs text-muted-foreground" suppressHydrationWarning>

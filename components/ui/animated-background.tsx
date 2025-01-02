@@ -15,7 +15,7 @@ export function AnimatedBackground() {
     <div className="fixed inset-0 -z-10 overflow-hidden">
       {/* Subtle gradient background */}
       <div className="bg-gradient" />
-      
+
       {/* Subtle grid lines */}
       <div className="bg-lines" />
     </div>

@@ -1,11 +1,12 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Eye, Maximize2, Settings } from 'lucide-react';
 import Image from 'next/image';
+import { Eye, Maximize2, Settings } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface StreamPreviewProps {
   roomId: string;
@@ -19,9 +20,7 @@ export function StreamPreview({ roomId }: StreamPreviewProps) {
       <CardHeader className="p-4 flex-row items-center justify-between">
         <CardTitle className="text-lg font-semibold">Stream Preview</CardTitle>
         <div className="flex items-center gap-2">
-          <Badge variant={isLive ? "default" : "secondary"}>
-            {isLive ? "LIVE" : "Preview"}
-          </Badge>
+          <Badge variant={isLive ? 'default' : 'secondary'}>{isLive ? 'LIVE' : 'Preview'}</Badge>
           <Button variant="ghost" size="icon">
             <Settings className="h-4 w-4" />
           </Button>

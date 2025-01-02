@@ -1,12 +1,15 @@
-"use client";
+'use client';
 
 import { useEffect, useRef } from 'react';
 import videojs from 'video.js';
+
 import 'video.js/dist/video-js.css';
+
 import type Player from 'video.js/dist/types/player';
-import { YouTubePlayer } from '@/components/video/youtube-player';
-import { VimeoPlayer } from '@/components/video/vimeo-player';
+
 import { Card } from '@/components/ui/card';
+import { VimeoPlayer } from '@/components/video/vimeo-player';
+import { YouTubePlayer } from '@/components/video/youtube-player';
 
 interface VideoPlayerProps {
   url: string;
@@ -23,19 +26,19 @@ interface VideoPlayerProps {
   };
 }
 
-export function VideoPlayer({ 
-  url, 
-  type, 
-  vodSource, 
-  autoplay = true, 
-  quality = 'auto', 
+export function VideoPlayer({
+  url,
+  type,
+  vodSource,
+  autoplay = true,
+  quality = 'auto',
   className,
   playerSettings = {
     theme: 'city',
     playbackRates: [0.5, 1, 1.5, 2],
     fluid: true,
     responsive: true,
-  }
+  },
 }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const playerRef = useRef<Player | null>(null);
@@ -60,23 +63,25 @@ export function VideoPlayer({
         responsive: playerSettings.responsive,
         fluid: playerSettings.fluid,
         playbackRates: playerSettings.playbackRates,
-        sources: [{
-          src: url,
-          type: url.includes('.m3u8') ? 'application/x-mpegURL' : 'video/mp4'
-        }],
+        sources: [
+          {
+            src: url,
+            type: url.includes('.m3u8') ? 'application/x-mpegURL' : 'video/mp4',
+          },
+        ],
         html5: {
           hls: {
             enableLowInitialPlaylist: true,
             smoothQualityChange: true,
             overrideNative: true,
-          }
-        }
+          },
+        },
       });
 
       // Add quality selector if HLS stream
       if (url.includes('.m3u8')) {
         playerRef.current.qualityLevels();
-        
+
         // Set initial quality if specified
         if (quality !== 'auto' && playerRef.current.qualityLevels()) {
           const levels = playerRef.current.qualityLevels();
@@ -99,7 +104,9 @@ export function VideoPlayer({
   // Helper to extract video IDs
   const getVideoId = (url: string, source: 'youtube' | 'vimeo'): string => {
     if (source === 'youtube') {
-      const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/);
+      const match = url.match(
+        /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/
+      );
       return match?.[1] || '';
     } else {
       const match = url.match(/(?:vimeo\.com\/)(\d+)/);
@@ -113,11 +120,7 @@ export function VideoPlayer({
       const videoId = getVideoId(url, 'youtube');
       return (
         <Card className={className}>
-          <YouTubePlayer
-            videoId={videoId}
-            autoplay={autoplay}
-            quality={quality}
-          />
+          <YouTubePlayer videoId={videoId} autoplay={autoplay} quality={quality} />
         </Card>
       );
     }
@@ -126,11 +129,7 @@ export function VideoPlayer({
       const videoId = getVideoId(url, 'vimeo');
       return (
         <Card className={className}>
-          <VimeoPlayer
-            videoId={videoId}
-            autoplay={autoplay}
-            quality={quality}
-          />
+          <VimeoPlayer videoId={videoId} autoplay={autoplay} quality={quality} />
         </Card>
       );
     }

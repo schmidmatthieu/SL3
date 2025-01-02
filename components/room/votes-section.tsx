@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
+
+import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Button } from '@/components/ui/button';
 
 interface Poll {
   id: string;
@@ -44,9 +45,7 @@ export function VotesSection({ roomId }: VotesSectionProps) {
     setPoll(prev => ({
       ...prev,
       options: prev.options.map(opt =>
-        opt.id === optionId
-          ? { ...opt, votes: opt.votes + 1 }
-          : opt
+        opt.id === optionId ? { ...opt, votes: opt.votes + 1 } : opt
       ),
       totalVotes: prev.totalVotes + 1,
     }));
@@ -62,7 +61,7 @@ export function VotesSection({ roomId }: VotesSectionProps) {
         </p>
 
         <div className="space-y-4">
-          {poll.options.map((option) => {
+          {poll.options.map(option => {
             const percentage = Math.round((option.votes / poll.totalVotes) * 100) || 0;
             const isSelected = userVote === option.id;
 
@@ -70,21 +69,16 @@ export function VotesSection({ roomId }: VotesSectionProps) {
               <div key={option.id} className="space-y-2">
                 <div className="flex justify-between items-center">
                   <Button
-                    variant={isSelected ? "secondary" : "ghost"}
+                    variant={isSelected ? 'secondary' : 'ghost'}
                     className="w-full justify-start font-normal"
                     onClick={() => handleVote(option.id)}
                     disabled={!!userVote || !poll.isActive}
                   >
                     {option.text}
                   </Button>
-                  <span className="text-sm font-medium ml-2">
-                    {percentage}%
-                  </span>
+                  <span className="text-sm font-medium ml-2">{percentage}%</span>
                 </div>
-                <Progress
-                  value={percentage}
-                  className={isSelected ? "bg-primary/20" : ""}
-                />
+                <Progress value={percentage} className={isSelected ? 'bg-primary/20' : ''} />
               </div>
             );
           })}

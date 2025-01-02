@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Eye } from 'lucide-react';
-import { VideoPlayer } from '@/components/video/video-player';
+
 import { useStreamStore } from '@/lib/stores/stream-store';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { VideoPlayer } from '@/components/video/video-player';
 
 interface StreamPreviewProps {
   roomId: string;

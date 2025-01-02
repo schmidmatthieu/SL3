@@ -1,9 +1,10 @@
 'use client';
 
 import { createContext, useContext, useEffect } from 'react';
+import { useAuthStore } from '@/store/auth-store';
+
 import type { User } from '@/types/auth';
 import type { Profile } from '@/types/profile';
-import { useAuthStore } from '@/store/auth-store';
 
 type AuthContextType = {
   user: User | null;
@@ -14,18 +15,18 @@ type AuthContextType = {
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ 
-  children,
-}: { 
-  children: React.ReactNode;
-}) {
-  const { user, profile, loading, setUser, setProfile, setLoading, signOut, setToken } = useAuthStore();
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const { user, profile, loading, setUser, setProfile, setLoading, signOut, setToken } =
+    useAuthStore();
 
   useEffect(() => {
     const getSession = async () => {
       try {
-        const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
-        
+        const token = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('token='))
+          ?.split('=')[1];
+
         if (!token) {
           setLoading(false);
           return;
@@ -37,10 +38,10 @@ export function AuthProvider({
         // Fetch user data from API
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/me`, {
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
           },
-          credentials: 'include'
+          credentials: 'include',
         });
 
         if (!response.ok) {
@@ -48,7 +49,7 @@ export function AuthProvider({
         }
 
         const data = await response.json();
-        
+
         // Set user and profile data if data exists
         if (data) {
           // Créer un objet user avec uniquement les propriétés nécessaires
@@ -57,7 +58,7 @@ export function AuthProvider({
             email: data.email,
             role: data.role,
           };
-          
+
           // Créer un profil complet avec toutes les informations
           const profile = {
             id: data.id,

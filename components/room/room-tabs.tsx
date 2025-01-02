@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { QASection } from "@/components/room/qa-section";
-import { VotesSection } from "@/components/room/votes-section";
-import { FilesSection } from "@/components/room/files-section";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { FilesSection } from '@/components/room/files-section';
+import { QASection } from '@/components/room/qa-section';
+import { VotesSection } from '@/components/room/votes-section';
 
 interface RoomTabsProps {
   roomId: string;

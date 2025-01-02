@@ -2,14 +2,22 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/store/auth-store';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/components/ui/use-toast';
-import { useAuthStore } from '@/store/auth-store';
 
 export function AuthForm() {
   const [email, setEmail] = useState('');
@@ -24,7 +32,7 @@ export function AuthForm() {
     e.preventDefault();
     try {
       setLoading(true);
-      
+
       const response = await fetch('http://localhost:3001/api/auth/login', {
         method: 'POST',
         headers: {
@@ -43,7 +51,7 @@ export function AuthForm() {
 
       // Store the token in cookie and user data in localStorage
       document.cookie = `token=${data.token}; path=/; max-age=2592000; SameSite=Lax`; // 30 days
-      
+
       if (data.user) {
         const user = {
           id: data.user.id,
@@ -51,9 +59,9 @@ export function AuthForm() {
           username: data.user.username,
           role: data.user.role,
           createdAt: data.user.createdAt,
-          updatedAt: data.user.updatedAt
+          updatedAt: data.user.updatedAt,
         };
-        
+
         const profile = {
           id: data.user.id,
           userId: data.user.id,
@@ -65,7 +73,7 @@ export function AuthForm() {
           preferredLanguage: data.user.preferredLanguage,
           theme: data.user.theme,
           createdAt: data.user.createdAt,
-          updatedAt: data.user.updatedAt
+          updatedAt: data.user.updatedAt,
         };
 
         localStorage.setItem('user', JSON.stringify(user));
@@ -75,18 +83,18 @@ export function AuthForm() {
         setUser(user);
         setProfile(profile);
       }
-      
+
       toast({
-        title: "Success",
-        description: "You have been signed in successfully.",
+        title: 'Success',
+        description: 'You have been signed in successfully.',
       });
 
       router.push('/events');
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: 'Error',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -117,7 +125,7 @@ export function AuthForm() {
 
       // Store the token in cookie and user data in localStorage
       document.cookie = `token=${data.token}; path=/; max-age=2592000; SameSite=Lax`; // 30 days
-      
+
       if (data.user) {
         const user = {
           id: data.user.id,
@@ -125,9 +133,9 @@ export function AuthForm() {
           username: data.user.username,
           role: data.user.role,
           createdAt: data.user.createdAt,
-          updatedAt: data.user.updatedAt
+          updatedAt: data.user.updatedAt,
         };
-        
+
         const profile = {
           id: data.user.id,
           userId: data.user.id,
@@ -139,7 +147,7 @@ export function AuthForm() {
           preferredLanguage: data.user.preferredLanguage,
           theme: data.user.theme,
           createdAt: data.user.createdAt,
-          updatedAt: data.user.updatedAt
+          updatedAt: data.user.updatedAt,
         };
 
         localStorage.setItem('user', JSON.stringify(user));
@@ -151,16 +159,16 @@ export function AuthForm() {
       }
 
       toast({
-        title: "Success",
-        description: "Account created successfully.",
+        title: 'Success',
+        description: 'Account created successfully.',
       });
 
       router.push('/events');
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: 'Error',
         description: error.message,
-        variant: "destructive",
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -176,7 +184,7 @@ export function AuthForm() {
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
           </TabsList>
         </CardHeader>
-        
+
         <CardContent>
           <TabsContent value="signin">
             <form onSubmit={handleSignIn} className="space-y-4">
@@ -187,18 +195,18 @@ export function AuthForm() {
                   type="email"
                   placeholder="Enter your email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   required
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                   required
                 />
               </div>
@@ -218,7 +226,7 @@ export function AuthForm() {
                   type="email"
                   placeholder="Enter your email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   required
                 />
               </div>
@@ -230,18 +238,18 @@ export function AuthForm() {
                   type="text"
                   placeholder="Enter your desired username"
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={e => setUsername(e.target.value)}
                   required
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="signup-password">Password</Label>
                 <Input
                   id="signup-password"
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                   required
                 />
               </div>

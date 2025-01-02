@@ -1,23 +1,18 @@
-"use client";
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { AlertTriangle, Database, Download, MemoryStick, Server } from 'lucide-react';
 import {
-  LineChart,
+  CartesianGrid,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
 } from 'recharts';
-import {
-  Download,
-  Server,
-  Database,
-  MemoryStick,
-  AlertTriangle,
-} from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const systemMetrics = Array.from({ length: 24 }, (_, i) => ({
   time: `${i}:00`,
@@ -101,17 +96,8 @@ export function SystemOverview() {
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={systemMetrics}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="time" 
-                    tick={{ fontSize: 12 }}
-                    height={50}
-                    tickMargin={10}
-                  />
-                  <YAxis 
-                    tick={{ fontSize: 12 }} 
-                    width={40}
-                    tickMargin={10}
-                  />
+                  <XAxis dataKey="time" tick={{ fontSize: 12 }} height={50} tickMargin={10} />
+                  <YAxis tick={{ fontSize: 12 }} width={40} tickMargin={10} />
                   <Tooltip />
                   <Line
                     type="monotone"
@@ -153,9 +139,7 @@ export function SystemOverview() {
                   <p className="text-sm text-muted-foreground">
                     Server instance SL3-EU-1 is experiencing elevated memory usage
                   </p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Triggered 15 minutes ago
-                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">Triggered 15 minutes ago</p>
                 </div>
               </div>
 
@@ -166,9 +150,7 @@ export function SystemOverview() {
                   <p className="text-sm text-muted-foreground">
                     Increased query response times detected in primary database
                   </p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Triggered 45 minutes ago
-                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">Triggered 45 minutes ago</p>
                 </div>
               </div>
 
@@ -179,9 +161,7 @@ export function SystemOverview() {
                   <p className="text-sm text-muted-foreground">
                     Degraded performance in EU-West region
                   </p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Triggered 1 hour ago
-                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">Triggered 1 hour ago</p>
                 </div>
               </div>
             </div>

@@ -1,9 +1,11 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
+import { ArrowBigDown, ArrowBigUp, MessageSquare } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -11,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ArrowBigUp, ArrowBigDown, MessageSquare } from 'lucide-react';
 
 interface Question {
   id: string;
@@ -69,7 +70,7 @@ export function QASection({ roomId }: QASectionProps) {
 
   const sortedQuestions = [...questions].sort((a, b) => {
     if (sortBy === 'popular') {
-      return (b.upvotes - b.downvotes) - (a.upvotes - a.downvotes);
+      return b.upvotes - b.downvotes - (a.upvotes - a.downvotes);
     }
     return b.timestamp - a.timestamp;
   });
@@ -110,7 +111,7 @@ export function QASection({ roomId }: QASectionProps) {
       <form onSubmit={handleSubmit} className="flex gap-2">
         <Input
           value={newQuestion}
-          onChange={(e) => setNewQuestion(e.target.value)}
+          onChange={e => setNewQuestion(e.target.value)}
           placeholder="Ask a question..."
           className="flex-1"
         />
@@ -120,7 +121,7 @@ export function QASection({ roomId }: QASectionProps) {
       </form>
 
       <div className="space-y-3">
-        {sortedQuestions.map((question) => (
+        {sortedQuestions.map(question => (
           <Card key={question.id} className="p-4">
             <div className="flex gap-4">
               <div className="flex flex-col items-center gap-1">
@@ -132,9 +133,7 @@ export function QASection({ roomId }: QASectionProps) {
                 >
                   <ArrowBigUp className="h-6 w-6" />
                 </Button>
-                <span className="text-sm font-medium">
-                  {question.upvotes - question.downvotes}
-                </span>
+                <span className="text-sm font-medium">{question.upvotes - question.downvotes}</span>
                 <Button
                   variant="ghost"
                   size="sm"

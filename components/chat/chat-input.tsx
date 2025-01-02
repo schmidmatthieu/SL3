@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
-import { useState, useCallback } from 'react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { useCallback, useState } from 'react';
 import { Send, Smile } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 interface ChatInputProps {
   onSendMessage: (content: string) => void;
@@ -13,23 +14,26 @@ interface ChatInputProps {
 export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
   const [message, setMessage] = useState('');
 
-  const handleSubmit = useCallback((e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (message.trim() && !disabled) {
-      onSendMessage(message.trim());
-      setMessage('');
-    }
-  }, [message, onSendMessage, disabled]);
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+
+      if (message.trim() && !disabled) {
+        onSendMessage(message.trim());
+        setMessage('');
+      }
+    },
+    [message, onSendMessage, disabled]
+  );
 
   return (
     <div className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <form onSubmit={handleSubmit} className="p-4">
         <div className="flex items-center gap-2">
-          <Button 
-            type="button" 
-            size="icon" 
-            variant="ghost" 
+          <Button
+            type="button"
+            size="icon"
+            variant="ghost"
             className="shrink-0"
             disabled={disabled}
           >
@@ -37,13 +41,13 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
           </Button>
           <Input
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder={disabled ? "Sign in to chat" : "Send a message"}
+            onChange={e => setMessage(e.target.value)}
+            placeholder={disabled ? 'Sign in to chat' : 'Send a message'}
             disabled={disabled}
             className="flex-1 bg-muted/50"
           />
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             size="icon"
             className="shrink-0"
             disabled={disabled || !message.trim()}

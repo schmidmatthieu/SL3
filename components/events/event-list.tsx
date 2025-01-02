@@ -1,82 +1,84 @@
-'use client'
+'use client';
 
-import { useEffect, useState, useMemo } from 'react'
-import { useEvents } from '@/hooks/useEvents'
-import { EventCard } from './event-card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Skeleton } from '@/components/ui/skeleton'
-import { useTranslation } from 'react-i18next'
-import { EventFilters } from './event-filters'
-import type { Event } from '@/store/event.store'
+import { useEffect, useMemo, useState } from 'react';
+import type { Event } from '@/store/event.store';
+import { useTranslation } from 'react-i18next';
+
+import { useEvents } from '@/hooks/useEvents';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Skeleton } from '@/components/ui/skeleton';
+
+import { EventCard } from './event-card';
+import { EventFilters } from './event-filters';
 
 interface EventListProps {
-  userId?: string
+  userId?: string;
 }
 
 export function EventList({ userId }: EventListProps) {
-  const { events, isLoading, error, fetchEvents, fetchMyEvents } = useEvents(true)
-  const { t } = useTranslation()
-  const [isClient, setIsClient] = useState(false)
+  const { events, isLoading, error, fetchEvents, fetchMyEvents } = useEvents(true);
+  const { t } = useTranslation();
+  const [isClient, setIsClient] = useState(false);
   const [filters, setFilters] = useState<EventFilters>({
     search: '',
     status: [],
     sortBy: 'date-desc',
-  })
+  });
 
   useEffect(() => {
-    setIsClient(true)
-  }, [])
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
     if (userId) {
-      fetchMyEvents()
+      fetchMyEvents();
     } else {
-      fetchEvents()
+      fetchEvents();
     }
-  }, [userId, fetchEvents, fetchMyEvents])
+  }, [userId, fetchEvents, fetchMyEvents]);
 
   const filteredEvents = useMemo(() => {
-    let result = [...events]
+    let result = [...events];
 
     // Filtre par recherche
     if (filters.search) {
-      const searchLower = filters.search.toLowerCase()
+      const searchLower = filters.search.toLowerCase();
       result = result.filter(
         event =>
           event.title.toLowerCase().includes(searchLower) ||
           event.description.toLowerCase().includes(searchLower)
-      )
+      );
     }
 
     // Filtre par statut
     if (filters.status.length > 0) {
-      result = result.filter(event => filters.status.includes(event.status))
+      result = result.filter(event => filters.status.includes(event.status));
     }
 
     // Tri
     result.sort((a, b) => {
       // Les événements en vedette sont toujours en premier
       if (a.featured !== b.featured) {
-        return a.featured ? -1 : 1
+        return a.featured ? -1 : 1;
       }
 
       // Ensuite, appliquer le tri sélectionné
       switch (filters.sortBy) {
         case 'date-asc':
-          return new Date(a.startDateTime).getTime() - new Date(b.startDateTime).getTime()
+          return new Date(a.startDateTime).getTime() - new Date(b.startDateTime).getTime();
         case 'date-desc':
-          return new Date(b.startDateTime).getTime() - new Date(a.startDateTime).getTime()
+          return new Date(b.startDateTime).getTime() - new Date(a.startDateTime).getTime();
         case 'title-asc':
-          return a.title.localeCompare(b.title)
+          return a.title.localeCompare(b.title);
         case 'title-desc':
-          return b.title.localeCompare(a.title)
+          return b.title.localeCompare(a.title);
         default:
-          return 0
+          return 0;
       }
-    })
+    });
 
-    return result
-  }, [events, filters])
+    return result;
+  }, [events, filters]);
 
   if (isLoading) {
     return (
@@ -88,53 +90,51 @@ export function EventList({ userId }: EventListProps) {
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   const staticContent = {
-    error: "An error occurred while loading events.",
+    error: 'An error occurred while loading events.',
     empty: {
       user: "You haven't created any events yet.",
-      general: "No events found."
-    }
-  }
+      general: 'No events found.',
+    },
+  };
 
   const translatedContent = {
     error: t('events.list.error'),
     empty: {
       user: t('events.list.empty.user'),
-      general: t('events.list.empty.general')
-    }
-  }
+      general: t('events.list.empty.general'),
+    },
+  };
 
-  const content = isClient ? translatedContent : staticContent
+  const content = isClient ? translatedContent : staticContent;
 
   if (error) {
     return (
       <Alert variant="destructive">
         <AlertDescription>{content.error}</AlertDescription>
       </Alert>
-    )
+    );
   }
 
   if (!events.length) {
     return (
       <Alert>
-        <AlertDescription>
-          {userId ? content.empty.user : content.empty.general}
-        </AlertDescription>
+        <AlertDescription>{userId ? content.empty.user : content.empty.general}</AlertDescription>
       </Alert>
-    )
+    );
   }
 
   return (
     <div className="space-y-6">
       <EventFilters onFiltersChange={setFilters} />
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {filteredEvents.map((event) => (
+        {filteredEvents.map(event => (
           <EventCard key={event._id || event.id} event={event} />
         ))}
       </div>
     </div>
-  )
+  );
 }

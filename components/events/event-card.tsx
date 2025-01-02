@@ -1,21 +1,23 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { format } from 'date-fns';
 import { useAuthStore } from '@/store/auth-store';
-import { useEvents } from '@/hooks/useEvents';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Event } from '@/store/event.store';
-import { Settings, Calendar, Clock, Users, ArrowRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Separator } from '@/components/ui/separator';
+import { format } from 'date-fns';
+import { ArrowRight, Calendar, Clock, Settings, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useState, useEffect } from 'react';
 
-const DEFAULT_EVENT_IMAGE = 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=2000&auto=format&fit=crop';
+import { cn } from '@/lib/utils';
+import { useEvents } from '@/hooks/useEvents';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+
+const DEFAULT_EVENT_IMAGE =
+  'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=2000&auto=format&fit=crop';
 
 interface EventCardProps {
   event: Event;
@@ -52,19 +54,19 @@ export function EventCard({ event }: EventCardProps) {
 
   const staticContent = {
     status: {
-      live: "Live",
-      scheduled: "Scheduled",
-      ended: "Ended",
-      draft: "Draft",
-      cancelled: "Cancelled",
-      postponed: "Postponed",
-      active: "Live"
+      live: 'Live',
+      scheduled: 'Scheduled',
+      ended: 'Ended',
+      draft: 'Draft',
+      cancelled: 'Cancelled',
+      postponed: 'Postponed',
+      active: 'Live',
     },
     card: {
-      startDate: "Start Date",
-      endDate: "End Date",
-      manageEvent: "Manage Event"
-    }
+      startDate: 'Start Date',
+      endDate: 'End Date',
+      manageEvent: 'Manage Event',
+    },
   };
 
   const translatedContent = {
@@ -75,22 +77,24 @@ export function EventCard({ event }: EventCardProps) {
       draft: t('events.status.draft'),
       cancelled: t('events.status.cancelled'),
       postponed: t('events.status.postponed'),
-      active: t('events.status.active')
+      active: t('events.status.active'),
     },
     card: {
       startDate: t('events.card.startDate'),
       endDate: t('events.card.endDate'),
       manageEvent: t('events.card.manage'),
-      featured: t('events.card.featured')
-    }
+      featured: t('events.card.featured'),
+    },
   };
 
   const content = isClient ? translatedContent : staticContent;
 
   const getDisplayStatus = (status: string) => {
     const statusKey = status.toLowerCase();
-    return content.status[statusKey as keyof typeof content.status] || 
-           status.charAt(0).toUpperCase() + status.slice(1);
+    return (
+      content.status[statusKey as keyof typeof content.status] ||
+      status.charAt(0).toUpperCase() + status.slice(1)
+    );
   };
 
   // On utilise directement l'événement passé en props
@@ -99,34 +103,31 @@ export function EventCard({ event }: EventCardProps) {
   return (
     <Card
       className={cn(
-        "group relative overflow-hidden",
-        "bg-background transition-all duration-300",
-        "border border-primary-100/30 dark:border-primary-800/30",
-        "hover:border-primary-200/50 dark:hover:border-primary-700/50",
-        "hover:shadow-lg dark:hover:shadow-primary-950/10",
-        displayEvent.status === 'cancelled' && "opacity-50",
+        'group relative overflow-hidden',
+        'bg-background transition-all duration-300',
+        'border border-primary-100/30 dark:border-primary-800/30',
+        'hover:border-primary-200/50 dark:hover:border-primary-700/50',
+        'hover:shadow-lg dark:hover:shadow-primary-950/10',
+        displayEvent.status === 'cancelled' && 'opacity-50',
         displayEvent.featured && [
-          "border-2 border-primary hover:border-primary/80",
-          "shadow-md hover:shadow-xl",
-          "dark:shadow-primary-950/20",
-          "scale-[1.02]",
-          "bg-gradient-to-br from-primary-50/50 to-background/50",
-          "dark:from-primary-950/50 dark:to-background/50"
+          'border-2 border-primary hover:border-primary/80',
+          'shadow-md hover:shadow-xl',
+          'dark:shadow-primary-950/20',
+          'scale-[1.02]',
+          'bg-gradient-to-br from-primary-50/50 to-background/50',
+          'dark:from-primary-950/50 dark:to-background/50',
         ]
       )}
     >
       {displayEvent.featured && (
         <div className="absolute top-4 left-4 z-20">
-          <Badge 
-            variant="default" 
-            className="bg-primary text-white font-medium shadow-sm"
-          >
+          <Badge variant="default" className="bg-primary text-white font-medium shadow-sm">
             {t('events.card.featured')}
           </Badge>
         </div>
       )}
       {displayEvent.status !== 'cancelled' && (
-        <Link 
+        <Link
           href={`/events/${displayEvent.id || displayEvent._id}`}
           className="absolute inset-0 z-10"
           aria-label={`View details for ${displayEvent.title}`}
@@ -134,9 +135,7 @@ export function EventCard({ event }: EventCardProps) {
       )}
       <CardContent className="p-0">
         <div className="relative w-full h-48 overflow-hidden">
-          <div 
-            className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent z-10" 
-          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent z-10" />
           <img
             src={displayEvent.imageUrl || DEFAULT_EVENT_IMAGE}
             alt={displayEvent.title}
@@ -144,20 +143,18 @@ export function EventCard({ event }: EventCardProps) {
           />
           <Badge
             className={cn(
-              "absolute top-4 right-4 z-10",
-              "font-medium",
+              'absolute top-4 right-4 z-10',
+              'font-medium',
               getStatusColor(displayEvent.status)
             )}
           >
             {getDisplayStatus(displayEvent.status)}
           </Badge>
         </div>
-            
+
         <div className="p-6">
           <div className="space-y-2 mb-6">
-            <h3 className="text-xl font-semibold tracking-tight">
-              {displayEvent.title}
-            </h3>
+            <h3 className="text-xl font-semibold tracking-tight">{displayEvent.title}</h3>
             <p className="text-primary-600/70 dark:text-primary-300/70 line-clamp-2">
               {displayEvent.description}
             </p>
@@ -167,7 +164,9 @@ export function EventCard({ event }: EventCardProps) {
             <div className="flex items-center space-x-3">
               <Calendar className="h-4 w-4 text-primary-600 dark:text-primary-400" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-primary-900 dark:text-primary-100">{content.card.startDate}</p>
+                <p className="text-sm font-medium text-primary-900 dark:text-primary-100">
+                  {content.card.startDate}
+                </p>
                 <div className="flex items-center space-x-2">
                   <p className="text-sm text-primary-600/70 dark:text-primary-300/70 truncate">
                     {format(new Date(displayEvent.startDateTime), 'PPP')}
@@ -183,7 +182,9 @@ export function EventCard({ event }: EventCardProps) {
             <div className="flex items-center space-x-3">
               <Clock className="h-4 w-4 text-primary-600 dark:text-primary-400" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-primary-900 dark:text-primary-100">{content.card.endDate}</p>
+                <p className="text-sm font-medium text-primary-900 dark:text-primary-100">
+                  {content.card.endDate}
+                </p>
                 <div className="flex items-center space-x-2">
                   <p className="text-sm text-primary-600/70 dark:text-primary-300/70 truncate">
                     {format(new Date(displayEvent.endDateTime), 'PPP')}

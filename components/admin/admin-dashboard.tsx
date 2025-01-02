@@ -1,18 +1,27 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth-store';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { SystemOverview } from '@/components/admin/system-overview';
-import { EventsMonitoring } from '@/components/admin/events-monitoring';
-import { IncidentLogs } from '@/components/admin/incident-logs';
-import { GlobalSettings } from '@/components/admin/global-settings';
-import { StyleManagement } from '@/components/admin/style-management';
-import { MediaManagement } from '@/components/admin/media-management';
+import {
+  Activity,
+  AlertTriangle,
+  ArrowLeft,
+  Image,
+  Paintbrush,
+  Settings,
+  Shield,
+} from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Activity, Shield, AlertTriangle, Settings, Paintbrush, Image } from 'lucide-react';
-import Link from 'next/link';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { EventsMonitoring } from '@/components/admin/events-monitoring';
+import { GlobalSettings } from '@/components/admin/global-settings';
+import { IncidentLogs } from '@/components/admin/incident-logs';
+import { MediaManagement } from '@/components/admin/media-management';
+import { StyleManagement } from '@/components/admin/style-management';
+import { SystemOverview } from '@/components/admin/system-overview';
 
 export function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -26,9 +35,11 @@ export function AdminDashboard() {
   }, [loading, user, profile, router]);
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">
-      <div className="text-lg">Loading...</div>
-    </div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
   }
 
   if (!user || profile?.role !== 'admin') {
@@ -48,9 +59,7 @@ export function AdminDashboard() {
               </Button>
               <div>
                 <h1 className="text-2xl font-bold tracking-tight">System Administration</h1>
-                <p className="text-muted-foreground">
-                  Monitor and manage the SL3 platform
-                </p>
+                <p className="text-muted-foreground">Monitor and manage the SL3 platform</p>
               </div>
             </div>
           </div>
@@ -58,11 +67,7 @@ export function AdminDashboard() {
       </div>
 
       <div className="container py-6">
-        <Tabs
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="space-y-6"
-        >
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <div className="flex items-center justify-between">
             <TabsList>
               <TabsTrigger value="overview">

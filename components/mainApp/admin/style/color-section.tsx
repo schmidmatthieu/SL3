@@ -1,21 +1,29 @@
 import React, { useEffect, useState } from 'react';
+import {
+  ColorSection as ColorSectionType,
+  ColorSectionType as SectionType,
+} from '@/apps/api/src/modules/styles/colors/types/color.types';
 import { useTranslation } from 'react-i18next';
+
 import { useStyleStore } from '@/lib/stores/style.store';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useToast } from '@/components/ui/use-toast';
+
 import { ColorPicker } from './color-picker';
 import { ColorVariantsPreview } from './color-variants-preview';
-import { useToast } from '@/components/ui/use-toast';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { ColorSection as ColorSectionType, ColorSectionType as SectionType } from '@/apps/api/src/modules/styles/colors/types/color.types';
 
 // Fonction de conversion HEX vers HSL
 const hexToHSL = (hex: string) => {
   // Gérer le cas avec transparence (#RRGGBBAA)
-  let r, g, b, a = 1;
-  
+  let r,
+    g,
+    b,
+    a = 1;
+
   if (hex.length === 9) {
     // Format #RRGGBBAA
     r = parseInt(hex.slice(1, 3), 16) / 255;
@@ -38,7 +46,7 @@ const hexToHSL = (hex: string) => {
   if (max !== min) {
     const d = max - min;
     s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    
+
     switch (max) {
       case r:
         h = (g - b) / d + (g < b ? 6 : 0);
@@ -50,7 +58,7 @@ const hexToHSL = (hex: string) => {
         h = (r - g) / d + 4;
         break;
     }
-    
+
     h /= 6;
   }
 
@@ -59,7 +67,7 @@ const hexToHSL = (hex: string) => {
     s: Math.round(s * 100),
     l: Math.round(l * 100),
     lPercent: Math.round(l * 100),
-    a: a // Ajouter la transparence
+    a: a, // Ajouter la transparence
   };
 };
 
@@ -71,7 +79,9 @@ const hslToHex = (h: number, s: number, l: number) => {
   const f = (n: number) => {
     const k = (n + h / 30) % 12;
     const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-    return Math.round(255 * color).toString(16).padStart(2, '0');
+    return Math.round(255 * color)
+      .toString(16)
+      .padStart(2, '0');
   };
   return `#${f(0)}${f(8)}${f(4)}`;
 };
@@ -97,9 +107,9 @@ const getColorFromCSS = (variableName: string, mode: 'light' | 'dark' | 'primary
   } else {
     cssVar = style.getPropertyValue(`--${variableName}`).trim();
   }
-  
+
   if (!cssVar) return '#000000';
-  
+
   const [h, s, l] = cssVar.split(' ').map(val => parseFloat(val.replace('%', '')));
   return hslToHex(h, s, l);
 };
@@ -109,7 +119,7 @@ export function ColorSection() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('primary');
   const [isDarkMode, setIsDarkMode] = useState(false);
-  
+
   // État du store
   const {
     config,
@@ -119,7 +129,7 @@ export function ColorSection() {
     currentSection,
     isPreviewActive,
     isLoading,
-    cancelPreview
+    cancelPreview,
   } = useStyleStore();
 
   // État pour tracker les modifications non sauvegardées
@@ -158,30 +168,30 @@ export function ColorSection() {
         };
 
         await updateColors({
-          ':root': colorVariables
+          ':root': colorVariables,
         });
 
         setColorValues(prev => ({
           ...prev,
-          [type]: color
+          [type]: color,
         }));
       } else {
         // Pour les couleurs système
         const hsl = hexToHSL(color);
         const selector = mode === 'dark' ? '.dark' : ':root';
-        
+
         await updateColors({
           [selector]: {
-            [`--${type}`]: `${hsl.h} ${hsl.s}% ${hsl.l}%`
-          }
+            [`--${type}`]: `${hsl.h} ${hsl.s}% ${hsl.l}%`,
+          },
         });
 
         setColorValues(prev => ({
           ...prev,
           [mode]: {
             ...prev[mode],
-            [type]: color
-          }
+            [type]: color,
+          },
         }));
       }
     } catch (error) {
@@ -304,7 +314,18 @@ export function ColorSection() {
       }
 
       // Mettre à jour les couleurs système light
-      const systemColors = ['background', 'foreground', 'card', 'popover', 'muted', 'accent', 'destructive', 'border', 'input', 'ring'];
+      const systemColors = [
+        'background',
+        'foreground',
+        'card',
+        'popover',
+        'muted',
+        'accent',
+        'destructive',
+        'border',
+        'input',
+        'ring',
+      ];
       systemColors.forEach(colorName => {
         if (config.colors[`--${colorName}`]) {
           const h = parseInt(config.colors[`--${colorName}`].split(' ')[0]);
@@ -349,14 +370,12 @@ export function ColorSection() {
                 <Card>
                   <CardHeader>
                     <CardTitle>{t('admin.style.colors.primary.title')}</CardTitle>
-                    <CardDescription>
-                      {t('admin.style.colors.primary.description')}
-                    </CardDescription>
+                    <CardDescription>{t('admin.style.colors.primary.description')}</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <ColorPicker
                       color={colorValues.primary}
-                      onChange={(color) => handleColorChange(color, 'primary')}
+                      onChange={color => handleColorChange(color, 'primary')}
                       disabled={false}
                     />
                     <ColorVariantsPreview colorType="primary" />
@@ -373,7 +392,7 @@ export function ColorSection() {
                   <CardContent className="space-y-4">
                     <ColorPicker
                       color={colorValues.secondary}
-                      onChange={(color) => handleColorChange(color, 'secondary')}
+                      onChange={color => handleColorChange(color, 'secondary')}
                       disabled={false}
                     />
                     <ColorVariantsPreview colorType="secondary" />
@@ -383,14 +402,12 @@ export function ColorSection() {
                 <Card>
                   <CardHeader>
                     <CardTitle>{t('admin.style.colors.third.title')}</CardTitle>
-                    <CardDescription>
-                      {t('admin.style.colors.third.description')}
-                    </CardDescription>
+                    <CardDescription>{t('admin.style.colors.third.description')}</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <ColorPicker
                       color={colorValues.third}
-                      onChange={(color) => handleColorChange(color, 'third')}
+                      onChange={color => handleColorChange(color, 'third')}
                       disabled={false}
                     />
                     <ColorVariantsPreview colorType="third" />
@@ -419,16 +436,18 @@ export function ColorSection() {
                         'muted',
                         'accent',
                         'popover',
-                        'card'
-                      ].map((type) => (
+                        'card',
+                      ].map(type => (
                         <Card key={type} className="p-2">
                           <CardHeader className="p-2">
-                            <CardTitle className="text-sm">{t(`admin.style.colors.system.${type}`)}</CardTitle>
+                            <CardTitle className="text-sm">
+                              {t(`admin.style.colors.system.${type}`)}
+                            </CardTitle>
                           </CardHeader>
                           <CardContent className="p-2">
                             <ColorPicker
                               color={colorValues.light[type]}
-                              onChange={(color) => handleColorChange(color, type, 'light')}
+                              onChange={color => handleColorChange(color, type, 'light')}
                               disabled={false}
                             />
                           </CardContent>
@@ -449,16 +468,18 @@ export function ColorSection() {
                         'muted',
                         'accent',
                         'popover',
-                        'card'
-                      ].map((type) => (
+                        'card',
+                      ].map(type => (
                         <Card key={type} className="p-2">
                           <CardHeader className="p-2">
-                            <CardTitle className="text-sm">{t(`admin.style.colors.system.${type}`)}</CardTitle>
+                            <CardTitle className="text-sm">
+                              {t(`admin.style.colors.system.${type}`)}
+                            </CardTitle>
                           </CardHeader>
                           <CardContent className="p-2">
                             <ColorPicker
                               color={colorValues.dark[type]}
-                              onChange={(color) => handleColorChange(color, type, 'dark')}
+                              onChange={color => handleColorChange(color, type, 'dark')}
                               disabled={false}
                             />
                           </CardContent>
@@ -473,26 +494,15 @@ export function ColorSection() {
 
           {/* Boutons d'action en bas */}
           <div className="flex justify-end gap-2 mt-4">
-            <Button
-              variant="outline"
-              onClick={handleReset}
-              disabled={isLoading}
-            >
+            <Button variant="outline" onClick={handleReset} disabled={isLoading}>
               {t('admin.style.reset.button')}
             </Button>
 
-            <Button
-              variant="outline"
-              onClick={handleCancel}
-              disabled={isLoading}
-            >
+            <Button variant="outline" onClick={handleCancel} disabled={isLoading}>
               {t('admin.style.cancel')}
             </Button>
 
-            <Button
-              onClick={handleApply}
-              disabled={isLoading || !config?.isDirty}
-            >
+            <Button onClick={handleApply} disabled={isLoading || !config?.isDirty}>
               {t('admin.style.apply')}
             </Button>
           </div>

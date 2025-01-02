@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
 import { Language } from '@/types/room';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 interface RoomFiltersProps {
   selectedLanguages: Language[];
@@ -13,7 +13,7 @@ const languages: { code: Language; label: string }[] = [
   { code: 'en', label: 'English' },
   { code: 'fr', label: 'Français' },
   { code: 'de', label: 'Deutsch' },
-  { code: 'it', label: 'Italiano' }
+  { code: 'it', label: 'Italiano' },
 ];
 
 export function RoomFilters({ selectedLanguages, onLanguageToggle }: RoomFiltersProps) {

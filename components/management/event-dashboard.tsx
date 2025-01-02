@@ -1,40 +1,41 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEventStore } from '@/store/event.store';
+import { format } from 'date-fns';
+import {
+  Activity,
+  AlertTriangle,
+  BarChart,
+  Calendar,
+  Clock,
+  Eye,
+  Lock,
+  MoreVertical,
+  Search,
+  Settings,
+  Shield,
+  Unlock,
+  Users,
+} from 'lucide-react';
+
 import { Event } from '@/types/event';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { BackButton } from '@/components/ui/back-button';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Search,
-  MoreVertical,
-  Users,
-  AlertTriangle,
-  Shield,
-  Eye,
-  Clock,
-  Activity,
-  Calendar,
-  BarChart,
-  Settings,
-  Lock,
-  Unlock,
-} from 'lucide-react';
-import { format } from 'date-fns';
-import { useRouter } from 'next/navigation';
-import { useEventStore } from '@/store/event.store';
-import { useState } from 'react';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
-import { BackButton } from '@/components/ui/back-button';
 
 interface EventDashboardProps {
   event: Event;
@@ -113,9 +114,9 @@ export function EventDashboard({ event, eventId }: EventDashboardProps) {
           <p className="text-muted-foreground mt-2">{event.description}</p>
         </div>
         <div className="flex gap-4">
-          <Button 
-            variant="outline" 
-            className="glass-effect" 
+          <Button
+            variant="outline"
+            className="glass-effect"
             onClick={() => navigateToEventPage('')}
           >
             <Eye className="mr-2 h-4 w-4" />
@@ -151,7 +152,7 @@ export function EventDashboard({ event, eventId }: EventDashboardProps) {
           </CardHeader>
           <CardContent>
             <div className="flex items-center space-x-2">
-              <div className={cn("h-3 w-3 rounded-full", getStatusColor(event.status))} />
+              <div className={cn('h-3 w-3 rounded-full', getStatusColor(event.status))} />
               <div className="text-2xl font-bold">{getDisplayStatus(event.status)}</div>
             </div>
           </CardContent>
@@ -163,9 +164,7 @@ export function EventDashboard({ event, eventId }: EventDashboardProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{event.rooms?.length || 0}</div>
-            <p className="text-xs text-muted-foreground">
-              Active Rooms
-            </p>
+            <p className="text-xs text-muted-foreground">Active Rooms</p>
           </CardContent>
         </Card>
         <Card className="glass-effect">
@@ -174,45 +173,41 @@ export function EventDashboard({ event, eventId }: EventDashboardProps) {
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {formatDate(event.startDateTime)}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              to {formatDate(event.endDateTime)}
-            </p>
+            <div className="text-2xl font-bold">{formatDate(event.startDateTime)}</div>
+            <p className="text-xs text-muted-foreground">to {formatDate(event.endDateTime)}</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Quick Actions */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-        <Button 
-          variant="outline" 
-          className="h-20 glass-effect" 
+        <Button
+          variant="outline"
+          className="h-20 glass-effect"
           onClick={() => navigateToEventPage('/rooms')}
         >
           <Users className="mr-2 h-4 w-4" />
           Manage Rooms
         </Button>
-        <Button 
-          variant="outline" 
-          className="h-20 glass-effect" 
+        <Button
+          variant="outline"
+          className="h-20 glass-effect"
           onClick={() => navigateToEventPage('/analytics')}
         >
           <BarChart className="mr-2 h-4 w-4" />
           View Analytics
         </Button>
-        <Button 
-          variant="outline" 
-          className="h-20 glass-effect" 
+        <Button
+          variant="outline"
+          className="h-20 glass-effect"
           onClick={() => navigateToEventPage('/settings')}
         >
           <Settings className="mr-2 h-4 w-4" />
           Event Settings
         </Button>
-        <Button 
-          variant="outline" 
-          className="h-20 glass-effect" 
+        <Button
+          variant="outline"
+          className="h-20 glass-effect"
           onClick={() => navigateToEventPage('/security')}
         >
           <Shield className="mr-2 h-4 w-4" />
@@ -244,15 +239,17 @@ export function EventDashboard({ event, eventId }: EventDashboardProps) {
           </CardContent>
         </Card>
         <div className="md:col-span-3">
-          <Button 
-            variant="outline" 
-            className="w-full h-[200px] glass-effect" 
+          <Button
+            variant="outline"
+            className="w-full h-[200px] glass-effect"
             onClick={() => navigateToEventPage('/speakers')}
           >
             <div className="flex flex-col items-center justify-center space-y-4">
               <Users className="h-12 w-12" />
               <div className="text-xl">Manage Speakers</div>
-              <div className="text-sm text-muted-foreground">Add, edit, or remove event speakers</div>
+              <div className="text-sm text-muted-foreground">
+                Add, edit, or remove event speakers
+              </div>
             </div>
           </Button>
         </div>

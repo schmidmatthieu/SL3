@@ -1,10 +1,13 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { AlertCircle, Clock, Plus, Users } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -12,8 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { AlertCircle, Plus, Clock, Users } from 'lucide-react';
 
 interface TimelineManagementProps {
   eventId: string;
@@ -81,7 +82,7 @@ export function TimelineManagement({ eventId }: TimelineManagementProps) {
 
     // Check for time conflicts
     const hasConflict = schedule.some(
-      (r) =>
+      r =>
         (room.startTime >= r.startTime && room.startTime < r.endTime) ||
         (room.endTime > r.startTime && room.endTime <= r.endTime)
     );
@@ -101,23 +102,23 @@ export function TimelineManagement({ eventId }: TimelineManagementProps) {
             <Input
               placeholder="Room Title"
               value={newRoom.title}
-              onChange={(e) => setNewRoom(prev => ({ ...prev, title: e.target.value }))}
+              onChange={e => setNewRoom(prev => ({ ...prev, title: e.target.value }))}
             />
             <Input
               type="time"
               value={newRoom.startTime}
-              onChange={(e) => setNewRoom(prev => ({ ...prev, startTime: e.target.value }))}
+              onChange={e => setNewRoom(prev => ({ ...prev, startTime: e.target.value }))}
             />
             <Input
               type="time"
               value={newRoom.endTime}
-              onChange={(e) => setNewRoom(prev => ({ ...prev, endTime: e.target.value }))}
+              onChange={e => setNewRoom(prev => ({ ...prev, endTime: e.target.value }))}
             />
             <Input
               type="number"
               placeholder="Capacity"
               value={newRoom.capacity}
-              onChange={(e) => setNewRoom(prev => ({ ...prev, capacity: e.target.value }))}
+              onChange={e => setNewRoom(prev => ({ ...prev, capacity: e.target.value }))}
             />
           </div>
           <Button
@@ -151,7 +152,7 @@ export function TimelineManagement({ eventId }: TimelineManagementProps) {
         <CardContent>
           <ScrollArea className="h-[500px] pr-4">
             <div className="space-y-4">
-              {schedule.map((room) => (
+              {schedule.map(room => (
                 <Card key={room.id}>
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">

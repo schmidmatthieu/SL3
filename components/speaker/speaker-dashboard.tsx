@@ -1,17 +1,12 @@
-"use client";
+'use client';
+
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { AlertCircle, ArrowLeft, Edit, Save } from 'lucide-react';
+import { Responsive, WidthProvider } from 'react-grid-layout';
 
 import { Event } from '@/types/event';
 import { Room } from '@/types/room';
-import { useState, useEffect } from 'react';
-import { StreamPreview } from '@/components/speaker/stream-preview';
-import { SourceControls } from '@/components/speaker/source-controls';
-import { PresentationArea } from '@/components/speaker/presentation-area';
-import { SidePanel } from '@/components/speaker/side-panel';
-import { Toolbar } from '@/components/speaker/toolbar';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, Edit, Save, AlertCircle } from 'lucide-react';
-import Link from 'next/link';
-import { Responsive, WidthProvider } from 'react-grid-layout';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,7 +16,14 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { PresentationArea } from '@/components/speaker/presentation-area';
+import { SidePanel } from '@/components/speaker/side-panel';
+import { SourceControls } from '@/components/speaker/source-controls';
+import { StreamPreview } from '@/components/speaker/stream-preview';
+import { Toolbar } from '@/components/speaker/toolbar';
+
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
@@ -33,7 +35,15 @@ interface SpeakerDashboardProps {
 }
 
 type PanelContent = 'questions' | 'chat' | 'files';
-type LayoutItem = { i: string; x: number; y: number; w: number; h: number; minW?: number; minH?: number };
+type LayoutItem = {
+  i: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  minW?: number;
+  minH?: number;
+};
 
 // Updated layouts with toolbar at the top
 const defaultLayouts = {
@@ -120,15 +130,12 @@ export function SpeakerDashboard({ event, room }: SpeakerDashboardProps) {
                   Unsaved changes
                 </span>
               )}
-              <Button
-                variant="outline"
-                onClick={() => setShowResetDialog(true)}
-              >
+              <Button variant="outline" onClick={() => setShowResetDialog(true)}>
                 Reset Layout
               </Button>
               <Button
                 variant={isEditMode ? 'default' : 'outline'}
-                onClick={() => isEditMode ? saveLayout() : setIsEditMode(true)}
+                onClick={() => (isEditMode ? saveLayout() : setIsEditMode(true))}
               >
                 {isEditMode ? (
                   <>
@@ -184,8 +191,8 @@ export function SpeakerDashboard({ event, room }: SpeakerDashboardProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Reset Layout</AlertDialogTitle>
             <AlertDialogDescription>
-              This will reset the layout to its default state. Any customizations will be lost.
-              Are you sure you want to continue?
+              This will reset the layout to its default state. Any customizations will be lost. Are
+              you sure you want to continue?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

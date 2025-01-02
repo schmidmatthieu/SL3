@@ -1,11 +1,12 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { CalendarClock } from 'lucide-react';
-import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
-import { useState, useEffect } from 'react';
+
+import { Button } from '@/components/ui/button';
 
 export function HeroSection() {
   const { t } = useTranslation();
@@ -29,8 +30,7 @@ export function HeroSection() {
 
               <div className="space-y-4">
                 <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
-                  The Future of Event Management{' '}
-                  <span className="text-gradient">is here</span>
+                  The Future of Event Management <span className="text-gradient">is here</span>
                 </h1>
                 <p className="text-muted-foreground text-lg sm:text-xl">
                   Discover the power of our event management platform
@@ -38,18 +38,10 @@ export function HeroSection() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  size="lg"
-                  variant="default"
-                  asChild
-                >
+                <Button size="lg" variant="default" asChild>
                   <Link href="/get-started">Get Started</Link>
                 </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  asChild
-                >
+                <Button size="lg" variant="outline" asChild>
                   <Link href="/demo">Try a Demo</Link>
                 </Button>
               </div>
@@ -91,7 +83,7 @@ export function HeroSection() {
   return (
     <section className="relative border-b bg-card clip-diagonal overflow-hidden">
       <div className="absolute inset-0 grid-pattern opacity-20" />
-      
+
       <div className="responsive-container relative py-24 sm:py-32">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
@@ -105,40 +97,42 @@ export function HeroSection() {
                 {t('hero.title.main')}{' '}
                 <span className="text-gradient">{t('hero.title.highlight')}</span>
               </h1>
-              <p className="text-muted-foreground text-lg sm:text-xl">
-                {t('hero.subtitle')}
-              </p>
+              <p className="text-muted-foreground text-lg sm:text-xl">{t('hero.subtitle')}</p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button
-                size="lg"
-                variant="default"
-                asChild
-              >
+              <Button size="lg" variant="default" asChild>
                 <Link href="/get-started">{t('hero.cta.primary')}</Link>
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                asChild
-              >
+              <Button size="lg" variant="outline" asChild>
                 <Link href="/demo">{t('hero.cta.secondary')}</Link>
               </Button>
             </div>
 
             <div className="grid grid-cols-3 gap-8 pt-8 border-t border-primary/10">
               <div className="glass-card p-4">
-                <div className="text-3xl font-bold text-gradient">{t('hero.stats.events.value')}</div>
-                <div className="text-sm text-muted-foreground mt-1">{t('hero.stats.events.label')}</div>
+                <div className="text-3xl font-bold text-gradient">
+                  {t('hero.stats.events.value')}
+                </div>
+                <div className="text-sm text-muted-foreground mt-1">
+                  {t('hero.stats.events.label')}
+                </div>
               </div>
               <div className="glass-card p-4">
-                <div className="text-3xl font-bold text-gradient">{t('hero.stats.users.value')}</div>
-                <div className="text-sm text-muted-foreground mt-1">{t('hero.stats.users.label')}</div>
+                <div className="text-3xl font-bold text-gradient">
+                  {t('hero.stats.users.value')}
+                </div>
+                <div className="text-sm text-muted-foreground mt-1">
+                  {t('hero.stats.users.label')}
+                </div>
               </div>
               <div className="glass-card p-4">
-                <div className="text-3xl font-bold text-gradient">{t('hero.stats.uptime.value')}</div>
-                <div className="text-sm text-muted-foreground mt-1">{t('hero.stats.uptime.label')}</div>
+                <div className="text-3xl font-bold text-gradient">
+                  {t('hero.stats.uptime.value')}
+                </div>
+                <div className="text-sm text-muted-foreground mt-1">
+                  {t('hero.stats.uptime.label')}
+                </div>
               </div>
             </div>
           </div>

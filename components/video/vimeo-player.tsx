@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect, useRef } from 'react';
 import Player from '@vimeo/player';
@@ -17,7 +17,7 @@ export function VimeoPlayer({ videoId, autoplay = true, quality = 'auto' }: Vime
     if (!containerRef.current) return;
 
     const qualityMap: { [key: string]: string } = {
-      'auto': 'auto',
+      auto: 'auto',
       '4k': '4k',
       '1440p': '2k',
       '1080p': '1080p',
@@ -41,7 +41,5 @@ export function VimeoPlayer({ videoId, autoplay = true, quality = 'auto' }: Vime
     };
   }, [videoId, autoplay, quality]);
 
-  return (
-    <div ref={containerRef} className="aspect-video w-full" />
-  );
+  return <div ref={containerRef} className="aspect-video w-full" />;
 }

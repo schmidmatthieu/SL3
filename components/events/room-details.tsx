@@ -1,15 +1,16 @@
 'use client';
 
-import { Event } from '@/types/event';
-import { Button } from '@/components/ui/button';
-import { StatusBadge } from '@/components/events/status-badge';
-import { Chat } from '@/components/chat/chat';
-import { RoomTabs } from '@/components/room/room-tabs';
-import { ArrowLeft, Users } from 'lucide-react';
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowLeft, Users } from 'lucide-react';
+
+import { Event } from '@/types/event';
 import { useRoom } from '@/hooks/useRoom';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Chat } from '@/components/chat/chat';
+import { StatusBadge } from '@/components/events/status-badge';
+import { RoomTabs } from '@/components/room/room-tabs';
 
 interface RoomDetailsProps {
   event: Event;
@@ -18,7 +19,7 @@ interface RoomDetailsProps {
 
 export function RoomDetails({ event, roomId }: RoomDetailsProps) {
   console.log('RoomDetails props:', { event, roomId });
-  
+
   const { currentRoom, isLoading, streamInfo } = useRoom(event._id, roomId);
   console.log('Room hook state:', { currentRoom, isLoading, streamInfo });
 
@@ -88,21 +89,11 @@ export function RoomDetails({ event, roomId }: RoomDetailsProps) {
           {currentRoom.status === 'live' && streamInfo?.streamUrl ? (
             <div className="relative aspect-video w-full overflow-hidden rounded-lg">
               {/* Le VideoPlayer sera implémenté dans la prochaine étape */}
-              <Image
-                src={thumbnailUrl}
-                alt={currentRoom.title}
-                fill
-                className="object-cover"
-              />
+              <Image src={thumbnailUrl} alt={currentRoom.title} fill className="object-cover" />
             </div>
           ) : (
             <div className="relative aspect-video w-full overflow-hidden rounded-lg">
-              <Image
-                src={thumbnailUrl}
-                alt={currentRoom.title}
-                fill
-                className="object-cover"
-              />
+              <Image src={thumbnailUrl} alt={currentRoom.title} fill className="object-cover" />
               {currentRoom.status === 'upcoming' && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                   <p className="text-white text-xl font-semibold">Coming Soon</p>
@@ -110,7 +101,7 @@ export function RoomDetails({ event, roomId }: RoomDetailsProps) {
               )}
             </div>
           )}
-          
+
           <div className="flex justify-between items-center p-4 bg-muted rounded-lg">
             <div className="text-sm">
               <p className="font-medium">Schedule</p>

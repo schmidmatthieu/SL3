@@ -1,12 +1,13 @@
-"use client";
+'use client';
 
-import { Room } from '@/types/room';
-import { Card, CardContent } from '@/components/ui/card';
-import { StatusBadge } from '@/components/events/status-badge';
-import { Users } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Users } from 'lucide-react';
+
+import { Room } from '@/types/room';
 import { useRoom } from '@/hooks/useRoom';
+import { Card, CardContent } from '@/components/ui/card';
+import { StatusBadge } from '@/components/events/status-badge';
 
 interface RoomPreviewProps {
   eventId: string;

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect, useRef } from 'react';
 import YouTube from 'react-youtube';
@@ -13,7 +13,7 @@ export function YouTubePlayer({ videoId, autoplay = true, quality = 'auto' }: Yo
   const playerRef = useRef<any>(null);
 
   const qualityLevels: { [key: string]: string } = {
-    'auto': 'default',
+    auto: 'default',
     '4k': 'hd2160',
     '1440p': 'hd1440',
     '1080p': 'hd1080',
@@ -50,12 +50,7 @@ export function YouTubePlayer({ videoId, autoplay = true, quality = 'auto' }: Yo
 
   return (
     <div className="aspect-video">
-      <YouTube
-        videoId={videoId}
-        opts={opts}
-        onReady={onReady}
-        className="w-full h-full"
-      />
+      <YouTube videoId={videoId} opts={opts} onReady={onReady} className="w-full h-full" />
     </div>
   );
 }

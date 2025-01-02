@@ -1,19 +1,12 @@
-"use client";
+'use client';
+
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { AlertCircle, ArrowLeft, Edit, Save, Settings } from 'lucide-react';
+import { Responsive, WidthProvider } from 'react-grid-layout';
 
 import { Event } from '@/types/event';
 import { Room } from '@/types/room';
-import { useState, useEffect } from 'react';
-import { StreamPreview } from '@/components/moderation/stream-preview';
-import { StreamControls } from '@/components/moderation/stream-controls';
-import { StreamStats } from '@/components/moderation/stream-stats';
-import { ActivityLog } from '@/components/moderation/activity-log';
-import { QuickActions } from '@/components/moderation/quick-actions';
-import { ModTabs } from '@/components/moderation/mod-tabs';
-import { StreamSettings } from '@/components/moderation/stream-settings';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, Edit, Save, AlertCircle, Settings } from 'lucide-react';
-import Link from 'next/link';
-import { Responsive, WidthProvider } from 'react-grid-layout';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,7 +16,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 import {
   Sheet,
   SheetContent,
@@ -31,7 +25,15 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
+} from '@/components/ui/sheet';
+import { ActivityLog } from '@/components/moderation/activity-log';
+import { ModTabs } from '@/components/moderation/mod-tabs';
+import { QuickActions } from '@/components/moderation/quick-actions';
+import { StreamControls } from '@/components/moderation/stream-controls';
+import { StreamPreview } from '@/components/moderation/stream-preview';
+import { StreamSettings } from '@/components/moderation/stream-settings';
+import { StreamStats } from '@/components/moderation/stream-stats';
+
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
@@ -42,7 +44,15 @@ interface ModDashboardProps {
   room: Room;
 }
 
-type LayoutItem = { i: string; x: number; y: number; w: number; h: number; minW?: number; minH?: number };
+type LayoutItem = {
+  i: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  minW?: number;
+  minH?: number;
+};
 
 const defaultLayouts = {
   lg: [
@@ -140,24 +150,19 @@ export function ModDashboard({ event, room }: ModDashboardProps) {
                 <SheetContent className="w-[600px] sm:w-[600px]" side="right">
                   <SheetHeader>
                     <SheetTitle>Stream Settings</SheetTitle>
-                    <SheetDescription>
-                      Configure stream settings for this room
-                    </SheetDescription>
+                    <SheetDescription>Configure stream settings for this room</SheetDescription>
                   </SheetHeader>
                   <div className="py-6">
                     <StreamSettings roomId={room.id} />
                   </div>
                 </SheetContent>
               </Sheet>
-              <Button
-                variant="outline"
-                onClick={() => setShowResetDialog(true)}
-              >
+              <Button variant="outline" onClick={() => setShowResetDialog(true)}>
                 Reset Layout
               </Button>
               <Button
                 variant={isEditMode ? 'default' : 'outline'}
-                onClick={() => isEditMode ? saveLayout() : setIsEditMode(true)}
+                onClick={() => (isEditMode ? saveLayout() : setIsEditMode(true))}
               >
                 {isEditMode ? (
                   <>
@@ -216,8 +221,8 @@ export function ModDashboard({ event, room }: ModDashboardProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Reset Layout</AlertDialogTitle>
             <AlertDialogDescription>
-              This will reset the layout to its default state. Any customizations will be lost.
-              Are you sure you want to continue?
+              This will reset the layout to its default state. Any customizations will be lost. Are
+              you sure you want to continue?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

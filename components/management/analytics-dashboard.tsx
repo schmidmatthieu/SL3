@@ -1,7 +1,20 @@
-"use client";
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Activity, Clock, Download, MessageSquare, Users } from 'lucide-react';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
+
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -9,18 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
-import { Download, Users, Clock, Activity, MessageSquare } from 'lucide-react';
 
 interface AnalyticsDashboardProps {
   eventId: string;
@@ -139,9 +140,7 @@ export function AnalyticsDashboard({ eventId }: AnalyticsDashboardProps) {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg font-semibold">
-              Engagement Breakdown
-            </CardTitle>
+            <CardTitle className="text-lg font-semibold">Engagement Breakdown</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="h-[300px]">
@@ -151,11 +150,7 @@ export function AnalyticsDashboard({ eventId }: AnalyticsDashboardProps) {
                   <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                   <YAxis tick={{ fontSize: 12 }} width={40} />
                   <Tooltip />
-                  <Bar
-                    dataKey="value"
-                    fill="hsl(var(--primary))"
-                    radius={[4, 4, 0, 0]}
-                  />
+                  <Bar dataKey="value" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

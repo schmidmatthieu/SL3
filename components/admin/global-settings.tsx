@@ -1,19 +1,13 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertTriangle, MessageSquare, Save, Settings, Shield, Users } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
-import {
-  Settings,
-  Shield,
-  Users,
-  MessageSquare,
-  Save,
-  AlertTriangle,
-} from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 
 export function GlobalSettings() {
   const [automod, setAutomod] = useState({
@@ -58,9 +52,7 @@ export function GlobalSettings() {
                 </div>
                 <Switch
                   checked={automod.links}
-                  onCheckedChange={(checked) =>
-                    setAutomod((prev) => ({ ...prev, links: checked }))
-                  }
+                  onCheckedChange={checked => setAutomod(prev => ({ ...prev, links: checked }))}
                 />
               </div>
 
@@ -73,9 +65,7 @@ export function GlobalSettings() {
                 </div>
                 <Switch
                   checked={automod.spam}
-                  onCheckedChange={(checked) =>
-                    setAutomod((prev) => ({ ...prev, spam: checked }))
-                  }
+                  onCheckedChange={checked => setAutomod(prev => ({ ...prev, spam: checked }))}
                 />
               </div>
 
@@ -88,9 +78,7 @@ export function GlobalSettings() {
                 </div>
                 <Switch
                   checked={automod.caps}
-                  onCheckedChange={(checked) =>
-                    setAutomod((prev) => ({ ...prev, caps: checked }))
-                  }
+                  onCheckedChange={checked => setAutomod(prev => ({ ...prev, caps: checked }))}
                 />
               </div>
 
@@ -103,9 +91,7 @@ export function GlobalSettings() {
                 </div>
                 <Switch
                   checked={automod.profanity}
-                  onCheckedChange={(checked) =>
-                    setAutomod((prev) => ({ ...prev, profanity: checked }))
-                  }
+                  onCheckedChange={checked => setAutomod(prev => ({ ...prev, profanity: checked }))}
                 />
               </div>
             </div>
@@ -132,43 +118,33 @@ export function GlobalSettings() {
                   value={[limits.maxViewers]}
                   max={20000}
                   step={100}
-                  onValueChange={([value]) =>
-                    setLimits((prev) => ({ ...prev, maxViewers: value }))
-                  }
+                  onValueChange={([value]) => setLimits(prev => ({ ...prev, maxViewers: value }))}
                 />
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="font-medium">Max Rooms per Event</div>
-                  <span className="text-sm text-muted-foreground">
-                    {limits.maxRooms}
-                  </span>
+                  <span className="text-sm text-muted-foreground">{limits.maxRooms}</span>
                 </div>
                 <Slider
                   value={[limits.maxRooms]}
                   max={100}
                   step={1}
-                  onValueChange={([value]) =>
-                    setLimits((prev) => ({ ...prev, maxRooms: value }))
-                  }
+                  onValueChange={([value]) => setLimits(prev => ({ ...prev, maxRooms: value }))}
                 />
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="font-medium">Chat Message Delay (seconds)</div>
-                  <span className="text-sm text-muted-foreground">
-                    {limits.messageDelay}s
-                  </span>
+                  <span className="text-sm text-muted-foreground">{limits.messageDelay}s</span>
                 </div>
                 <Slider
                   value={[limits.messageDelay]}
                   max={10}
                   step={1}
-                  onValueChange={([value]) =>
-                    setLimits((prev) => ({ ...prev, messageDelay: value }))
-                  }
+                  onValueChange={([value]) => setLimits(prev => ({ ...prev, messageDelay: value }))}
                 />
               </div>
             </div>
@@ -185,10 +161,7 @@ export function GlobalSettings() {
           <CardContent className="space-y-4">
             <div>
               <label className="text-sm font-medium">Default Username Pattern</label>
-              <Input
-                placeholder="user_{random_id}"
-                defaultValue="user_{random_id}"
-              />
+              <Input placeholder="user_{random_id}" defaultValue="user_{random_id}" />
             </div>
 
             <div>
@@ -197,9 +170,7 @@ export function GlobalSettings() {
             </div>
 
             <div>
-              <label className="text-sm font-medium">
-                Maximum Concurrent Sessions
-              </label>
+              <label className="text-sm font-medium">Maximum Concurrent Sessions</label>
               <Input type="number" defaultValue="5" min="1" max="10" />
             </div>
           </CardContent>

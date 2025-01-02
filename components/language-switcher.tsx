@@ -1,25 +1,26 @@
-"use client";
+'use client';
 
+import { useEffect, useState } from 'react';
+import { useProfileStore } from '@/store/profile';
+import { Globe as Globe2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { languages } from "@/app/i18n/settings";
+
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Globe as Globe2 } from "lucide-react";
-import { useProfileStore } from '@/store/profile';
+} from '@/components/ui/dropdown-menu';
 import { useToast } from '@/components/ui/use-toast';
-import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
+import { languages } from '@/app/i18n/settings';
 
 const languageNames = {
-  en: "English",
-  de: "Deutsch",
-  fr: "Français",
-  it: "Italiano",
+  en: 'English',
+  de: 'Deutsch',
+  fr: 'Français',
+  it: 'Italiano',
 };
 
 export function LanguageSwitcher() {
@@ -48,7 +49,7 @@ export function LanguageSwitcher() {
     try {
       // Changer la langue dans i18next
       await i18n.changeLanguage(lang);
-      
+
       // Mettre à jour les paramètres utilisateur si l'utilisateur est connecté
       if (user) {
         await updateProfile({
@@ -77,13 +78,13 @@ export function LanguageSwitcher() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {languages.map((lang) => (
+        {languages.map(lang => (
           <DropdownMenuItem
             key={lang}
             onClick={() => handleLanguageChange(lang)}
             className={cn(
-              "cursor-pointer",
-              i18n.language === lang && "bg-primary-50 dark:bg-primary-900"
+              'cursor-pointer',
+              i18n.language === lang && 'bg-primary-50 dark:bg-primary-900'
             )}
           >
             <span className="mr-2">{languageNames[lang as keyof typeof languageNames]}</span>

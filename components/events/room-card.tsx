@@ -1,21 +1,33 @@
 'use client';
 
-import { Room, ROOM_STATUS_TRANSLATIONS } from '@/types/room';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Users, Shield, Mic, Clock, MessageCircle, Video, Globe2, Settings, Wrench } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import {
+  Clock,
+  Globe2,
+  MessageCircle,
+  Mic,
+  Settings,
+  Shield,
+  Users,
+  Video,
+  Wrench,
+} from 'lucide-react';
+
+import { Room, ROOM_STATUS_TRANSLATIONS } from '@/types/room';
+import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
-const DEFAULT_ROOM_IMAGE = 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=2000&auto=format&fit=crop';
+const DEFAULT_ROOM_IMAGE =
+  'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=2000&auto=format&fit=crop';
 
 const LANGUAGES = {
   fr: 'Français',
@@ -71,17 +83,15 @@ export function RoomCard({ room, eventId, userLanguage = 'en' }: RoomCardProps) 
   const statusTranslation = ROOM_STATUS_TRANSLATIONS[room.status]?.[userLanguage] || room.status;
 
   return (
-    <Card 
+    <Card
       className={cn(
-        "group relative overflow-hidden transition-all card-hover-effect",
-        room.status === 'cancelled'
-          ? "cursor-not-allowed opacity-60" 
-          : "cursor-pointer",
-        "bg-background/40 backdrop-blur-[12px]",
-        "border-primary-100/30 dark:border-primary-800/30",
-        "hover:bg-primary-50/20 dark:hover:bg-primary-950/20",
-        "hover:shadow-[0_0_15px_-5px_hsl(var(--primary-200))]",
-        "dark:hover:shadow-[0_0_15px_-5px_hsl(var(--primary-800))]"
+        'group relative overflow-hidden transition-all card-hover-effect',
+        room.status === 'cancelled' ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
+        'bg-background/40 backdrop-blur-[12px]',
+        'border-primary-100/30 dark:border-primary-800/30',
+        'hover:bg-primary-50/20 dark:hover:bg-primary-950/20',
+        'hover:shadow-[0_0_15px_-5px_hsl(var(--primary-200))]',
+        'dark:hover:shadow-[0_0_15px_-5px_hsl(var(--primary-800))]'
       )}
       onClick={handleClick}
     >
@@ -95,9 +105,9 @@ export function RoomCard({ room, eventId, userLanguage = 'en' }: RoomCardProps) 
           />
           <Badge
             className={cn(
-              "absolute top-4 right-4",
-              "transition-all duration-300",
-              "group-hover:scale-105 font-medium",
+              'absolute top-4 right-4',
+              'transition-all duration-300',
+              'group-hover:scale-105 font-medium',
               getStatusColor(room.status)
             )}
           >
@@ -116,12 +126,12 @@ export function RoomCard({ room, eventId, userLanguage = 'en' }: RoomCardProps) 
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={(e) => handleAccessClick(e, 'mod')}>
+                <DropdownMenuItem onClick={e => handleAccessClick(e, 'mod')}>
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Accès modérateur</span>
                 </DropdownMenuItem>
                 {room.status !== 'cancelled' && (
-                  <DropdownMenuItem onClick={(e) => handleAccessClick(e, 'speaker')}>
+                  <DropdownMenuItem onClick={e => handleAccessClick(e, 'speaker')}>
                     <Mic className="mr-2 h-4 w-4" />
                     <span>Accès speaker</span>
                   </DropdownMenuItem>
@@ -130,7 +140,7 @@ export function RoomCard({ room, eventId, userLanguage = 'en' }: RoomCardProps) 
             </DropdownMenu>
           </div>
         </div>
-        
+
         <div className="p-6">
           <div className="mb-4">
             <h3 className="text-lg font-semibold mb-2 group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors">
@@ -161,7 +171,8 @@ export function RoomCard({ room, eventId, userLanguage = 'en' }: RoomCardProps) 
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm text-muted-foreground">
-                  {room.participants?.length || 0} / {room.settings?.maxParticipants || "∞"} participants
+                  {room.participants?.length || 0} / {room.settings?.maxParticipants || '∞'}{' '}
+                  participants
                 </p>
               </div>
             </div>
@@ -172,12 +183,21 @@ export function RoomCard({ room, eventId, userLanguage = 'en' }: RoomCardProps) 
               </div>
               <div className="flex flex-1 min-w-0 gap-2 flex-wrap">
                 {room.settings?.originalLanguage && (
-                  <Badge variant="outline" className="text-xs flex items-center gap-1 bg-blue-100/50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-                    <span className="font-semibold">VO:</span> {LANGUAGES[room.settings.originalLanguage as keyof typeof LANGUAGES] || room.settings.originalLanguage}
+                  <Badge
+                    variant="outline"
+                    className="text-xs flex items-center gap-1 bg-blue-100/50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                  >
+                    <span className="font-semibold">VO:</span>{' '}
+                    {LANGUAGES[room.settings.originalLanguage as keyof typeof LANGUAGES] ||
+                      room.settings.originalLanguage}
                   </Badge>
                 )}
-                {room.settings?.availableLanguages?.map((lang) => (
-                  <Badge key={lang} variant="outline" className="text-xs bg-muted/30 text-muted-foreground hover:bg-muted/40">
+                {room.settings?.availableLanguages?.map(lang => (
+                  <Badge
+                    key={lang}
+                    variant="outline"
+                    className="text-xs bg-muted/30 text-muted-foreground hover:bg-muted/40"
+                  >
                     {LANGUAGES[lang as keyof typeof LANGUAGES] || lang}
                   </Badge>
                 ))}

@@ -1,20 +1,21 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   Camera,
-  Monitor,
   Film,
   Mic,
   MicOff,
-  Video,
-  VideoOff,
+  Monitor,
   ScreenShare,
   StopCircle,
+  Video,
+  VideoOff,
 } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type Source = 'camera' | 'screen' | 'media';
 
@@ -73,11 +74,7 @@ export function SourceControls() {
             className="flex-1"
             onClick={() => setIsMuted(!isMuted)}
           >
-            {isMuted ? (
-              <MicOff className="h-4 w-4 mr-2" />
-            ) : (
-              <Mic className="h-4 w-4 mr-2" />
-            )}
+            {isMuted ? <MicOff className="h-4 w-4 mr-2" /> : <Mic className="h-4 w-4 mr-2" />}
             {isMuted ? 'Unmute' : 'Mute'}
           </Button>
           <Button

@@ -1,17 +1,10 @@
-"use client";
+'use client';
+
+import { Activity, ArrowDownRight, ArrowUpRight, Clock, Signal, Users, Zap } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  Users,
-  Signal,
-  Clock,
-  ArrowUpRight,
-  ArrowDownRight,
-  Activity,
-  Zap,
-} from 'lucide-react';
 
 export function StreamStats() {
   return (

@@ -2,13 +2,14 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/hooks/use-auth';
 import { useEventStore } from '@/store/event.store';
 import { useMediaStore } from '@/store/media.store';
-import { EventStatus } from '@/types/event';
-import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+
+import { EventStatus } from '@/types/event';
+import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { DateTimePicker } from '@/components/ui/date-time-picker';
@@ -21,8 +22,8 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { ImageUploader } from '@/components/ui/image-uploader';
+import { Input } from '@/components/ui/input';
 
 const formSchema = z
   .object({
@@ -36,9 +37,9 @@ const formSchema = z
     }),
     imageUrl: z.string().optional(),
   })
-  .refine((data) => data.endDateTime > data.startDateTime, {
-    message: "La date de fin doit être postérieure à la date de début",
-    path: ["endDateTime"],
+  .refine(data => data.endDateTime > data.startDateTime, {
+    message: 'La date de fin doit être postérieure à la date de début',
+    path: ['endDateTime'],
   });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -78,6 +79,14 @@ export function EventForm({ onComplete }: { onComplete?: () => void }) {
   const createEvent = useEventStore(state => state.createEvent);
   const { addUsage, items } = useMediaStore();
 
+  // Fonction pour formater les dates correctement
+  const formatDate = (date: Date) => {
+    if (!date) return undefined;
+    const isoString = date.toISOString();
+    console.log('formatDate: Date formatée:', { original: date, formatted: isoString });
+    return isoString;
+  };
+
   const onSubmit = async (data: FormValues) => {
     try {
       if (!user) {
@@ -87,7 +96,7 @@ export function EventForm({ onComplete }: { onComplete?: () => void }) {
       // Determine event status based on dates
       const now = new Date();
       let status: EventStatus;
-      
+
       if (data.startDateTime > now) {
         status = 'scheduled';
       } else if (data.endDateTime < now) {
@@ -96,19 +105,17 @@ export function EventForm({ onComplete }: { onComplete?: () => void }) {
         status = 'active';
       }
 
-      // Format dates as ISO strings
-      const startDateTime = data.startDateTime.toISOString();
-      const endDateTime = data.endDateTime.toISOString();
-
-      const event = await createEvent({
-        title: data.title,
-        description: data.description,
-        startDateTime,
-        endDateTime,
-        imageUrl: data.imageUrl || undefined,
+      // Format dates before sending
+      const formattedData = {
+        ...data,
+        startDateTime: formatDate(data.startDateTime),
+        endDateTime: formatDate(data.endDateTime),
         status,
-        rooms: 1,
-      });
+      };
+
+      console.log('onSubmit: Données formatées:', formattedData);
+
+      const event = await createEvent(formattedData);
 
       // Ajouter l'utilisation de l'image après la création de l'événement
       if (data.imageUrl) {
@@ -117,7 +124,7 @@ export function EventForm({ onComplete }: { onComplete?: () => void }) {
           await addUsage(mediaId, {
             type: 'event',
             entityId: event._id || event.id,
-            entityName: data.title
+            entityName: data.title,
           });
         }
       }
@@ -178,7 +185,7 @@ export function EventForm({ onComplete }: { onComplete?: () => void }) {
                   <FormControl>
                     <DateTimePicker
                       value={field.value}
-                      onChange={(date) => {
+                      onChange={date => {
                         field.onChange(date);
                         // Mettre à jour automatiquement la date de fin à +1 jour
                         const endDate = new Date(date);
@@ -219,7 +226,7 @@ export function EventForm({ onComplete }: { onComplete?: () => void }) {
                   <FormControl>
                     <ImageUploader
                       currentImage={field.value}
-                      onImageSelect={(url) => field.onChange(url)}
+                      onImageSelect={url => field.onChange(url)}
                       mediaType="event"
                       entityName={form.getValues('title')}
                     />

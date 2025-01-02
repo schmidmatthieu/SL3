@@ -1,15 +1,8 @@
 'use client';
 
-import {
-  CalendarDays,
-  Users,
-  Building2,
-  Clock,
-  Shield,
-  LineChart
-} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Building2, CalendarDays, Clock, LineChart, Shield, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useState, useEffect } from 'react';
 
 const features = [
   {
@@ -59,7 +52,7 @@ export function FeaturesSection() {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {features.map((feature) => (
+          {features.map(feature => (
             <div
               key={feature.key}
               className="glass-card p-6 group transition-all duration-300 hover:translate-y-[-2px]"
@@ -93,7 +86,7 @@ export function FeaturesSection() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8">
-        {features.map((feature) => (
+        {features.map(feature => (
           <div
             key={feature.key}
             className="glass-card p-6 group transition-all duration-300 hover:translate-y-[-2px]"

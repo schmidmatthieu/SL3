@@ -1,24 +1,25 @@
 'use client';
 
-import { ModeToggle } from '@/components/theme/mode-toggle';
-import { LanguageSwitcher } from '@/components/language-switcher';
-import { Button } from '@/components/ui/button';
-import { Shield, LogOut, Settings, User, User2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Logo } from '@/components/layout/logo';
 import { useAuthStore } from '@/store/auth-store';
+import { LogOut, Settings, Shield, User, User2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuLabel,
-} from "@/components/ui/dropdown-menu";
-import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
+} from '@/components/ui/dropdown-menu';
+import { LanguageSwitcher } from '@/components/language-switcher';
+import { Logo } from '@/components/layout/logo';
+import { ModeToggle } from '@/components/theme/mode-toggle';
 
 export function Header() {
   const { t } = useTranslation();
@@ -34,11 +35,12 @@ export function Header() {
     setTranslationsLoaded(true);
   }, []);
 
-  const userInitials = profile?.firstName && profile?.lastName
-    ? `${profile.firstName[0]}${profile.lastName[0]}`
-    : user?.email
-      ? user.email[0].toUpperCase()
-      : 'U';
+  const userInitials =
+    profile?.firstName && profile?.lastName
+      ? `${profile.firstName[0]}${profile.lastName[0]}`
+      : user?.email
+        ? user.email[0].toUpperCase()
+        : 'U';
 
   const getFullImageUrl = (url: string) => {
     if (!url) return '';
@@ -58,19 +60,19 @@ export function Header() {
           <Logo className="h-8 w-8 group-hover:animate-logo-spin" />
           <span className="font-bold text-gradient">SL3</span>
         </Link>
-        
+
         <div className="flex-1 flex justify-center space-x-8">
           {navItems.map(({ href, label }) => {
-            const isActive = pathname === href
+            const isActive = pathname === href;
             return (
               <Link
                 key={href}
                 href={href}
                 className={cn(
-                  "relative py-1 text-sm font-medium transition-colors duration-300 group",
+                  'relative py-1 text-sm font-medium transition-colors duration-300 group',
                   isActive
-                    ? "text-primary-900 dark:text-primary-200"
-                    : "text-primary-700 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-200"
+                    ? 'text-primary-900 dark:text-primary-200'
+                    : 'text-primary-700 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-200'
                 )}
               >
                 {label}
@@ -82,7 +84,7 @@ export function Header() {
                   </>
                 )}
               </Link>
-            )
+            );
           })}
         </div>
 
@@ -98,7 +100,7 @@ export function Header() {
               </Button>
             </Link>
           )}
-          
+
           <LanguageSwitcher />
           <ModeToggle />
 

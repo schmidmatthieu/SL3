@@ -1,10 +1,11 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
-import { useState, useEffect } from 'react';
+
+import { Button } from '@/components/ui/button';
 
 export function CTASection() {
   const { t } = useTranslation();
@@ -19,13 +20,12 @@ export function CTASection() {
       <section className="responsive-container py-24 sm:py-32">
         <div className="relative rounded-2xl overflow-hidden">
           <div className="absolute inset-0 grid-pattern opacity-20" />
-          
+
           <div className="glass p-8 md:p-12 lg:p-16 relative">
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div className="space-y-8">
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
-                  Ready to Create Your{' '}
-                  <span className="text-gradient">Next Event?</span>
+                  Ready to Create Your <span className="text-gradient">Next Event?</span>
                 </h2>
                 <p className="text-muted-foreground text-lg">
                   Join thousands of event organizers who trust our platform.
@@ -62,7 +62,7 @@ export function CTASection() {
     <section className="responsive-container py-24 sm:py-32">
       <div className="relative rounded-2xl overflow-hidden">
         <div className="absolute inset-0 grid-pattern opacity-20" />
-        
+
         <div className="glass p-8 md:p-12 lg:p-16 relative">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
@@ -70,22 +70,12 @@ export function CTASection() {
                 {t('cta.title.main')}{' '}
                 <span className="text-gradient">{t('cta.title.highlight')}</span>
               </h2>
-              <p className="text-muted-foreground text-lg">
-                {t('cta.description')}
-              </p>
+              <p className="text-muted-foreground text-lg">{t('cta.description')}</p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button
-                  size="lg"
-                  variant="default"
-                  asChild
-                >
+                <Button size="lg" variant="default" asChild>
                   <Link href="/get-started">{t('cta.buttons.getStarted')}</Link>
                 </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  asChild
-                >
+                <Button size="lg" variant="outline" asChild>
                   <Link href="/contact">{t('cta.buttons.contactSales')}</Link>
                 </Button>
               </div>

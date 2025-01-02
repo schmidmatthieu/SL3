@@ -1,20 +1,19 @@
-"use client"
+'use client';
 
-import * as React from "react"
-import { Moon, Sun, Cloud } from "lucide-react"
-import { useTheme } from "next-themes"
-import { useTranslation } from 'react-i18next';
+import * as React from 'react';
 import { useState } from 'react';
-import { cn } from "@/lib/utils";
-import { Laptop } from "lucide-react";
+import { Cloud, Laptop, Moon, Sun } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import { useTranslation } from 'react-i18next';
 
-import { Button } from "@/components/ui/button"
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from '@/components/ui/dropdown-menu';
 
 export function ModeToggle() {
   const { setTheme, theme } = useTheme();
@@ -54,9 +53,15 @@ export function ModeToggle() {
             </div>
             <div className="absolute inset-0">
               <div className="absolute inset-0 dark-mode-effects opacity-0 group-hover:opacity-100 transition-opacity duration-300 dark:block hidden">
-                <div className="absolute -right-1 -top-1 w-1 h-1 bg-primary-400/70 rounded-full animate-star-twinkle" style={{ animationDelay: '0.5s' }} />
+                <div
+                  className="absolute -right-1 -top-1 w-1 h-1 bg-primary-400/70 rounded-full animate-star-twinkle"
+                  style={{ animationDelay: '0.5s' }}
+                />
                 <div className="absolute right-2 top-0 w-1 h-1 bg-primary-400/70 rounded-full animate-star-twinkle" />
-                <div className="absolute -right-1 bottom-0 w-1 h-1 bg-primary-400/70 rounded-full animate-star-twinkle" style={{ animationDelay: '1s' }} />
+                <div
+                  className="absolute -right-1 bottom-0 w-1 h-1 bg-primary-400/70 rounded-full animate-star-twinkle"
+                  style={{ animationDelay: '1s' }}
+                />
               </div>
               <Moon className="absolute inset-0 h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-primary-400" />
             </div>
@@ -65,31 +70,25 @@ export function ModeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem 
-          onClick={() => setTheme("light")}
-          className={cn(
-            "cursor-pointer",
-            theme === "light" && "bg-primary-50 dark:bg-primary-900"
-          )}
+        <DropdownMenuItem
+          onClick={() => setTheme('light')}
+          className={cn('cursor-pointer', theme === 'light' && 'bg-primary-50 dark:bg-primary-900')}
         >
           <Sun className="mr-2 h-4 w-4" />
           <span>{t('theme.mode.light')}</span>
         </DropdownMenuItem>
-        <DropdownMenuItem 
-          onClick={() => setTheme("dark")}
-          className={cn(
-            "cursor-pointer",
-            theme === "dark" && "bg-primary-50 dark:bg-primary-900"
-          )}
+        <DropdownMenuItem
+          onClick={() => setTheme('dark')}
+          className={cn('cursor-pointer', theme === 'dark' && 'bg-primary-50 dark:bg-primary-900')}
         >
           <Moon className="mr-2 h-4 w-4" />
           <span>{t('theme.mode.dark')}</span>
         </DropdownMenuItem>
-        <DropdownMenuItem 
-          onClick={() => setTheme("system")}
+        <DropdownMenuItem
+          onClick={() => setTheme('system')}
           className={cn(
-            "cursor-pointer",
-            theme === "system" && "bg-primary-50 dark:bg-primary-900"
+            'cursor-pointer',
+            theme === 'system' && 'bg-primary-50 dark:bg-primary-900'
           )}
         >
           <Laptop className="mr-2 h-4 w-4" />

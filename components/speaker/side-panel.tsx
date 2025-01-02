@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Check, MessageSquare, ThumbsUp, X } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ThumbsUp, MessageSquare, Check, X } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface SidePanelProps {
   type: 'questions' | 'chat' | 'files';
@@ -32,7 +33,7 @@ export function SidePanel({ type }: SidePanelProps) {
       case 'questions':
         return (
           <div className="space-y-4 p-4">
-            {mockQuestions.map((question) => (
+            {mockQuestions.map(question => (
               <Card key={question.id}>
                 <CardContent className="p-4">
                   <div className="space-y-2">
@@ -43,8 +44,8 @@ export function SidePanel({ type }: SidePanelProps) {
                           question.status === 'approved'
                             ? 'default'
                             : question.status === 'rejected'
-                            ? 'destructive'
-                            : 'secondary'
+                              ? 'destructive'
+                              : 'secondary'
                         }
                       >
                         {question.status}
@@ -75,18 +76,10 @@ export function SidePanel({ type }: SidePanelProps) {
         );
 
       case 'chat':
-        return (
-          <div className="p-4 text-center text-muted-foreground">
-            Chat panel content
-          </div>
-        );
+        return <div className="p-4 text-center text-muted-foreground">Chat panel content</div>;
 
       case 'files':
-        return (
-          <div className="p-4 text-center text-muted-foreground">
-            Files panel content
-          </div>
-        );
+        return <div className="p-4 text-center text-muted-foreground">Files panel content</div>;
     }
   };
 

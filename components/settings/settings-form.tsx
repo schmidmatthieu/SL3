@@ -1,21 +1,35 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useAuthStore } from '@/store/auth-store';
+import { useProfileStore } from '@/store/profile';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useTheme } from 'next-themes';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
+
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { ImageUploader } from '@/components/ui/image-uploader';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
-import { useProfileStore } from '@/store/profile';
-import { useAuthStore } from '@/store/auth-store';
-import { useTheme } from 'next-themes';
-import { ImageUploader } from '@/components/ui/image-uploader';
 
 const profileFormSchema = z.object({
   username: z.string().min(3).max(30),
@@ -28,7 +42,8 @@ const profileFormSchema = z.object({
 
 const passwordFormSchema = z.object({
   currentPassword: z.string(),
-  newPassword: z.string()
+  newPassword: z
+    .string()
     .min(8)
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/, {
       message: 'Password must contain uppercase, lowercase, number and special character',
@@ -137,9 +152,7 @@ export function SettingsForm() {
         <Card>
           <CardHeader>
             <CardTitle>Profile</CardTitle>
-            <CardDescription>
-              Manage your profile information.
-            </CardDescription>
+            <CardDescription>Manage your profile information.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
@@ -148,24 +161,24 @@ export function SettingsForm() {
                 <div className="mt-2">
                   <ImageUploader
                     currentImage={user?.imageUrl}
-                    onImageSelect={async (url) => {
+                    onImageSelect={async url => {
                       try {
-                        if (url === "") {
+                        if (url === '') {
                           return;
                         }
                         await updateProfile({
                           imageUrl: url,
                         });
                         toast({
-                          title: "Succès",
-                          description: "Photo de profil mise à jour avec succès",
+                          title: 'Succès',
+                          description: 'Photo de profil mise à jour avec succès',
                         });
                       } catch (error) {
                         console.error('Error updating profile picture:', error);
                         toast({
-                          title: "Erreur",
-                          description: "Erreur lors de la mise à jour de la photo de profil",
-                          variant: "destructive",
+                          title: 'Erreur',
+                          description: 'Erreur lors de la mise à jour de la photo de profil',
+                          variant: 'destructive',
                         });
                       }
                     }}
@@ -269,9 +282,7 @@ export function SettingsForm() {
         <Card>
           <CardHeader>
             <CardTitle>Password</CardTitle>
-            <CardDescription>
-              Change your password.
-            </CardDescription>
+            <CardDescription>Change your password.</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...passwordForm}>
@@ -315,9 +326,7 @@ export function SettingsForm() {
         <Card>
           <CardHeader>
             <CardTitle>Appearance</CardTitle>
-            <CardDescription>
-              Customize how the application looks.
-            </CardDescription>
+            <CardDescription>Customize how the application looks.</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...profileForm}>

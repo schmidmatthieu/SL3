@@ -1,37 +1,24 @@
-"use client";
+'use client';
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const mockData = [
-  { name: "Tickets Sold", value: 150 },
-  { name: "Revenue (CHF)", value: 7500 },
-  { name: "Registrations", value: 200 },
-  { name: "Waitlist", value: 25 },
+  { name: 'Tickets Sold', value: 150 },
+  { name: 'Revenue (CHF)', value: 7500 },
+  { name: 'Registrations', value: 200 },
+  { name: 'Waitlist', value: 25 },
 ];
 
 const chartData = [
-  { date: "Mon", tickets: 20 },
-  { date: "Tue", tickets: 35 },
-  { date: "Wed", tickets: 45 },
-  { date: "Thu", tickets: 30 },
-  { date: "Fri", tickets: 50 },
-  { date: "Sat", tickets: 65 },
-  { date: "Sun", tickets: 40 },
+  { date: 'Mon', tickets: 20 },
+  { date: 'Tue', tickets: 35 },
+  { date: 'Wed', tickets: 45 },
+  { date: 'Thu', tickets: 30 },
+  { date: 'Fri', tickets: 50 },
+  { date: 'Sat', tickets: 65 },
+  { date: 'Sun', tickets: 40 },
 ];
 
 export function ViewAnalytics() {

@@ -1,28 +1,13 @@
-"use client";
+'use client';
 
-import { Event } from "@/types/event";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useEventStore } from "@/store/event.store";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { DateTimePicker } from "@/components/ui/date-time-picker";
-import { Textarea } from "@/components/ui/textarea";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEventStore } from '@/store/event.store';
+import { calculateEventStatus } from '@/utils/event-status';
+import { Calendar, Image, Info, Link, Type } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
+import { Event } from '@/types/event';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,17 +18,21 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { useToast } from "@/components/ui/use-toast";
-import { 
-  Calendar,
-  Image,
-  Info,
-  Link,
-  Type,
-} from "lucide-react";
-import { calculateEventStatus } from '@/utils/event-status';
-import { useTranslation } from 'react-i18next';
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { DateTimePicker } from '@/components/ui/date-time-picker';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/components/ui/use-toast';
 
 interface EventSettingsProps {
   event: Event;
@@ -57,14 +46,14 @@ export function EventSettings({ event }: EventSettingsProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
   const { t } = useTranslation();
-  
+
   const [formData, setFormData] = useState({
     title: event.title,
-    description: event.description || "",
+    description: event.description || '',
     startDateTime: event.startDateTime ? new Date(event.startDateTime) : null,
     endDateTime: event.endDateTime ? new Date(event.endDateTime) : null,
-    imageUrl: event.imageUrl || "",
-    rooms: event.rooms?.toString() || "1",
+    imageUrl: event.imageUrl || '',
+    rooms: event.rooms?.toString() || '1',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -77,9 +66,10 @@ export function EventSettings({ event }: EventSettingsProps) {
         throw new Error('Event ID is missing');
       }
 
-      const status = formData.startDateTime && formData.endDateTime
-        ? calculateEventStatus(formData.startDateTime, formData.endDateTime)
-        : event.status;
+      const status =
+        formData.startDateTime && formData.endDateTime
+          ? calculateEventStatus(formData.startDateTime, formData.endDateTime)
+          : event.status;
 
       const updatedEvent = await updateEvent(eventId, {
         title: formData.title,
@@ -102,7 +92,7 @@ export function EventSettings({ event }: EventSettingsProps) {
       toast({
         title: t('common.error'),
         description: t('eventSettings.updateError'),
-        variant: "destructive",
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -128,7 +118,7 @@ export function EventSettings({ event }: EventSettingsProps) {
       toast({
         title: t('common.error'),
         description: t('eventSettings.cancelError'),
-        variant: "destructive",
+        variant: 'destructive',
       });
     } finally {
       setIsCancelling(false);
@@ -154,7 +144,7 @@ export function EventSettings({ event }: EventSettingsProps) {
       toast({
         title: t('common.error'),
         description: t('eventSettings.deleteError'),
-        variant: "destructive",
+        variant: 'destructive',
       });
     } finally {
       setIsDeleting(false);
@@ -166,9 +156,7 @@ export function EventSettings({ event }: EventSettingsProps) {
       <Card>
         <CardHeader>
           <CardTitle>{t('eventSettings.basicInfo.title')}</CardTitle>
-          <CardDescription>
-            {t('eventSettings.basicInfo.description')}
-          </CardDescription>
+          <CardDescription>{t('eventSettings.basicInfo.description')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-4">
@@ -181,9 +169,7 @@ export function EventSettings({ event }: EventSettingsProps) {
               <Input
                 id="title"
                 value={formData.title}
-                onChange={(e) =>
-                  setFormData({ ...formData, title: e.target.value })
-                }
+                onChange={e => setFormData({ ...formData, title: e.target.value })}
               />
             </div>
 
@@ -196,9 +182,7 @@ export function EventSettings({ event }: EventSettingsProps) {
               <Textarea
                 id="description"
                 value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
+                onChange={e => setFormData({ ...formData, description: e.target.value })}
               />
             </div>
 
@@ -211,9 +195,7 @@ export function EventSettings({ event }: EventSettingsProps) {
               <Input
                 id="imageUrl"
                 value={formData.imageUrl}
-                onChange={(e) =>
-                  setFormData({ ...formData, imageUrl: e.target.value })
-                }
+                onChange={e => setFormData({ ...formData, imageUrl: e.target.value })}
                 placeholder="https://images.unsplash.com/photo-ID?q=80&w=2000&auto=format&fit=crop"
               />
             </div>
@@ -226,9 +208,7 @@ export function EventSettings({ event }: EventSettingsProps) {
               </Label>
               <DateTimePicker
                 value={formData.startDateTime}
-                onChange={(date) =>
-                  setFormData({ ...formData, startDateTime: date })
-                }
+                onChange={date => setFormData({ ...formData, startDateTime: date })}
               />
             </div>
 
@@ -240,9 +220,7 @@ export function EventSettings({ event }: EventSettingsProps) {
               </Label>
               <DateTimePicker
                 value={formData.endDateTime}
-                onChange={(date) =>
-                  setFormData({ ...formData, endDateTime: date })
-                }
+                onChange={date => setFormData({ ...formData, endDateTime: date })}
               />
             </div>
           </div>
@@ -254,7 +232,9 @@ export function EventSettings({ event }: EventSettingsProps) {
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button type="button" variant="outline" disabled={isDeleting}>
-                {isDeleting ? t('eventSettings.actions.deleting') : t('eventSettings.actions.deleteEvent')}
+                {isDeleting
+                  ? t('eventSettings.actions.deleting')
+                  : t('eventSettings.actions.deleteEvent')}
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -266,21 +246,21 @@ export function EventSettings({ event }: EventSettingsProps) {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDelete}>
-                  {t('common.delete')}
-                </AlertDialogAction>
+                <AlertDialogAction onClick={handleDelete}>{t('common.delete')}</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
 
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 disabled={isCancelling || event.status === 'cancelled'}
               >
-                {isCancelling ? t('eventSettings.actions.cancelling') : t('eventSettings.actions.cancelEvent')}
+                {isCancelling
+                  ? t('eventSettings.actions.cancelling')
+                  : t('eventSettings.actions.cancelEvent')}
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>

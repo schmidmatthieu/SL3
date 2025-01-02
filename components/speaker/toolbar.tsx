@@ -1,22 +1,18 @@
-"use client";
+'use client';
 
-import { Button } from '@/components/ui/button';
 import {
-  MessageSquare,
   FileText,
-  Upload,
-  Settings,
   HelpCircle,
-  Users,
+  MessageSquare,
   Mic,
+  Settings,
+  Upload,
+  Users,
   Video,
 } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ToolbarProps {
   onPanelChange: (panel: 'questions' | 'chat' | 'files') => void;
@@ -41,11 +37,7 @@ export function Toolbar({ onPanelChange }: ToolbarProps) {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onPanelChange('questions')}
-                >
+                <Button variant="ghost" size="sm" onClick={() => onPanelChange('questions')}>
                   <HelpCircle className="h-4 w-4 mr-2" />
                   Questions
                 </Button>
@@ -55,11 +47,7 @@ export function Toolbar({ onPanelChange }: ToolbarProps) {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => onPanelChange('chat')}
-                >
+                <Button variant="ghost" size="sm" onClick={() => onPanelChange('chat')}>
                   <Users className="h-4 w-4 mr-2" />
                   Chat
                 </Button>
@@ -69,11 +57,7 @@ export function Toolbar({ onPanelChange }: ToolbarProps) {
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => onPanelChange('files')}
-                >
+                <Button variant="ghost" size="sm" onClick={() => onPanelChange('files')}>
                   <FileText className="h-4 w-4 mr-2" />
                   Files
                 </Button>

@@ -1,27 +1,20 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { AlertTriangle, Ban, Clock, MoreVertical, Search, Settings, Shield } from 'lucide-react';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-  MoreVertical,
-  Shield,
-  Clock,
-  Ban,
-  AlertTriangle,
-  Search,
-  Settings,
-} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Switch } from '@/components/ui/switch';
 
 interface ChatModerationProps {
   roomId: string;
@@ -76,7 +69,7 @@ export function ChatModeration({ roomId }: ChatModerationProps) {
             </div>
             <Switch
               checked={automod.links}
-              onCheckedChange={(checked) => setAutomod(prev => ({ ...prev, links: checked }))}
+              onCheckedChange={checked => setAutomod(prev => ({ ...prev, links: checked }))}
             />
           </div>
           <div className="flex items-center justify-between">
@@ -86,7 +79,7 @@ export function ChatModeration({ roomId }: ChatModerationProps) {
             </div>
             <Switch
               checked={automod.caps}
-              onCheckedChange={(checked) => setAutomod(prev => ({ ...prev, caps: checked }))}
+              onCheckedChange={checked => setAutomod(prev => ({ ...prev, caps: checked }))}
             />
           </div>
           <div className="flex items-center justify-between">
@@ -96,7 +89,7 @@ export function ChatModeration({ roomId }: ChatModerationProps) {
             </div>
             <Switch
               checked={automod.spam}
-              onCheckedChange={(checked) => setAutomod(prev => ({ ...prev, spam: checked }))}
+              onCheckedChange={checked => setAutomod(prev => ({ ...prev, spam: checked }))}
             />
           </div>
           <div className="flex items-center justify-between">
@@ -106,7 +99,7 @@ export function ChatModeration({ roomId }: ChatModerationProps) {
             </div>
             <Switch
               checked={automod.profanity}
-              onCheckedChange={(checked) => setAutomod(prev => ({ ...prev, profanity: checked }))}
+              onCheckedChange={checked => setAutomod(prev => ({ ...prev, profanity: checked }))}
             />
           </div>
         </CardContent>
@@ -124,7 +117,7 @@ export function ChatModeration({ roomId }: ChatModerationProps) {
             <Input
               placeholder="Search users..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className="max-w-sm"
               prefix={<Search className="h-4 w-4 text-muted-foreground" />}
             />
@@ -133,7 +126,7 @@ export function ChatModeration({ roomId }: ChatModerationProps) {
         <CardContent className="p-0 flex-1 min-h-0">
           <ScrollArea className="h-full">
             <div className="divide-y">
-              {filteredUsers.map((user) => (
+              {filteredUsers.map(user => (
                 <div
                   key={user.id}
                   className="flex items-center justify-between p-4 hover:bg-muted/50"
@@ -146,9 +139,7 @@ export function ChatModeration({ roomId }: ChatModerationProps) {
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-medium">{user.username}</span>
-                        {user.isMod && (
-                          <Shield className="h-3 w-3 text-primary" />
-                        )}
+                        {user.isMod && <Shield className="h-3 w-3 text-primary" />}
                       </div>
                       <span className="text-xs text-muted-foreground">
                         {user.messages} messages
@@ -163,9 +154,7 @@ export function ChatModeration({ roomId }: ChatModerationProps) {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        onClick={() => handleUserAction(user.id, 'timeout')}
-                      >
+                      <DropdownMenuItem onClick={() => handleUserAction(user.id, 'timeout')}>
                         <Clock className="h-4 w-4 mr-2" />
                         Timeout
                       </DropdownMenuItem>
@@ -177,9 +166,7 @@ export function ChatModeration({ roomId }: ChatModerationProps) {
                         Ban User
                       </DropdownMenuItem>
                       {!user.isMod && (
-                        <DropdownMenuItem
-                          onClick={() => handleUserAction(user.id, 'mod')}
-                        >
+                        <DropdownMenuItem onClick={() => handleUserAction(user.id, 'mod')}>
                           <Shield className="h-4 w-4 mr-2" />
                           Make Moderator
                         </DropdownMenuItem>

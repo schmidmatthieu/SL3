@@ -1,13 +1,14 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useEffect, useState } from 'react';
+import { Play, Settings, Twitch, Video, Youtube } from 'lucide-react';
+
+import { useStreamStore } from '@/lib/stores/stream-store';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useToast } from '@/components/ui/use-toast';
-import { useStreamStore } from '@/lib/stores/stream-store';
 import {
   Select,
   SelectContent,
@@ -15,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Settings, Play, Video, Youtube, Twitch } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 interface StreamSettingsProps {
   roomId: string;
@@ -24,19 +25,21 @@ interface StreamSettingsProps {
 export function StreamSettings({ roomId }: StreamSettingsProps) {
   const { toast } = useToast();
   const { config: savedConfig, updateConfig } = useStreamStore();
-  const [config, setConfig] = useState(savedConfig || {
-    type: 'live',
-    url: '',
-    vodSource: 'youtube',
-    autoplay: true,
-    quality: 'auto',
-    playerSettings: {
-      theme: 'city',
-      playbackRates: [0.5, 1, 1.5, 2],
-      fluid: true,
-      responsive: true,
-    },
-  });
+  const [config, setConfig] = useState(
+    savedConfig || {
+      type: 'live',
+      url: '',
+      vodSource: 'youtube',
+      autoplay: true,
+      quality: 'auto',
+      playerSettings: {
+        theme: 'city',
+        playbackRates: [0.5, 1, 1.5, 2],
+        fluid: true,
+        responsive: true,
+      },
+    }
+  );
 
   // Update local state when store changes
   useEffect(() => {
@@ -49,9 +52,9 @@ export function StreamSettings({ roomId }: StreamSettingsProps) {
     // Validate URL based on type and source
     if (!config.url) {
       toast({
-        title: "Error",
-        description: "Please enter a valid URL",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Please enter a valid URL',
+        variant: 'destructive',
       });
       return;
     }
@@ -60,8 +63,8 @@ export function StreamSettings({ roomId }: StreamSettingsProps) {
     updateConfig(config);
 
     toast({
-      title: "Settings Saved",
-      description: "Stream settings have been updated successfully.",
+      title: 'Settings Saved',
+      description: 'Stream settings have been updated successfully.',
     });
   };
 
@@ -70,8 +73,8 @@ export function StreamSettings({ roomId }: StreamSettingsProps) {
   };
 
   const handleTypeChange = (type: 'live' | 'vod') => {
-    setConfig(prev => ({ 
-      ...prev, 
+    setConfig(prev => ({
+      ...prev,
       type,
       url: '', // Reset URL when changing types
       vodSource: type === 'vod' ? 'youtube' : undefined,
@@ -113,11 +116,7 @@ export function StreamSettings({ roomId }: StreamSettingsProps) {
             className="grid grid-cols-2 gap-4"
           >
             <div>
-              <RadioGroupItem
-                value="live"
-                id="live"
-                className="peer sr-only"
-              />
+              <RadioGroupItem value="live" id="live" className="peer sr-only" />
               <Label
                 htmlFor="live"
                 className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
@@ -129,11 +128,7 @@ export function StreamSettings({ roomId }: StreamSettingsProps) {
             </div>
 
             <div>
-              <RadioGroupItem
-                value="vod"
-                id="vod"
-                className="peer sr-only"
-              />
+              <RadioGroupItem value="vod" id="vod" className="peer sr-only" />
               <Label
                 htmlFor="vod"
                 className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
@@ -159,7 +154,7 @@ export function StreamSettings({ roomId }: StreamSettingsProps) {
                 <Input
                   placeholder="Enter HLS stream URL (e.g., https://stream.example.com/live/stream.m3u8)"
                   value={config.url}
-                  onChange={(e) => handleUrlChange(e.target.value)}
+                  onChange={e => handleUrlChange(e.target.value)}
                 />
                 <p className="text-sm text-muted-foreground">
                   Enter the HLS stream URL provided by your streaming service
@@ -177,7 +172,7 @@ export function StreamSettings({ roomId }: StreamSettingsProps) {
                 <Label>Player Theme</Label>
                 <Select
                   value={config.playerSettings.theme}
-                  onValueChange={(value) => handlePlayerSettingChange('theme', value)}
+                  onValueChange={value => handlePlayerSettingChange('theme', value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select theme" />
@@ -195,7 +190,7 @@ export function StreamSettings({ roomId }: StreamSettingsProps) {
                 <Label>Quality</Label>
                 <Select
                   value={config.quality}
-                  onValueChange={(quality) => setConfig(prev => ({ ...prev, quality }))}
+                  onValueChange={quality => setConfig(prev => ({ ...prev, quality }))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select quality" />
@@ -212,10 +207,12 @@ export function StreamSettings({ roomId }: StreamSettingsProps) {
               <div className="space-y-2">
                 <Label>Playback Speed Options</Label>
                 <div className="flex flex-wrap gap-2">
-                  {[0.5, 0.75, 1, 1.25, 1.5, 2].map((rate) => (
+                  {[0.5, 0.75, 1, 1.25, 1.5, 2].map(rate => (
                     <Button
                       key={rate}
-                      variant={config.playerSettings.playbackRates?.includes(rate) ? "default" : "outline"}
+                      variant={
+                        config.playerSettings.playbackRates?.includes(rate) ? 'default' : 'outline'
+                      }
                       size="sm"
                       onClick={() => {
                         const currentRates = config.playerSettings.playbackRates || [];
@@ -249,11 +246,7 @@ export function StreamSettings({ roomId }: StreamSettingsProps) {
                 className="grid grid-cols-3 gap-4"
               >
                 <div>
-                  <RadioGroupItem
-                    value="youtube"
-                    id="youtube"
-                    className="peer sr-only"
-                  />
+                  <RadioGroupItem value="youtube" id="youtube" className="peer sr-only" />
                   <Label
                     htmlFor="youtube"
                     className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
@@ -264,11 +257,7 @@ export function StreamSettings({ roomId }: StreamSettingsProps) {
                 </div>
 
                 <div>
-                  <RadioGroupItem
-                    value="vimeo"
-                    id="vimeo"
-                    className="peer sr-only"
-                  />
+                  <RadioGroupItem value="vimeo" id="vimeo" className="peer sr-only" />
                   <Label
                     htmlFor="vimeo"
                     className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
@@ -279,11 +268,7 @@ export function StreamSettings({ roomId }: StreamSettingsProps) {
                 </div>
 
                 <div>
-                  <RadioGroupItem
-                    value="custom"
-                    id="custom"
-                    className="peer sr-only"
-                  />
+                  <RadioGroupItem value="custom" id="custom" className="peer sr-only" />
                   <Label
                     htmlFor="custom"
                     className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
@@ -306,16 +291,18 @@ export function StreamSettings({ roomId }: StreamSettingsProps) {
                   config.vodSource === 'youtube'
                     ? 'Enter YouTube video URL'
                     : config.vodSource === 'vimeo'
-                    ? 'Enter Vimeo video URL'
-                    : 'Enter custom video URL (HLS/MP4)'
+                      ? 'Enter Vimeo video URL'
+                      : 'Enter custom video URL (HLS/MP4)'
                 }
                 value={config.url}
-                onChange={(e) => handleUrlChange(e.target.value)}
+                onChange={e => handleUrlChange(e.target.value)}
               />
               <p className="text-sm text-muted-foreground">
-                {config.vodSource === 'youtube' && 'Example: https://www.youtube.com/watch?v=VIDEO_ID'}
+                {config.vodSource === 'youtube' &&
+                  'Example: https://www.youtube.com/watch?v=VIDEO_ID'}
                 {config.vodSource === 'vimeo' && 'Example: https://vimeo.com/VIDEO_ID'}
-                {config.vodSource === 'custom' && 'Enter the direct URL to your video file (HLS or MP4)'}
+                {config.vodSource === 'custom' &&
+                  'Enter the direct URL to your video file (HLS or MP4)'}
               </p>
             </div>
           </CardContent>
@@ -332,7 +319,7 @@ export function StreamSettings({ roomId }: StreamSettingsProps) {
             <input
               type="checkbox"
               checked={config.autoplay}
-              onChange={(e) => setConfig(prev => ({ ...prev, autoplay: e.target.checked }))}
+              onChange={e => setConfig(prev => ({ ...prev, autoplay: e.target.checked }))}
               className="toggle"
             />
           </div>

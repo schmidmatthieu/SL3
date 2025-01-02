@@ -1,17 +1,12 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { CheckCircle, MessageSquare, Star, ThumbsUp, XCircle } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  CheckCircle,
-  XCircle,
-  Star,
-  MessageSquare,
-  ThumbsUp,
-} from 'lucide-react';
 
 interface QAModerationProps {
   roomId: string;
@@ -32,7 +27,9 @@ const mockQuestions: Question[] = Array.from({ length: 10 }, (_, i) => ({
   author: `User${i + 1}`,
   timestamp: new Date(Date.now() - Math.random() * 1000 * 60 * 60),
   upvotes: Math.floor(Math.random() * 50),
-  status: ['pending', 'approved', 'rejected', 'highlighted'][Math.floor(Math.random() * 4)] as Question['status'],
+  status: ['pending', 'approved', 'rejected', 'highlighted'][
+    Math.floor(Math.random() * 4)
+  ] as Question['status'],
 }));
 
 const statusColors = {
@@ -47,18 +44,10 @@ export function QAModeration({ roomId }: QAModerationProps) {
   const [filter, setFilter] = useState<Question['status'] | 'all'>('all');
 
   const handleQuestionAction = (questionId: string, action: Question['status']) => {
-    setQuestions(prev =>
-      prev.map(q =>
-        q.id === questionId
-          ? { ...q, status: action }
-          : q
-      )
-    );
+    setQuestions(prev => prev.map(q => (q.id === questionId ? { ...q, status: action } : q)));
   };
 
-  const filteredQuestions = questions.filter(q =>
-    filter === 'all' ? true : q.status === filter
-  );
+  const filteredQuestions = questions.filter(q => (filter === 'all' ? true : q.status === filter));
 
   return (
     <div className="h-full flex flex-col">
@@ -103,17 +92,13 @@ export function QAModeration({ roomId }: QAModerationProps) {
       <Card className="flex-1 min-h-0">
         <ScrollArea className="h-full">
           <div className="p-4 space-y-4">
-            {filteredQuestions.map((question) => (
+            {filteredQuestions.map(question => (
               <Card key={question.id}>
                 <CardContent className="p-4">
                   <div className="flex gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <div
-                          className={`h-2 w-2 rounded-full ${
-                            statusColors[question.status]
-                          }`}
-                        />
+                        <div className={`h-2 w-2 rounded-full ${statusColors[question.status]}`} />
                         <span className="font-medium">{question.author}</span>
                         <span className="text-sm text-muted-foreground" suppressHydrationWarning>
                           {question.timestamp.toLocaleTimeString()}

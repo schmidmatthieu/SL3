@@ -1,30 +1,33 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, ChevronsUpDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-} from "@/components/ui/command";
+} from '@/components/ui/command';
+import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { useTranslation } from 'react-i18next';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export type EventFilters = {
   search: string;
   status: string[];
   sortBy: 'date-asc' | 'date-desc' | 'title-asc' | 'title-desc';
-}
+};
 
 interface EventFiltersProps {
   onFiltersChange: (filters: EventFilters) => void;
@@ -62,9 +65,9 @@ export function EventFilters({ onFiltersChange }: EventFiltersProps) {
 
   const handleStatusChange = (value: string) => {
     const newStatus = selectedStatus.includes(value)
-      ? selectedStatus.filter((s) => s !== value)
+      ? selectedStatus.filter(s => s !== value)
       : [...selectedStatus, value];
-    
+
     setSelectedStatus(newStatus);
     onFiltersChange({
       search,
@@ -89,11 +92,11 @@ export function EventFilters({ onFiltersChange }: EventFiltersProps) {
           <Input
             placeholder="Rechercher des événements..."
             value={search}
-            onChange={(e) => handleSearchChange(e.target.value)}
+            onChange={e => handleSearchChange(e.target.value)}
             className="w-full"
           />
         </div>
-        
+
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -103,7 +106,7 @@ export function EventFilters({ onFiltersChange }: EventFiltersProps) {
               className="justify-between min-w-[130px]"
             >
               {selectedStatus.length === 0
-                ? "Statut"
+                ? 'Statut'
                 : `${selectedStatus.length} sélectionné${selectedStatus.length > 1 ? 's' : ''}`}
               <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
             </Button>
@@ -113,15 +116,12 @@ export function EventFilters({ onFiltersChange }: EventFiltersProps) {
               <CommandInput placeholder="Rechercher un statut..." />
               <CommandEmpty>Aucun statut trouvé.</CommandEmpty>
               <CommandGroup>
-                {statusOptions.map((status) => (
-                  <CommandItem
-                    key={status.value}
-                    onSelect={() => handleStatusChange(status.value)}
-                  >
+                {statusOptions.map(status => (
+                  <CommandItem key={status.value} onSelect={() => handleStatusChange(status.value)}>
                     <Check
                       className={cn(
-                        "mr-2 h-4 w-4",
-                        selectedStatus.includes(status.value) ? "opacity-100" : "opacity-0"
+                        'mr-2 h-4 w-4',
+                        selectedStatus.includes(status.value) ? 'opacity-100' : 'opacity-0'
                       )}
                     />
                     {status.label}
@@ -135,13 +135,13 @@ export function EventFilters({ onFiltersChange }: EventFiltersProps) {
 
       <Select
         value={sortBy}
-        onValueChange={(value) => handleSortChange(value as EventFilters['sortBy'])}
+        onValueChange={value => handleSortChange(value as EventFilters['sortBy'])}
       >
         <SelectTrigger className="w-[180px]">
           <SelectValue placeholder="Trier par" />
         </SelectTrigger>
         <SelectContent>
-          {sortOptions.map((option) => (
+          {sortOptions.map(option => (
             <SelectItem key={option.value} value={option.value}>
               {option.label}
             </SelectItem>

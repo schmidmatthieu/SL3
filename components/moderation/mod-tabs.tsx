@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChatModeration } from "@/components/moderation/chat-moderation";
-import { QAModeration } from "@/components/moderation/qa-moderation";
-import { VoteModeration } from "@/components/moderation/vote-moderation";
-import { Card } from "@/components/ui/card";
+import { Card } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ChatModeration } from '@/components/moderation/chat-moderation';
+import { QAModeration } from '@/components/moderation/qa-moderation';
+import { VoteModeration } from '@/components/moderation/vote-moderation';
 
 interface ModTabsProps {
   roomId: string;

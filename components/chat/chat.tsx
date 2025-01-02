@@ -1,16 +1,23 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { ChatMessage, ChatUser } from '@/types/chat';
-import { ChatList } from '@/components/chat/chat-list';
-import { ChatInput } from '@/components/chat/chat-input';
-import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Users } from 'lucide-react';
+
+import { ChatMessage, ChatUser } from '@/types/chat';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { ChatInput } from '@/components/chat/chat-input';
+import { ChatList } from '@/components/chat/chat-list';
 
 const generateColor = () => {
   const colors = [
-    '#FF4B4B', '#FF8000', '#FFD700', '#00FF00',
-    '#00FFFF', '#0000FF', '#FF00FF', '#FF69B4'
+    '#FF4B4B',
+    '#FF8000',
+    '#FFD700',
+    '#00FF00',
+    '#00FFFF',
+    '#0000FF',
+    '#FF00FF',
+    '#FF69B4',
   ];
   return colors[Math.floor(Math.random() * colors.length)];
 };
@@ -36,7 +43,7 @@ export function Chat({ roomId, currentUser }: ChatProps) {
       content,
       timestamp: Date.now(),
       status: 'delivered',
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${Math.random()}`
+      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${Math.random()}`,
     });
 
     const interval = setInterval(() => {
@@ -57,44 +64,43 @@ export function Chat({ roomId, currentUser }: ChatProps) {
     bufferTimeout.current = setTimeout(() => {
       setMessages(prev => [...prev, ...messageBuffer.current]);
       messageBuffer.current = [];
-      
+
       // Auto-scroll to bottom
       requestAnimationFrame(() => {
         listRef.current?.scrollTo({
           top: listRef.current.scrollHeight,
-          behavior: 'smooth'
+          behavior: 'smooth',
         });
       });
     }, 100);
   }, []);
 
-  const handleSendMessage = useCallback((content: string) => {
-    if (!currentUser) return;
+  const handleSendMessage = useCallback(
+    (content: string) => {
+      if (!currentUser) return;
 
-    const newMessage: ChatMessage = {
-      id: Math.random().toString(36).substr(2, 9),
-      userId: currentUser.id,
-      username: currentUser.username,
-      color: currentUser.color,
-      content,
-      timestamp: Date.now(),
-      status: 'sending',
-      avatar: currentUser.avatar
-    };
+      const newMessage: ChatMessage = {
+        id: Math.random().toString(36).substr(2, 9),
+        userId: currentUser.id,
+        username: currentUser.username,
+        color: currentUser.color,
+        content,
+        timestamp: Date.now(),
+        status: 'sending',
+        avatar: currentUser.avatar,
+      };
 
-    addMessageToBuffer(newMessage);
+      addMessageToBuffer(newMessage);
 
-    // Simulate message delivery
-    setTimeout(() => {
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === newMessage.id 
-            ? { ...msg, status: 'delivered' } 
-            : msg
-        )
-      );
-    }, 1000);
-  }, [currentUser]);
+      // Simulate message delivery
+      setTimeout(() => {
+        setMessages(prev =>
+          prev.map(msg => (msg.id === newMessage.id ? { ...msg, status: 'delivered' } : msg))
+        );
+      }, 1000);
+    },
+    [currentUser]
+  );
 
   return (
     <Card className="flex flex-col h-full border-none shadow-none bg-card/50">
@@ -110,10 +116,7 @@ export function Chat({ roomId, currentUser }: ChatProps) {
       <CardContent className="flex-1 p-0 min-h-0">
         <div className="flex flex-col h-full">
           <ChatList ref={listRef} messages={messages} />
-          <ChatInput
-            onSendMessage={handleSendMessage}
-            disabled={!currentUser}
-          />
+          <ChatInput onSendMessage={handleSendMessage} disabled={!currentUser} />
         </div>
       </CardContent>
     </Card>

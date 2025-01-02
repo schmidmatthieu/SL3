@@ -1,26 +1,20 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { AlertTriangle, Eye, MoreVertical, Search, Shield, Users } from 'lucide-react';
+
+import { events } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Search,
-  MoreVertical,
-  Users,
-  AlertTriangle,
-  Shield,
-  Eye,
-} from 'lucide-react';
-import { events } from '@/lib/data';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export function EventsMonitoring() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -37,7 +31,7 @@ export function EventsMonitoring() {
           <Input
             placeholder="Search events..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             className="w-[300px]"
             prefix={<Search className="h-4 w-4 text-muted-foreground" />}
           />
@@ -45,7 +39,7 @@ export function EventsMonitoring() {
       </div>
 
       <div className="grid gap-6">
-        {filteredEvents.map((event) => (
+        {filteredEvents.map(event => (
           <Card key={event.id}>
             <CardContent className="p-6">
               <div className="flex items-start justify-between">

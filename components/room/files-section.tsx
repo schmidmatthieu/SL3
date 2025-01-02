@@ -1,16 +1,11 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Download, Eye, FileText, Film, Image as ImageIcon } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
-import {
-  FileText,
-  Image as ImageIcon,
-  Film,
-  Download,
-  Eye,
-} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 type FileType = 'doc' | 'image' | 'video';
 
@@ -71,25 +66,25 @@ export function FilesSection({ roomId }: FilesSectionProps) {
     <div className="space-y-4">
       <div className="flex gap-2">
         <Button
-          variant={selectedType === null ? "secondary" : "ghost"}
+          variant={selectedType === null ? 'secondary' : 'ghost'}
           onClick={() => setSelectedType(null)}
         >
           All
         </Button>
         <Button
-          variant={selectedType === 'doc' ? "secondary" : "ghost"}
+          variant={selectedType === 'doc' ? 'secondary' : 'ghost'}
           onClick={() => setSelectedType('doc')}
         >
           Documents
         </Button>
         <Button
-          variant={selectedType === 'image' ? "secondary" : "ghost"}
+          variant={selectedType === 'image' ? 'secondary' : 'ghost'}
           onClick={() => setSelectedType('image')}
         >
           Images
         </Button>
         <Button
-          variant={selectedType === 'video' ? "secondary" : "ghost"}
+          variant={selectedType === 'video' ? 'secondary' : 'ghost'}
           onClick={() => setSelectedType('video')}
         >
           Videos
@@ -97,7 +92,7 @@ export function FilesSection({ roomId }: FilesSectionProps) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredFiles.map((file) => {
+        {filteredFiles.map(file => {
           const Icon = fileTypeIcons[file.type];
 
           return (
@@ -118,9 +113,7 @@ export function FilesSection({ roomId }: FilesSectionProps) {
                       <Badge variant="secondary" className="text-xs">
                         {file.type.toUpperCase()}
                       </Badge>
-                      <span className="text-sm text-muted-foreground">
-                        {file.size}
-                      </span>
+                      <span className="text-sm text-muted-foreground">{file.size}</span>
                     </div>
                   </div>
                 </div>

@@ -1,10 +1,13 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { AlertTriangle, Ban, Download, MessageSquare, Search, Shield, UserX } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -12,16 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  AlertTriangle,
-  Ban,
-  Search,
-  Shield,
-  UserX,
-  MessageSquare,
-  Download,
-} from 'lucide-react';
 
 interface Incident {
   id: string;
@@ -41,12 +34,9 @@ const mockIncidents: Incident[] = Array.from({ length: 20 }, (_, i) => ({
   roomId: `room-${Math.floor(Math.random() * 5) + 1}`,
   moderator: `Moderator ${Math.floor(Math.random() * 5) + 1}`,
   target: `User${Math.floor(Math.random() * 100) + 1}`,
-  reason: [
-    'Spam',
-    'Inappropriate content',
-    'Harassment',
-    'Multiple violations',
-  ][Math.floor(Math.random() * 4)],
+  reason: ['Spam', 'Inappropriate content', 'Harassment', 'Multiple violations'][
+    Math.floor(Math.random() * 4)
+  ],
   timestamp: new Date(Date.now() - Math.random() * 86400000 * 7),
 }));
 
@@ -70,7 +60,7 @@ export function IncidentLogs() {
   const [typeFilter, setTypeFilter] = useState<string>('all');
 
   const filteredIncidents = incidents.filter(incident => {
-    const matchesSearch = 
+    const matchesSearch =
       incident.target.toLowerCase().includes(searchQuery.toLowerCase()) ||
       incident.moderator.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesType = typeFilter === 'all' || incident.type === typeFilter;
@@ -95,7 +85,7 @@ export function IncidentLogs() {
               <Input
                 placeholder="Search incidents..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={e => setSearchQuery(e.target.value)}
                 className="w-[300px]"
                 prefix={<Search className="h-4 w-4 text-muted-foreground" />}
               />
@@ -117,7 +107,7 @@ export function IncidentLogs() {
         <CardContent>
           <ScrollArea className="h-[600px] pr-4">
             <div className="space-y-4">
-              {filteredIncidents.map((incident) => {
+              {filteredIncidents.map(incident => {
                 const Icon = incidentIcons[incident.type];
                 return (
                   <Card key={incident.id}>
@@ -129,20 +119,14 @@ export function IncidentLogs() {
                         <div className="flex-1 space-y-1">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <span className="font-medium">
-                                {incident.target}
-                              </span>
-                              <Badge variant="secondary">
-                                {incident.type.toUpperCase()}
-                              </Badge>
+                              <span className="font-medium">{incident.target}</span>
+                              <Badge variant="secondary">{incident.type.toUpperCase()}</Badge>
                             </div>
                             <span className="text-sm text-muted-foreground">
                               {incident.timestamp.toLocaleString()}
                             </span>
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            {incident.reason}
-                          </p>
+                          <p className="text-sm text-muted-foreground">{incident.reason}</p>
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Shield className="h-4 w-4" />
                             <span>by {incident.moderator}</span>

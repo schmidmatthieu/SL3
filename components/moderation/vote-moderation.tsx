@@ -1,12 +1,13 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { BarChart3, Play, Plus, Square, Trash2 } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Plus, Play, Square, BarChart3, Trash2 } from 'lucide-react';
 
 interface VoteModerationProps {
   roomId: string;
@@ -94,9 +95,7 @@ export function VoteModeration({ roomId }: VoteModerationProps) {
     } else {
       setPolls(prev =>
         prev.map(p =>
-          p.id === pollId
-            ? { ...p, status: action === 'start' ? 'active' : 'ended' }
-            : p
+          p.id === pollId ? { ...p, status: action === 'start' ? 'active' : 'ended' } : p
         )
       );
     }
@@ -112,7 +111,7 @@ export function VoteModeration({ roomId }: VoteModerationProps) {
           <Input
             placeholder="Enter your question"
             value={newPoll.question}
-            onChange={(e) => setNewPoll(prev => ({ ...prev, question: e.target.value }))}
+            onChange={e => setNewPoll(prev => ({ ...prev, question: e.target.value }))}
           />
           <div className="space-y-2">
             {newPoll.options.map((option, index) => (
@@ -120,7 +119,7 @@ export function VoteModeration({ roomId }: VoteModerationProps) {
                 key={index}
                 placeholder={`Option ${index + 1}`}
                 value={option}
-                onChange={(e) => handleOptionChange(index, e.target.value)}
+                onChange={e => handleOptionChange(index, e.target.value)}
               />
             ))}
           </div>
@@ -136,9 +135,7 @@ export function VoteModeration({ roomId }: VoteModerationProps) {
             <Button
               onClick={handleCreatePoll}
               disabled={
-                !newPoll.question ||
-                newPoll.options.some(opt => !opt) ||
-                newPoll.options.length < 2
+                !newPoll.question || newPoll.options.some(opt => !opt) || newPoll.options.length < 2
               }
             >
               Create Poll
@@ -154,7 +151,7 @@ export function VoteModeration({ roomId }: VoteModerationProps) {
         <ScrollArea className="h-[calc(100%-5rem)]">
           <CardContent className="p-4">
             <div className="space-y-4">
-              {polls.map((poll) => (
+              {polls.map(poll => (
                 <Card key={poll.id}>
                   <CardContent className="p-4">
                     <div className="mb-4">
@@ -165,7 +162,7 @@ export function VoteModeration({ roomId }: VoteModerationProps) {
                     </div>
 
                     <div className="space-y-3 mb-4">
-                      {poll.options.map((option) => {
+                      {poll.options.map(option => {
                         const percentage = Math.round(
                           (option.votes / (poll.totalVotes || 1)) * 100
                         );

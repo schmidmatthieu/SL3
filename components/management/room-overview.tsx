@@ -1,14 +1,15 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
+import { AlertCircle, Search, Settings, Users } from 'lucide-react';
+
 import { rooms } from '@/lib/rooms';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Search, Settings, Users, AlertCircle } from 'lucide-react';
-import Link from 'next/link';
 
 interface RoomOverviewProps {
   eventId: string;
@@ -54,9 +55,7 @@ export function RoomOverview({ eventId }: RoomOverviewProps) {
             <CardTitle className="text-lg font-semibold">Upcoming</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-blue-500">
-              {stats.upcoming}
-            </div>
+            <div className="text-3xl font-bold text-blue-500">{stats.upcoming}</div>
           </CardContent>
         </Card>
 
@@ -65,9 +64,7 @@ export function RoomOverview({ eventId }: RoomOverviewProps) {
             <CardTitle className="text-lg font-semibold">Issues</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-yellow-500">
-              {stats.issues}
-            </div>
+            <div className="text-3xl font-bold text-yellow-500">{stats.issues}</div>
           </CardContent>
         </Card>
       </div>
@@ -79,7 +76,7 @@ export function RoomOverview({ eventId }: RoomOverviewProps) {
             <Input
               placeholder="Search rooms..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className="max-w-xs"
               prefix={<Search className="h-4 w-4 text-muted-foreground" />}
             />
@@ -88,7 +85,7 @@ export function RoomOverview({ eventId }: RoomOverviewProps) {
         <CardContent>
           <ScrollArea className="h-[500px] pr-4">
             <div className="space-y-4">
-              {filteredRooms.map((room) => (
+              {filteredRooms.map(room => (
                 <Card key={room.id}>
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
@@ -100,8 +97,8 @@ export function RoomOverview({ eventId }: RoomOverviewProps) {
                               room.status === 'live'
                                 ? 'default'
                                 : room.status === 'upcoming'
-                                ? 'secondary'
-                                : 'outline'
+                                  ? 'secondary'
+                                  : 'outline'
                             }
                           >
                             {room.status.toUpperCase()}

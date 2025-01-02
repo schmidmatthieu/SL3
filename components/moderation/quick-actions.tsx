@@ -1,20 +1,13 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertTriangle, Ban, Clock, MessageSquare, ShieldAlert, Trash2, Users } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  Trash2,
-  Clock,
-  Users,
-  ShieldAlert,
-  MessageSquare,
-  Ban,
-  AlertTriangle,
-} from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 
 export function QuickActions() {
   const [slowMode, setSlowMode] = useState(false);
@@ -46,17 +39,14 @@ export function QuickActions() {
                   <Clock className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm">Slow Mode</span>
                 </div>
-                <Switch
-                  checked={slowMode}
-                  onCheckedChange={setSlowMode}
-                />
+                <Switch checked={slowMode} onCheckedChange={setSlowMode} />
               </div>
               {slowMode && (
                 <div className="flex items-center gap-2">
                   <Input
                     type="number"
                     value={slowModeDelay}
-                    onChange={(e) => setSlowModeDelay(Number(e.target.value))}
+                    onChange={e => setSlowModeDelay(Number(e.target.value))}
                     className="w-20"
                     min={1}
                     max={300}
@@ -71,18 +61,11 @@ export function QuickActions() {
                 <Users className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm">Followers-only Chat</span>
               </div>
-              <Switch
-                checked={followersOnly}
-                onCheckedChange={setFollowersOnly}
-              />
+              <Switch checked={followersOnly} onCheckedChange={setFollowersOnly} />
             </div>
 
             <div className="space-y-2">
-              <Button
-                variant="outline"
-                className="w-full justify-start"
-                onClick={handleClearChat}
-              >
+              <Button variant="outline" className="w-full justify-start" onClick={handleClearChat}>
                 <Trash2 className="h-4 w-4 mr-2" />
                 Clear Chat
               </Button>

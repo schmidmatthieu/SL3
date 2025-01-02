@@ -1,32 +1,29 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Room } from '@/types/room';
+import { useEffect, useState } from 'react';
 import { useRoomStore } from '@/store/room.store';
+import { addHours, format } from 'date-fns';
+import { CalendarIcon, Settings } from 'lucide-react';
+
+import { Room } from '@/types/room';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
 } from '@/components/ui/dialog';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { format, addHours } from 'date-fns';
-import { CalendarIcon, Settings } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useToast } from '@/components/ui/use-toast';
 import { ImageUploader } from '@/components/ui/image-uploader';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Switch } from '@/components/ui/switch';
+import { useToast } from '@/components/ui/use-toast';
 
 const AVAILABLE_LANGUAGES = [
   { code: 'fr', label: 'Français' },
@@ -54,7 +51,9 @@ export function EditRoomDialog({ room, onClose }: EditRoomDialogProps) {
   const [chatEnabled, setChatEnabled] = useState(room.settings.chatEnabled);
   const [recordingEnabled, setRecordingEnabled] = useState(room.settings.recordingEnabled);
   const [originalLanguage, setOriginalLanguage] = useState(room.settings.originalLanguage);
-  const [availableLanguages, setAvailableLanguages] = useState<string[]>(room.settings.availableLanguages);
+  const [availableLanguages, setAvailableLanguages] = useState<string[]>(
+    room.settings.availableLanguages
+  );
 
   const { updateRoom } = useRoomStore();
   const { toast } = useToast();
@@ -91,20 +90,20 @@ export function EditRoomDialog({ room, onClose }: EditRoomDialogProps) {
     try {
       const start = new Date(startDate);
       const end = new Date(endDate);
-      const [startHours, startMinutes] = startTime.split(":").map(Number);
-      const [endHours, endMinutes] = endTime.split(":").map(Number);
-      
+      const [startHours, startMinutes] = startTime.split(':').map(Number);
+      const [endHours, endMinutes] = endTime.split(':').map(Number);
+
       start.setHours(startHours, startMinutes);
       end.setHours(endHours, endMinutes);
 
       // Ne mettre à jour que les champs qui ont été modifiés
       const updatedFields: any = {
-        settings: {}
+        settings: {},
       };
 
       // Vérifier les changements dans les paramètres de settings
       let hasSettingsChanges = false;
-      
+
       if (isPublic !== room.settings.isPublic) {
         updatedFields.settings.isPublic = isPublic;
         hasSettingsChanges = true;
@@ -139,11 +138,11 @@ export function EditRoomDialog({ room, onClose }: EditRoomDialogProps) {
       if (name !== room.name) {
         updatedFields.name = name;
       }
-      
+
       if (description !== room.description) {
         updatedFields.description = description;
       }
-      
+
       if (thumbnail !== room.thumbnail) {
         updatedFields.thumbnail = thumbnail;
       }
@@ -151,11 +150,11 @@ export function EditRoomDialog({ room, onClose }: EditRoomDialogProps) {
       // Vérifier les changements de dates
       const newStartTime = start.toISOString();
       const newEndTime = end.toISOString();
-      
+
       if (newStartTime !== room.startTime) {
         updatedFields.startTime = newStartTime;
       }
-      
+
       if (newEndTime !== room.endTime) {
         updatedFields.endTime = newEndTime;
       }
@@ -163,26 +162,26 @@ export function EditRoomDialog({ room, onClose }: EditRoomDialogProps) {
       // Ne pas envoyer de mise à jour si aucun champ n'a été modifié
       if (Object.keys(updatedFields).length === 0) {
         toast({
-          title: "Information",
-          description: "Aucun changement à sauvegarder",
+          title: 'Information',
+          description: 'Aucun changement à sauvegarder',
         });
         return;
       }
 
       await updateRoom(room._id, updatedFields);
-      
+
       toast({
-        title: "Succès",
-        description: "Room mise à jour avec succès",
+        title: 'Succès',
+        description: 'Room mise à jour avec succès',
       });
-      
+
       setOpen(false);
     } catch (error) {
       console.error('Error updating room:', error);
       toast({
-        title: "Erreur",
-        description: "Erreur lors de la mise à jour: " + error.message,
-        variant: "destructive",
+        title: 'Erreur',
+        description: 'Erreur lors de la mise à jour: ' + error.message,
+        variant: 'destructive',
       });
     }
   };
@@ -198,20 +197,14 @@ export function EditRoomDialog({ room, onClose }: EditRoomDialogProps) {
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Edit Room</DialogTitle>
-          <DialogDescription>
-            Update the room&apos;s details and settings
-          </DialogDescription>
+          <DialogDescription>Update the room&apos;s details and settings</DialogDescription>
         </DialogHeader>
-        
+
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Room Name</Label>
-              <Input
-                placeholder="Room name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
+              <Input placeholder="Room name" value={name} onChange={e => setName(e.target.value)} />
             </div>
             <div className="space-y-2">
               <Label>Max Capacity</Label>
@@ -219,7 +212,7 @@ export function EditRoomDialog({ room, onClose }: EditRoomDialogProps) {
                 type="number"
                 placeholder="Max capacity"
                 value={capacity}
-                onChange={(e) => setCapacity(e.target.value)}
+                onChange={e => setCapacity(e.target.value)}
               />
             </div>
           </div>
@@ -230,7 +223,7 @@ export function EditRoomDialog({ room, onClose }: EditRoomDialogProps) {
               <Input
                 placeholder="Description"
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={e => setDescription(e.target.value)}
               />
             </div>
             <div className="space-y-2">
@@ -253,20 +246,16 @@ export function EditRoomDialog({ room, onClose }: EditRoomDialogProps) {
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !startDate && "text-muted-foreground"
+                      'w-full justify-start text-left font-normal',
+                      !startDate && 'text-muted-foreground'
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
+                    {startDate ? format(startDate, 'PPP') : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={startDate}
-                    onSelect={handleStartDateChange}
-                  />
+                  <Calendar mode="single" selected={startDate} onSelect={handleStartDateChange} />
                 </PopoverContent>
               </Popover>
               <div className="mt-2">
@@ -274,7 +263,7 @@ export function EditRoomDialog({ room, onClose }: EditRoomDialogProps) {
                 <Input
                   type="time"
                   value={startTime}
-                  onChange={(e) => handleStartTimeChange(e.target.value)}
+                  onChange={e => handleStartTimeChange(e.target.value)}
                 />
               </div>
             </div>
@@ -286,12 +275,12 @@ export function EditRoomDialog({ room, onClose }: EditRoomDialogProps) {
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !endDate && "text-muted-foreground"
+                      'w-full justify-start text-left font-normal',
+                      !endDate && 'text-muted-foreground'
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
+                    {endDate ? format(endDate, 'PPP') : <span>Pick a date</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -299,17 +288,13 @@ export function EditRoomDialog({ room, onClose }: EditRoomDialogProps) {
                     mode="single"
                     selected={endDate}
                     onSelect={setEndDate}
-                    disabled={(date) => date < startDate}
+                    disabled={date => date < startDate}
                   />
                 </PopoverContent>
               </Popover>
               <div className="mt-2">
                 <Label>End Time</Label>
-                <Input
-                  type="time"
-                  value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                />
+                <Input type="time" value={endTime} onChange={e => setEndTime(e.target.value)} />
               </div>
             </div>
           </div>
@@ -317,24 +302,15 @@ export function EditRoomDialog({ room, onClose }: EditRoomDialogProps) {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <Label>Public Room</Label>
-              <Switch
-                checked={isPublic}
-                onCheckedChange={setIsPublic}
-              />
+              <Switch checked={isPublic} onCheckedChange={setIsPublic} />
             </div>
             <div className="flex items-center justify-between">
               <Label>Enable Chat</Label>
-              <Switch
-                checked={chatEnabled}
-                onCheckedChange={setChatEnabled}
-              />
+              <Switch checked={chatEnabled} onCheckedChange={setChatEnabled} />
             </div>
             <div className="flex items-center justify-between">
               <Label>Enable Recording</Label>
-              <Switch
-                checked={recordingEnabled}
-                onCheckedChange={setRecordingEnabled}
-              />
+              <Switch checked={recordingEnabled} onCheckedChange={setRecordingEnabled} />
             </div>
           </div>
         </div>
@@ -343,9 +319,7 @@ export function EditRoomDialog({ room, onClose }: EditRoomDialogProps) {
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave}>
-            Save Changes
-          </Button>
+          <Button onClick={handleSave}>Save Changes</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
