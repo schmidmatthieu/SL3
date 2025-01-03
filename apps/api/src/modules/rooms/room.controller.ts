@@ -147,4 +147,30 @@ export class RoomController {
   async endRoom(@Param('id') id: string) {
     return this.roomService.endRoom(id);
   }
+
+  @Patch(':id/speakers')
+  @UseGuards(JwtAuthGuard)
+  async updateSpeakers(
+    @Param('id') id: string,
+    @Body('speakers') speakers: string[],
+  ) {
+    try {
+      return await this.roomService.updateSpeakers(id, speakers);
+    } catch (error) {
+      throw new BadRequestException('Failed to update speakers');
+    }
+  }
+
+  @Patch(':id/moderators')
+  @UseGuards(JwtAuthGuard)
+  async updateModerators(
+    @Param('id') id: string,
+    @Body('moderators') moderators: string[],
+  ) {
+    try {
+      return await this.roomService.updateModerators(id, moderators);
+    } catch (error) {
+      throw new BadRequestException('Failed to update moderators');
+    }
+  }
 }

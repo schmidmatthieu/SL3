@@ -45,7 +45,12 @@
     "filters": {
       "language": "Language",
       "all": "All"
-    }
+    },
+    "speakersCount": "{{count}} speaker",
+    "speakersCount_plural": "{{count}} speakers",
+    "oneSpeaker": "1 speaker",
+    "multipleSpeakers": "{{count}} speakers",
+    "noSpeakers": "No speakers"
   },
   "status": {
     "draft": "Draft",

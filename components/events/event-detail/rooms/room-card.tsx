@@ -13,6 +13,8 @@ import {
   Wrench,
 } from 'lucide-react';
 
+import { useTranslation } from 'react-i18next';
+
 import { Room, ROOM_STATUS_TRANSLATIONS } from '@/types/room';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -25,6 +27,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
+import { RoomSpeakersDisplay } from './components/room-speakers-display';
 
 const DEFAULT_ROOM_IMAGE =
   'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=2000&auto=format&fit=crop';
@@ -39,6 +42,10 @@ const LANGUAGES = {
 interface RoomCardProps {
   room: Room;
   eventId: string;
+  isSelected?: boolean;
+  onSelect?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
   userLanguage?: keyof typeof ROOM_STATUS_TRANSLATIONS.upcoming;
 }
 
@@ -63,8 +70,28 @@ const formatTime = (date: string) => {
   return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 };
 
-export function RoomCard({ room, eventId, userLanguage = 'en' }: RoomCardProps) {
+export function RoomCard({
+  room,
+  eventId,
+  isSelected,
+  onSelect,
+  onEdit,
+  onDelete,
+  userLanguage = 'en',
+}: RoomCardProps) {
+  const { t } = useTranslation(['components/event-detail', 'common']);
   const router = useRouter();
+
+  console.log('RoomCard received full room data:', room);
+
+  // Si la room n'a pas d'ID ou d'eventId, utiliser _id et l'eventId des props
+  const roomId = room.id || room._id;
+  const roomEventId = room.eventId || eventId;
+
+  if (!roomId || !roomEventId) {
+    console.error('Room is missing required fields:', { roomId, roomEventId, room });
+    return null;
+  }
 
   const handleClick = () => {
     if (room.status === 'cancelled') {
@@ -164,6 +191,27 @@ export function RoomCard({ room, eventId, userLanguage = 'en' }: RoomCardProps) 
                 </p>
               </div>
             </div>
+
+            {console.log('Room data:', {
+              id: room.id || room._id,
+              name: room.name,
+              speakers: room.speakers,
+              hasValidSpeakers: room.speakers && room.speakers.length > 0,
+              eventId: room.eventId || eventId
+            })}
+            {room.speakers && room.speakers.length > 0 && (
+              <>
+                {console.log('Rendering RoomSpeakersDisplay with:', {
+                  speakerIds: room.speakers,
+                  eventId: room.eventId || eventId
+                })}
+                <RoomSpeakersDisplay 
+                  speakerIds={room.speakers} 
+                  eventId={room.eventId || eventId}
+                  className="group"
+                />
+              </>
+            )}
 
             <div className="flex items-center gap-3">
               <div className="flex items-center justify-center w-8 h-8 rounded-md bg-muted/50">

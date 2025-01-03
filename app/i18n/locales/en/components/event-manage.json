@@ -1,0 +1,103 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "Manage your event",
+    "backToEvents": "Back to events",
+    "viewEvent": "View Event",
+    "actions": {
+      "startEvent": "Start Event",
+      "endEvent": "End Event",
+      "reopenEvent": "Reopen Event"
+    }
+  },
+  "stats": {
+    "status": {
+      "title": "Status",
+      "active": "Active",
+      "scheduled": "Scheduled",
+      "ended": "Ended",
+      "draft": "Draft"
+    },
+    "rooms": {
+      "title": "Rooms",
+      "activeRooms": "Active Rooms"
+    },
+    "duration": {
+      "title": "Duration",
+      "to": "to"
+    }
+  },
+  "quickActions": {
+    "manageRooms": "Manage Rooms",
+    "viewAnalytics": "View Analytics",
+    "eventSettings": "Settings",
+    "manageSpeakers": "Manage Speakers",
+    "security": "Security"
+  },
+  "management": {
+    "title": "Management",
+    "tabs": {
+      "overview": "Overview",
+      "settings": "Settings"
+    }
+  },
+  "speakers": {
+    "title": "Speaker Management",
+    "description": "Manage speakers for your event",
+    "formDescription": "Fill in the speaker information",
+    "addButton": "Add Speaker",
+    "editTitle": "Edit Speaker",
+    "addTitle": "Add New Speaker",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "role": "Role",
+    "company": "Company",
+    "bio": "Bio",
+    "bioPlaceholder": "Enter a short biography of the speaker...",
+    "photo": "Photo",
+    "imageUrl": "Profile Picture",
+    "rooms": "Assigned Rooms",
+    "form": {
+      "rooms": "Assigned Rooms"
+    },
+    "noRooms": "No rooms available",
+    "roomsDescription": "Select one or more rooms for this speaker",
+    "selectRooms": "Select rooms",
+    "linkedin": "LinkedIn",
+    "twitter": "Twitter",
+    "deleteTitle": "Delete Speaker",
+    "deleteDescription": "Are you sure you want to delete this speaker? This action cannot be undone.",
+    "searchPlaceholder": "Search speakers...",
+    "noSpeakers": "No speakers found",
+    "create": "Create",
+    "save": "Save",
+    "updatePhoto": "Update Photo",
+    "updatePhotoDescription": "Select a new photo for this speaker",
+    "photoUpdated": "Photo updated successfully",
+    "photoError": "Error updating photo",
+    "success": {
+      "create": "Speaker created successfully",
+      "update": "Speaker updated successfully",
+      "delete": "Speaker deleted successfully",
+      "createDescription": "The speaker has been created successfully",
+      "updateDescription": "The speaker has been updated successfully",
+      "deleteDescription": "The speaker has been deleted successfully"
+    },
+    "error": {
+      "title": "Error",
+      "description": "An error occurred while processing your request",
+      "save": "Failed to save speaker",
+      "delete": "Failed to delete speaker",
+      "load": "Failed to load speakers"
+    },
+    "table": {
+      "speaker": "Speaker",
+      "roleCompany": "Role & Company",
+      "rooms": "Rooms",
+      "bio": "Biography",
+      "social": "Social Links",
+      "actions": "Actions"
+    }
+  },
+  "error": "Error"
+}

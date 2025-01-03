@@ -45,7 +45,9 @@
     "filters": {
       "language": "Sprache",
       "all": "Alle"
-    }
+    },
+    "oneSpeaker": "1 Sprecher",
+    "multipleSpeakers": "{{count}} Sprecher"
   },
   "status": {
     "draft": "Entwurf",

@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException, Logger } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger, Inject, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Speaker, SpeakerDocument } from './schemas/speaker.schema';
 import { CreateSpeakerDto } from './dto/create-speaker.dto';
 import { UpdateSpeakerDto } from './dto/update-speaker.dto';
 import { MediaService } from '../media/media.service';
+import { RoomService } from '../rooms/room.service';
 
 @Injectable()
 export class SpeakersService {
@@ -13,6 +14,8 @@ export class SpeakersService {
   constructor(
     @InjectModel(Speaker.name) private speakerModel: Model<SpeakerDocument>,
     private readonly mediaService: MediaService,
+    @Inject(forwardRef(() => RoomService))
+    private readonly roomService: RoomService,
   ) {}
 
   async create(createSpeakerDto: CreateSpeakerDto): Promise<Speaker> {
@@ -101,28 +104,111 @@ export class SpeakersService {
         if (newMedia) {
           await this.mediaService.addUsage(newMedia._id.toString(), {
             type: 'speaker',
-            entityId: speaker._id.toString(),
-            entityName: `${updateSpeakerDto.firstName || speaker.firstName} ${updateSpeakerDto.lastName || speaker.lastName}`,
+            entityId: id,
+            entityName: `${speaker.firstName} ${speaker.lastName}`,
           });
         }
       }
     }
 
-    Object.assign(speaker, updateSpeakerDto);
-    return speaker.save();
+    // Gérer la synchronisation des rooms si elles sont modifiées
+    if (updateSpeakerDto.rooms) {
+      const currentRooms = speaker.rooms || [];
+      const newRooms = updateSpeakerDto.rooms;
+
+      // Rooms à supprimer
+      const roomsToRemove = currentRooms.filter(room => !newRooms.includes(room));
+      // Rooms à ajouter
+      const roomsToAdd = newRooms.filter(room => !currentRooms.includes(room));
+
+      // Synchroniser les suppressions
+      await Promise.all(roomsToRemove.map(roomId => 
+        this.roomService.removeSpeaker(roomId, id)
+      ));
+
+      // Synchroniser les ajouts
+      await Promise.all(roomsToAdd.map(roomId =>
+        this.roomService.addSpeaker(roomId, id)
+      ));
+    }
+
+    const updatedSpeaker = await this.speakerModel
+      .findByIdAndUpdate(id, updateSpeakerDto, { new: true })
+      .exec();
+
+    this.logger.log('Speaker updated successfully');
+    return updatedSpeaker;
+  }
+
+  async addToRoom(speakerId: string, roomId: string): Promise<Speaker> {
+    this.logger.log(`Adding speaker ${speakerId} to room ${roomId}`);
+
+    const speaker = await this.speakerModel.findById(speakerId);
+    if (!speaker) {
+      throw new NotFoundException('Speaker not found');
+    }
+
+    if (!speaker.rooms) {
+      speaker.rooms = [];
+    }
+
+    if (!speaker.rooms.includes(roomId)) {
+      speaker.rooms.push(roomId);
+      await speaker.save();
+      
+      // Synchroniser avec le RoomService
+      await this.roomService.addSpeaker(roomId, speakerId);
+    }
+
+    return speaker;
+  }
+
+  async removeFromRoom(speakerId: string, roomId: string): Promise<Speaker> {
+    this.logger.log(`Removing speaker ${speakerId} from room ${roomId}`);
+
+    const speaker = await this.speakerModel.findById(speakerId);
+    if (!speaker) {
+      throw new NotFoundException('Speaker not found');
+    }
+
+    if (speaker.rooms) {
+      speaker.rooms = speaker.rooms.filter(id => id !== roomId);
+      await speaker.save();
+      
+      // Synchroniser avec le RoomService
+      await this.roomService.removeSpeaker(roomId, speakerId);
+    }
+
+    return speaker;
   }
 
   async remove(id: string): Promise<Speaker> {
     this.logger.log(`Removing speaker ${id}`);
 
-    const speaker = await this.speakerModel.findByIdAndDelete(id).exec();
+    const speaker = await this.speakerModel.findById(id);
     if (!speaker) {
       this.logger.error(`Speaker not found with id: ${id}`);
       throw new NotFoundException('Speaker not found');
     }
 
-    this.logger.log('Speaker removed:', speaker);
-    return speaker;
+    // Retirer le speaker de toutes les rooms associées
+    const rooms = speaker.rooms || [];
+    for (const roomId of rooms) {
+      const room = await this.roomService.findOne(roomId.toString());
+      if (room) {
+        const updatedSpeakers = room.speakers.filter(speakerId => speakerId.toString() !== id);
+        await this.roomService.updateSpeakers(roomId.toString(), updatedSpeakers.map(id => id.toString()));
+      }
+    }
+
+    const deletedSpeaker = await this.speakerModel.findByIdAndDelete(id).exec();
+    if (!deletedSpeaker) {
+      this.logger.error(`Speaker not found with id: ${id}`);
+      throw new NotFoundException('Speaker not found');
+    }
+
+    this.logger.log('Speaker removed:', deletedSpeaker);
+    return deletedSpeaker;
   }
 
   async findByEvent(eventId: string): Promise<Speaker[]> {
@@ -147,5 +233,30 @@ export class SpeakersService {
     this.logger.log(`Found ${speakers.length} speakers for room`);
 
     return speakers;
+  }
+
+  async uploadImage(id: string, file: Express.Multer.File): Promise<string> {
+    this.logger.log(`Uploading image for speaker ${id}`);
+
+    const speaker = await this.speakerModel.findById(id);
+    if (!speaker) {
+      throw new NotFoundException('Speaker not found');
+    }
+
+    // Créer l'entrée média avec le fichier uploadé
+    const media = await this.mediaService.create(file, speaker._id.toString());
+
+    // Ajouter l'utilisation du média
+    await this.mediaService.addUsage((media as any)._id.toString(), {
+      type: 'speaker',
+      entityId: speaker._id.toString(),
+      entityName: `${speaker.firstName} ${speaker.lastName}`,
+    });
+
+    // Mettre à jour l'URL de l'image du speaker
+    const imageUrl = media.url;
+    await this.speakerModel.findByIdAndUpdate(id, { imageUrl });
+
+    return imageUrl;
   }
 }

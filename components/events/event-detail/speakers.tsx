@@ -2,6 +2,9 @@
 
 import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
+import { Linkedin, Twitter } from 'lucide-react';
+
+import { Speaker } from '@/types/speaker';
 import { Card } from '@/components/ui/card';
 import {
   Tooltip,
@@ -10,25 +13,6 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
-import { Linkedin, Twitter } from 'lucide-react';
-
-interface Speaker {
-  id: string;
-  name: string;
-  role: string;
-  company: string;
-  bio: string;
-  imageUrl: string;
-  sessions: Array<{
-    id: string;
-    title: string;
-    time: string;
-  }>;
-  socialLinks?: {
-    linkedin?: string;
-    twitter?: string;
-  };
-}
 
 interface SpeakersProps {
   speakers: Speaker[];
@@ -60,21 +44,34 @@ export function Speakers({ speakers }: SpeakersProps) {
             >
               <div className="flex items-start gap-4">
                 <div className="relative w-20 h-20 rounded-full overflow-hidden flex-shrink-0">
-                  <Image
-                    src={speaker.imageUrl}
-                    alt={speaker.name}
-                    fill
-                    className="object-cover"
-                  />
+                  {speaker.imageUrl ? (
+                    <Image
+                      src={speaker.imageUrl}
+                      alt={`${speaker.firstName} ${speaker.lastName}`}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-muted flex items-center justify-center text-xl font-semibold">
+                      {speaker.firstName[0]}
+                      {speaker.lastName[0]}
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-4">
                     <div>
-                      <h3 className="font-semibold truncate">{speaker.name}</h3>
-                      <p className="text-sm text-muted-foreground truncate">
-                        {speaker.role} @ {speaker.company}
-                      </p>
+                      <h3 className="font-semibold truncate">
+                        {speaker.firstName} {speaker.lastName}
+                      </h3>
+                      {(speaker.role || speaker.company) && (
+                        <p className="text-sm text-muted-foreground truncate">
+                          {speaker.role}
+                          {speaker.role && speaker.company && ' @ '}
+                          {speaker.company}
+                        </p>
+                      )}
                     </div>
 
                     {speaker.socialLinks && (
@@ -118,21 +115,25 @@ export function Speakers({ speakers }: SpeakersProps) {
                     )}
                   </div>
 
-                  <p className="mt-2 text-sm line-clamp-2">{speaker.bio}</p>
+                  {speaker.bio && (
+                    <p className="mt-2 text-sm line-clamp-2">{speaker.bio}</p>
+                  )}
 
-                  <div className="mt-4 space-y-2">
-                    {speaker.sessions.map((session) => (
-                      <div
-                        key={session.id}
-                        className="flex items-center justify-between gap-2 text-sm"
-                      >
-                        <span className="truncate flex-1">{session.title}</span>
-                        <Badge variant="outline" className="flex-shrink-0">
-                          {session.time}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
+                  {speaker.sessions && speaker.sessions.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      {speaker.sessions.map((session) => (
+                        <div
+                          key={session.id}
+                          className="flex items-center justify-between gap-2 text-sm"
+                        >
+                          <span className="truncate flex-1">{session.title}</span>
+                          <Badge variant="outline" className="flex-shrink-0">
+                            {session.time}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </Card>

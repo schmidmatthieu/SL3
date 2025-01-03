@@ -1,0 +1,101 @@
+{
+  "dashboard": {
+    "title": "Panel de control",
+    "description": "Gestiona tu evento",
+    "backToEvents": "Volver a eventos",
+    "viewEvent": "Ver evento",
+    "actions": {
+      "startEvent": "Iniciar evento",
+      "endEvent": "Finalizar evento",
+      "reopenEvent": "Reabrir evento"
+    }
+  },
+  "stats": {
+    "status": {
+      "title": "Estado",
+      "active": "Activo",
+      "scheduled": "Programado",
+      "ended": "Finalizado",
+      "draft": "Borrador"
+    },
+    "rooms": {
+      "title": "Salas",
+      "activeRooms": "Salas activas"
+    },
+    "duration": {
+      "title": "Duración",
+      "to": "hasta"
+    }
+  },
+  "quickActions": {
+    "manageRooms": "Gestionar salas",
+    "viewAnalytics": "Ver análisis",
+    "eventSettings": "Configuración",
+    "manageSpeakers": "Gestionar ponentes",
+    "security": "Seguridad"
+  },
+  "management": {
+    "title": "Gestión",
+    "tabs": {
+      "overview": "Vista general",
+      "settings": "Configuración"
+    }
+  },
+  "speakers": {
+    "title": "Gestión de ponentes",
+    "description": "Gestiona los ponentes de tu evento",
+    "formDescription": "Completa la información del ponente",
+    "addButton": "Añadir ponente",
+    "editTitle": "Editar ponente",
+    "addTitle": "Añadir nuevo ponente",
+    "firstName": "Nombre",
+    "lastName": "Apellidos",
+    "role": "Cargo",
+    "company": "Empresa",
+    "bio": "Biografía",
+    "bioPlaceholder": "Introduce una breve biografía del ponente...",
+    "photo": "Foto",
+    "rooms": "Salas asignadas",
+    "form": {
+      "rooms": "Salas asignadas"
+    },
+    "noRooms": "No hay salas disponibles",
+    "roomsDescription": "Selecciona una o más salas para este ponente",
+    "selectRooms": "Seleccionar salas",
+    "linkedin": "LinkedIn",
+    "twitter": "Twitter",
+    "deleteTitle": "Eliminar ponente",
+    "deleteDescription": "¿Estás seguro de que quieres eliminar este ponente? Esta acción no se puede deshacer.",
+    "searchPlaceholder": "Buscar ponentes...",
+    "noSpeakers": "No se encontraron ponentes",
+    "create": "Crear",
+    "save": "Guardar",
+    "updatePhoto": "Actualizar foto",
+    "updatePhotoDescription": "Seleccione una nueva foto para este ponente",
+    "photoUpdated": "Foto actualizada con éxito",
+    "photoError": "Error al actualizar la foto",
+    "success": {
+      "create": "Ponente creado con éxito",
+      "update": "Ponente actualizado con éxito",
+      "delete": "Ponente eliminado con éxito",
+      "createDescription": "El ponente ha sido creado con éxito",
+      "updateDescription": "El ponente ha sido actualizado con éxito",
+      "deleteDescription": "El ponente ha sido eliminado con éxito"
+    },
+    "error": {
+      "title": "Error",
+      "description": "Se ha producido un error al procesar tu solicitud",
+      "save": "Error al guardar el ponente",
+      "delete": "Error al eliminar el ponente",
+      "load": "Error al cargar los ponentes"
+    },
+    "table": {
+      "speaker": "Ponente",
+      "roleCompany": "Cargo y empresa",
+      "rooms": "Salas",
+      "bio": "Biografía",
+      "social": "Redes sociales",
+      "actions": "Acciones"
+    }
+  }
+}

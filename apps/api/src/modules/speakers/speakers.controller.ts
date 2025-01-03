@@ -9,7 +9,12 @@ import {
   Query,
   UseGuards,
   Logger,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 import { SpeakersService } from './speakers.service';
 import { CreateSpeakerDto } from './dto/create-speaker.dto';
 import { UpdateSpeakerDto } from './dto/update-speaker.dto';
@@ -75,5 +80,27 @@ export class SpeakersController {
       `Finding speakers for room: ${roomId} in event: ${eventId}`,
     );
     return this.speakersService.findByRoom(roomId);
+  }
+
+  @Post(':id/image')
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './public/uploads',
+        filename: (req, file, callback) => {
+          const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+          callback(null, `${uniqueSuffix}${extname(file.originalname)}`);
+        },
+      }),
+    }),
+  )
+  async uploadImage(
+    @Param('eventId') eventId: string,
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<{ imageUrl: string }> {
+    this.logger.log(`Uploading image for speaker ${id} in event: ${eventId}`);
+    const imageUrl = await this.speakersService.uploadImage(id, file);
+    return { imageUrl };
   }
 }

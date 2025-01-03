@@ -1,0 +1,101 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "Verwalten Sie Ihre Veranstaltung",
+    "backToEvents": "Zurück zu den Veranstaltungen",
+    "viewEvent": "Veranstaltung anzeigen",
+    "actions": {
+      "startEvent": "Veranstaltung starten",
+      "endEvent": "Veranstaltung beenden",
+      "reopenEvent": "Veranstaltung wieder öffnen"
+    }
+  },
+  "stats": {
+    "status": {
+      "title": "Status",
+      "active": "Aktiv",
+      "scheduled": "Geplant",
+      "ended": "Beendet",
+      "draft": "Entwurf"
+    },
+    "rooms": {
+      "title": "Räume",
+      "activeRooms": "Aktive Räume"
+    },
+    "duration": {
+      "title": "Dauer",
+      "to": "bis"
+    }
+  },
+  "quickActions": {
+    "manageRooms": "Räume verwalten",
+    "viewAnalytics": "Analysen anzeigen",
+    "eventSettings": "Einstellungen",
+    "manageSpeakers": "Referenten verwalten",
+    "security": "Sicherheit"
+  },
+  "management": {
+    "title": "Verwaltung",
+    "tabs": {
+      "overview": "Übersicht",
+      "settings": "Einstellungen"
+    }
+  },
+  "speakers": {
+    "title": "Referentenverwaltung",
+    "description": "Verwalten Sie die Referenten Ihrer Veranstaltung",
+    "formDescription": "Füllen Sie die Referenteninformationen aus",
+    "addButton": "Referent hinzufügen",
+    "editTitle": "Referent bearbeiten",
+    "addTitle": "Neuen Referenten hinzufügen",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "role": "Rolle",
+    "company": "Unternehmen",
+    "bio": "Bio",
+    "bioPlaceholder": "Geben Sie eine kurze Biografie des Referenten ein...",
+    "photo": "Foto",
+    "rooms": "Zugewiesene Räume",
+    "form": {
+      "rooms": "Zugewiesene Räume"
+    },
+    "noRooms": "Keine Räume verfügbar",
+    "roomsDescription": "Wählen Sie einen oder mehrere Räume für diesen Referenten aus",
+    "selectRooms": "Räume auswählen",
+    "linkedin": "LinkedIn",
+    "twitter": "Twitter",
+    "deleteTitle": "Referent löschen",
+    "deleteDescription": "Sind Sie sicher, dass Sie diesen Referenten löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "searchPlaceholder": "Referenten suchen...",
+    "noSpeakers": "Keine Referenten gefunden",
+    "create": "Erstellen",
+    "save": "Speichern",
+    "updatePhoto": "Foto aktualisieren",
+    "updatePhotoDescription": "Wählen Sie ein neues Foto für diesen Sprecher",
+    "photoUpdated": "Foto erfolgreich aktualisiert",
+    "photoError": "Fehler beim Aktualisieren des Fotos",
+    "success": {
+      "create": "Referent erfolgreich erstellt",
+      "update": "Referent erfolgreich aktualisiert",
+      "delete": "Referent erfolgreich gelöscht",
+      "createDescription": "Der Referent wurde erfolgreich erstellt",
+      "updateDescription": "Der Referent wurde erfolgreich aktualisiert",
+      "deleteDescription": "Der Referent wurde erfolgreich gelöscht"
+    },
+    "error": {
+      "title": "Fehler",
+      "description": "Bei der Verarbeitung Ihrer Anfrage ist ein Fehler aufgetreten",
+      "save": "Fehler beim Speichern des Referenten",
+      "delete": "Fehler beim Löschen des Referenten",
+      "load": "Fehler beim Laden der Referenten"
+    },
+    "table": {
+      "speaker": "Referent",
+      "roleCompany": "Rolle & Unternehmen",
+      "rooms": "Räume",
+      "bio": "Biografie",
+      "social": "Soziale Medien",
+      "actions": "Aktionen"
+    }
+  }
+}

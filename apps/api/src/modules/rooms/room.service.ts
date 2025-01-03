@@ -11,6 +11,7 @@ import { Room, RoomDocument, RoomStatus } from './room.schema';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { EventsService } from '../events/events.service';
+import { SpeakersService } from '../speakers/speakers.service';
 
 @Injectable()
 export class RoomService {
@@ -18,6 +19,8 @@ export class RoomService {
     @InjectModel(Room.name) private roomModel: Model<RoomDocument>,
     @Inject(forwardRef(() => EventsService))
     private readonly eventService: EventsService,
+    @Inject(forwardRef(() => SpeakersService))
+    private readonly speakersService: SpeakersService,
   ) {}
 
   private isValidStatusTransition(
@@ -68,6 +71,8 @@ export class RoomService {
     const rooms = await this.roomModel
       .find({ eventId: eventIdQuery })
       .populate('eventId')
+      .populate('speakers')
+      .populate('moderators')
       .sort({ startTime: 1 })
       .exec();
 
@@ -77,13 +82,18 @@ export class RoomService {
         id: r._id,
         name: r.name,
         status: r.status,
+        speakers: r.speakers,
       })),
     );
     return rooms;
   }
 
   async findOne(id: string): Promise<Room> {
-    const room = await this.roomModel.findById(id).exec();
+    const room = await this.roomModel
+      .findById(id)
+      .populate('speakers')
+      .populate('moderators')
+      .exec();
     if (!room) {
       throw new NotFoundException(`Room #${id} not found`);
     }
@@ -91,33 +101,53 @@ export class RoomService {
   }
 
   async update(id: string, updateRoomDto: UpdateRoomDto): Promise<Room> {
-    const room = await this.findOne(id);
+    const room = await this.roomModel.findById(id);
     if (!room) {
-      throw new NotFoundException('Room not found');
-    }
-
-    // Vérifier la transition de statut uniquement si le statut est modifié
-    if (
-      updateRoomDto.status &&
-      !this.isValidStatusTransition(room.status, updateRoomDto.status)
-    ) {
-      throw new BadRequestException(
-        `Invalid status transition from ${room.status} to ${updateRoomDto.status}`,
-      );
-    }
-
-    // Nettoyer l'objet updateRoomDto pour ne garder que les champs définis
-    const cleanedUpdate = Object.fromEntries(
-      Object.entries(updateRoomDto).filter(([_, value]) => value !== undefined),
-    );
-
-    const updatedRoom = await this.roomModel
-      .findByIdAndUpdate(id, { $set: cleanedUpdate }, { new: true })
-      .exec();
-
-    if (!updatedRoom) {
       throw new NotFoundException(`Room #${id} not found`);
     }
+
+    // Vérifier la transition de statut si elle est fournie
+    if (updateRoomDto.status && updateRoomDto.status !== room.status) {
+      if (!this.isValidStatusTransition(room.status, updateRoomDto.status)) {
+        throw new BadRequestException(
+          `Invalid status transition from ${room.status} to ${updateRoomDto.status}`,
+        );
+      }
+    }
+
+    // Gérer la synchronisation des speakers si ils sont modifiés
+    if (updateRoomDto.speakers) {
+      const currentSpeakers = room.speakers?.map(id => id.toString()) || [];
+      const newSpeakers = updateRoomDto.speakers.map(id => id.toString());
+
+      // Speakers à supprimer
+      const speakersToRemove = currentSpeakers.filter(
+        speaker => !newSpeakers.includes(speaker)
+      );
+
+      // Speakers à ajouter
+      const speakersToAdd = newSpeakers.filter(
+        speaker => !currentSpeakers.includes(speaker)
+      );
+
+      // Synchroniser les suppressions
+      await Promise.all(speakersToRemove.map(speakerId =>
+        this.speakersService.removeFromRoom(speakerId, id)
+      ));
+
+      // Synchroniser les ajouts
+      await Promise.all(speakersToAdd.map(speakerId =>
+        this.speakersService.addToRoom(speakerId, id)
+      ));
+    }
+
+    // Mettre à jour la room
+    const updatedRoom = await this.roomModel
+      .findByIdAndUpdate(id, updateRoomDto, { new: true })
+      .populate('speakers')
+      .populate('moderators')
+      .exec();
+
     return updatedRoom;
   }
 
@@ -264,6 +294,94 @@ export class RoomService {
       throw new NotFoundException(`Room #${id} not found`);
     }
     return room;
+  }
+
+  async addSpeaker(roomId: string, speakerId: string): Promise<Room> {
+    const room = await this.roomModel.findById(roomId);
+    if (!room) {
+      throw new NotFoundException('Room not found');
+    }
+
+    if (!room.speakers) {
+      room.speakers = [];
+    }
+
+    const speakerObjectId = new Types.ObjectId(speakerId);
+    if (!room.speakers.some(id => id.equals(speakerObjectId))) {
+      room.speakers.push(speakerObjectId);
+      await room.save();
+    }
+
+    return room;
+  }
+
+  async removeSpeaker(roomId: string, speakerId: string): Promise<Room> {
+    const room = await this.roomModel.findById(roomId);
+    if (!room) {
+      throw new NotFoundException('Room not found');
+    }
+
+    if (room.speakers) {
+      const speakerObjectId = new Types.ObjectId(speakerId);
+      room.speakers = room.speakers.filter(id => !id.equals(speakerObjectId));
+      await room.save();
+    }
+
+    return room;
+  }
+
+  async updateSpeakers(id: string, speakers: string[]): Promise<Room> {
+    const room = await this.roomModel.findById(id);
+    if (!room) {
+      throw new NotFoundException(`Room #${id} not found`);
+    }
+
+    // Récupérer les anciens speakers pour pouvoir les mettre à jour
+    const oldSpeakers = room.speakers.map(id => id.toString());
+    
+    // Mettre à jour les speakers de la room
+    room.speakers = speakers.map(speakerId => new Types.ObjectId(speakerId));
+    const updatedRoom = await room.save();
+
+    // Mettre à jour les références des rooms pour chaque speaker
+    const removedSpeakers = oldSpeakers.filter(id => !speakers.includes(id));
+    const addedSpeakers = speakers.filter(id => !oldSpeakers.includes(id));
+
+    // Retirer la room des speakers qui ne sont plus assignés
+    for (const speakerId of removedSpeakers) {
+      const speaker = await this.speakersService.findOne(speakerId);
+      if (speaker) {
+        const updatedRooms = speaker.rooms.filter(roomId => roomId.toString() !== id);
+        await this.speakersService.update(speakerId, { 
+          ...speaker,
+          rooms: updatedRooms.map(r => r.toString()) 
+        });
+      }
+    }
+
+    // Ajouter la room aux nouveaux speakers
+    for (const speakerId of addedSpeakers) {
+      const speaker = await this.speakersService.findOne(speakerId);
+      if (speaker) {
+        const updatedRooms = [...speaker.rooms, new Types.ObjectId(id)];
+        await this.speakersService.update(speakerId, {
+          ...speaker,
+          rooms: updatedRooms.map(r => r.toString())
+        });
+      }
+    }
+
+    return updatedRoom;
+  }
+
+  async updateModerators(id: string, moderators: string[]): Promise<Room> {
+    const room = await this.roomModel.findById(id);
+    if (!room) {
+      throw new NotFoundException(`Room #${id} not found`);
+    }
+
+    room.moderators = moderators.map(moderatorId => new Types.ObjectId(moderatorId));
+    return await room.save();
   }
 
   async remove(id: string): Promise<void> {

@@ -56,9 +56,9 @@ export interface Room {
   streamKey?: string;
   streamUrl?: string;
   settings: RoomSettings;
-  participants: string[];
-  speakers: string[];
-  moderators: string[];
+  participants?: string[];
+  speakers?: string[];
+  moderators?: string[];
   createdBy: string;
   createdAt: string;
   updatedAt: string;

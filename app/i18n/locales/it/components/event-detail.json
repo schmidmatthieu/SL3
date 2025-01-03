@@ -45,7 +45,9 @@
     "filters": {
       "language": "Lingua",
       "all": "Tutte"
-    }
+    },
+    "oneSpeaker": "1 relatore",
+    "multipleSpeakers": "{{count}} relatori"
   },
   "status": {
     "draft": "Bozza",

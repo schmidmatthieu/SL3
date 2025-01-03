@@ -1,89 +1,40 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useSpeakerStore } from '@/store/speaker.store';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Pencil, Plus, Trash2, UserPlus } from 'lucide-react';
+import { Suspense, useEffect, useState } from 'react';
+import { Loader2, UserPlus } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-
-import { Speaker } from '@/types/speaker';
-import { cn } from '@/lib/utils';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useSpeakerStore } from '@/store/speaker.store';
+import { useRoomStore } from '@/store/room.store';
+import { useToast } from '@/components/ui/use-toast';
 import { BackButton } from '@/components/ui/back-button';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from '@/components/ui/dialog';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { ImageUploader } from '@/components/ui/image-uploader';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { useToast } from '@/components/ui/use-toast';
+import { Speaker } from '@/types/speaker';
+import { SpeakerList } from './speaker-list';
+import { SpeakerManagementProps, speakerFormSchema, SpeakerFormValues } from './types';
+import { useTranslation } from 'react-i18next';
+import '@/app/i18n/client';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
+import { RoomSelector } from './room-selector';
 
-interface Room {
-  id: string;
-  name: string;
-}
-
-interface SpeakerManagementProps {
-  eventId: string;
-  rooms: Room[];
-}
-
-const speakerFormSchema = z.object({
-  firstName: z.string().min(2, 'First name must be at least 2 characters'),
-  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
-  imageUrl: z.string().optional(),
-  rooms: z.array(z.string()).optional().default([]),
-});
-
-type SpeakerFormValues = z.infer<typeof speakerFormSchema>;
-
-export function SpeakerManagement({ eventId, rooms }: SpeakerManagementProps) {
+function SpeakerManagementContent({ eventId }: SpeakerManagementProps) {
+  const { t } = useTranslation('components/event-manage');
   const { toast } = useToast();
   const { speakers, error, getSpeakers, createSpeaker, updateSpeaker, deleteSpeaker } =
     useSpeakerStore();
+  const { rooms, fetchEventRooms } = useRoomStore();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -95,81 +46,129 @@ export function SpeakerManagement({ eventId, rooms }: SpeakerManagementProps) {
     defaultValues: {
       firstName: '',
       lastName: '',
+      role: '',
+      company: '',
+      bio: '',
       imageUrl: '',
       rooms: [],
+      socialLinks: {
+        linkedin: '',
+        twitter: '',
+      },
     },
   });
 
   useEffect(() => {
     getSpeakers(eventId);
-  }, [eventId, getSpeakers]);
+    console.log('Fetching rooms for event:', eventId);
+    fetchEventRooms(eventId);
+  }, [eventId, getSpeakers, fetchEventRooms]);
+
+  useEffect(() => {
+    console.log('Current rooms:', rooms);
+  }, [rooms]);
 
   useEffect(() => {
     if (currentSpeaker) {
       form.reset({
-        firstName: currentSpeaker.firstName,
+        firstName: currentSpeaker.firstName || '',
         lastName: currentSpeaker.lastName,
+        role: currentSpeaker.role || '',
+        company: currentSpeaker.company || '',
+        bio: currentSpeaker.bio || '',
         imageUrl: currentSpeaker.imageUrl || '',
-        rooms: currentSpeaker.rooms || [],
+        rooms: currentSpeaker.rooms?.map(id => id.toString()) || [],
+        socialLinks: {
+          linkedin: currentSpeaker.socialLinks?.linkedin || '',
+          twitter: currentSpeaker.socialLinks?.twitter || '',
+        },
+      });
+    } else {
+      form.reset({
+        firstName: '',
+        lastName: '',
+        role: '',
+        company: '',
+        bio: '',
+        imageUrl: '',
+        rooms: [],
+        socialLinks: {
+          linkedin: '',
+          twitter: '',
+        },
       });
     }
   }, [currentSpeaker, form]);
 
-  const onSubmit = async (values: SpeakerFormValues) => {
-    setIsSubmitting(true);
+  const handleSubmit = async (values: SpeakerFormValues) => {
     try {
+      setIsSubmitting(true);
+      const speakerData = {
+        ...values,
+        eventId,
+        rooms: values.rooms?.map(roomId => {
+          // Ensure we have the correct room ID format
+          const room = rooms.find(r => r.id === roomId || r._id === roomId);
+          return room ? (room._id || room.id) : roomId;
+        }) || [],
+      };
+
+      console.log('Submitting speaker data:', speakerData);
+
       if (currentSpeaker) {
-        await updateSpeaker(eventId, currentSpeaker.id, values);
+        await updateSpeaker(eventId, currentSpeaker.id, speakerData);
         toast({
-          title: 'Success',
-          description: 'Speaker updated successfully',
+          title: t('speakers.success.update'),
+          description: t('speakers.success.updateDescription'),
         });
       } else {
-        await createSpeaker(eventId, {
-          ...values,
-          eventId,
-          rooms: values.rooms || [],
-        });
+        await createSpeaker(eventId, speakerData);
         toast({
-          title: 'Success',
-          description: 'Speaker created successfully',
+          title: t('speakers.success.create'),
+          description: t('speakers.success.createDescription'),
         });
       }
 
       setIsAddDialogOpen(false);
-      setCurrentSpeaker(null);
       form.reset();
+      setCurrentSpeaker(null);
     } catch (error) {
       console.error('Error submitting speaker:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to save speaker',
         variant: 'destructive',
+        title: t('speakers.error.title'),
+        description: t('speakers.error.description'),
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDeleteSpeaker = async (speakerId: string) => {
+  const handleDelete = async (speaker: Speaker) => {
     try {
-      await deleteSpeaker(eventId, speakerId);
+      await deleteSpeaker(eventId, speaker.id);
       toast({
-        title: 'Success',
-        description: 'Speaker deleted successfully',
+        title: t('speakers.success.delete'),
+        description: `${speaker.firstName} ${speaker.lastName}`,
       });
     } catch (error) {
+      console.error('Error deleting speaker:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to delete speaker',
+        title: t('speakers.error.delete'),
+        description: `${speaker.firstName} ${speaker.lastName}`,
         variant: 'destructive',
       });
     }
   };
 
+  const handleEdit = (speaker: Speaker) => {
+    setCurrentSpeaker(speaker);
+    setIsAddDialogOpen(true);
+  };
+
   const filteredSpeakers = speakers.filter(
     speaker =>
-      speaker.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      speaker.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       speaker.lastName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -177,209 +176,183 @@ export function SpeakerManagement({ eventId, rooms }: SpeakerManagementProps) {
     return (
       <div className="container py-8">
         <div className="flex flex-col items-center justify-center space-y-4">
-          <p className="text-destructive">Failed to load speakers</p>
-          <Button onClick={() => getSpeakers(eventId)}>Retry</Button>
+          <p className="text-destructive">{t('speakers.error.load')}</p>
+          <Button onClick={() => getSpeakers(eventId)}>{t('common.retry')}</Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container py-8">
-      <BackButton className="mb-6" />
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Speaker Management</h1>
-          <p className="text-muted-foreground mt-2">Manage speakers for your event</p>
+    <Card className="container mt-8">
+      <CardHeader className="space-y-1">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-2xl">{t('speakers.title')}</CardTitle>
+          <BackButton />
         </div>
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogTrigger asChild>
-            <Button variant="default">
-              <UserPlus className="mr-2 h-4 w-4" />
-              Add Speaker
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{currentSpeaker ? 'Edit Speaker' : 'Add New Speaker'}</DialogTitle>
-            </DialogHeader>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>First Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Last Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="rooms"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Assigned Rooms</FormLabel>
-                      <Select
-                        value={field.value[0] || ''}
-                        onValueChange={value => field.onChange([...field.value, value])}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select rooms" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {rooms.map(room => (
-                            <SelectItem key={room.id} value={room.id}>
-                              {room.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="imageUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Photo</FormLabel>
-                      <FormControl>
-                        <ImageUploader
-                          currentImage={currentSpeaker?.imageUrl}
-                          onImageSelect={url => form.setValue('imageUrl', url)}
-                          mediaType="speaker"
-                          entityId={currentSpeaker?._id}
-                          entityName={`${currentSpeaker?.firstName} ${currentSpeaker?.lastName}`}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" disabled={isSubmitting} className="w-full">
-                  {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {currentSpeaker ? 'Update' : 'Add'} Speaker
-                </Button>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      <Card className="glass-effect">
-        <CardHeader>
-          <CardTitle>Speakers</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="mb-4">
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="flex justify-between gap-4">
             <Input
-              placeholder="Search speakers..."
+              placeholder={t('speakers.searchPlaceholder')}
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               className="max-w-sm"
             />
+            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  {t('speakers.addButton')}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>
+                    {currentSpeaker ? t('speakers.editTitle') : t('speakers.addTitle')}
+                  </DialogTitle>
+                  <DialogDescription>{t('speakers.formDescription')}</DialogDescription>
+                </DialogHeader>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <FormField
+                          control={form.control}
+                          name="firstName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>{t('speakers.firstName')}</FormLabel>
+                              <FormControl>
+                                <Input {...field} value={field.value || ''} tabIndex={2} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="lastName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>{t('speakers.lastName')}</FormLabel>
+                              <FormControl>
+                                <Input {...field} value={field.value || ''} tabIndex={3} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <div className="space-y-4">
+                        <FormField
+                          control={form.control}
+                          name="role"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>{t('speakers.role')}</FormLabel>
+                              <FormControl>
+                                <Input {...field} value={field.value || ''} tabIndex={4} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="company"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>{t('speakers.company')}</FormLabel>
+                              <FormControl>
+                                <Input {...field} value={field.value || ''} tabIndex={5} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <FormField
+                            control={form.control}
+                            name="socialLinks.linkedin"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>{t('speakers.linkedin')}</FormLabel>
+                                <FormControl>
+                                  <Input {...field} value={field.value || ''} tabIndex={6} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="socialLinks.twitter"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>{t('speakers.twitter')}</FormLabel>
+                                <FormControl>
+                                  <Input {...field} value={field.value || ''} tabIndex={7} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <FormField
+                        control={form.control}
+                        name="bio"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t('speakers.bio')}</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                {...field}
+                                value={field.value || ''}
+                                className="min-h-[100px] resize-y"
+                                tabIndex={8}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <RoomSelector form={form} rooms={rooms} />
+                    </div>
+                    <DialogFooter>
+                      <Button type="submit" disabled={isSubmitting} tabIndex={10}>
+                        {isSubmitting ? (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : null}
+                        {currentSpeaker ? t('speakers.save') : t('speakers.create')}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </Form>
+              </DialogContent>
+            </Dialog>
           </div>
-          <ScrollArea className="h-[600px] w-full">
-            {speakers.length === 0 ? (
-              <div className="flex justify-center items-center h-32">
-                <p>No speakers found</p>
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Speaker</TableHead>
-                    <TableHead>Rooms</TableHead>
-                    <TableHead className="w-[100px]">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredSpeakers.map(speaker => (
-                    <TableRow key={speaker.id}>
-                      <TableCell className="flex items-center space-x-4">
-                        <Avatar>
-                          <AvatarImage src={speaker.imageUrl} />
-                          <AvatarFallback>
-                            {speaker.firstName[0]}
-                            {speaker.lastName[0]}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="font-medium">
-                            {speaker.firstName} {speaker.lastName}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {speaker.rooms
-                          .map(roomId => rooms.find(r => r.id === roomId)?.name || roomId)
-                          .join(', ')}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex space-x-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => {
-                              setCurrentSpeaker(speaker);
-                              setIsAddDialogOpen(true);
-                            }}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="icon">
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Delete Speaker</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Are you sure you want to delete this speaker? This action cannot
-                                  be undone.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleDeleteSpeaker(speaker.id)}>
-                                  Delete
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </ScrollArea>
-        </CardContent>
-      </Card>
-    </div>
+          <SpeakerList
+            speakers={filteredSpeakers}
+            eventId={eventId}
+            rooms={rooms}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function SpeakerManagement(props: SpeakerManagementProps) {
+  return (
+    <Suspense>
+      <SpeakerManagementContent {...props} />
+    </Suspense>
   );
 }

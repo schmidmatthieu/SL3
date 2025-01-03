@@ -1,0 +1,179 @@
+{
+  "dashboard": {
+    "title": "Tableau de bord",
+    "description": "Gérer votre événement",
+    "backToEvents": "Retour aux événements",
+    "viewEvent": "Voir l'événement",
+    "actions": {
+      "startEvent": "Démarrer l'événement",
+      "endEvent": "Terminer l'événement",
+      "reopenEvent": "Rouvrir l'événement"
+    }
+  },
+  "stats": {
+    "status": {
+      "title": "Statut",
+      "active": "Actif",
+      "scheduled": "Planifié",
+      "ended": "Terminé",
+      "draft": "Brouillon"
+    },
+    "rooms": {
+      "title": "Salles",
+      "activeRooms": "Salles actives"
+    },
+    "duration": {
+      "title": "Durée",
+      "to": "à"
+    }
+  },
+  "quickActions": {
+    "manageRooms": "Gérer les salles",
+    "viewAnalytics": "Voir les analyses",
+    "eventSettings": "Paramètres",
+    "manageSpeakers": "Gérer les intervenants",
+    "security": "Sécurité"
+  },
+  "management": {
+    "title": "Gestion de l'événement",
+    "description": "Gérez les détails de votre événement, les salles et les intervenants",
+    "tabs": {
+      "overview": "Vue d'ensemble",
+      "settings": "Paramètres",
+      "details": "Détails",
+      "rooms": "Salles",
+      "speakers": "Intervenants",
+      "media": "Médias"
+    }
+  },
+  "speakers": {
+    "title": "Gestion des intervenants",
+    "description": "Ajoutez et gérez les intervenants de votre événement",
+    "add": "Ajouter un intervenant",
+    "edit": "Modifier l'intervenant",
+    "delete": "Supprimer l'intervenant",
+    "list": {
+      "title": "Liste des intervenants",
+      "empty": "Aucun intervenant",
+      "search": "Rechercher un intervenant",
+      "columns": {
+        "name": "Nom",
+        "title": "Titre",
+        "company": "Entreprise",
+        "social": "Réseaux sociaux",
+        "actions": "Actions"
+      }
+    },
+    "formDescription": "Remplissez les informations de l'intervenant",
+    "addButton": "Ajouter un intervenant",
+    "editTitle": "Modifier l'intervenant",
+    "addTitle": "Ajouter un nouvel intervenant",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "role": "Rôle",
+    "company": "Entreprise",
+    "bio": "Bio",
+    "bioPlaceholder": "Entrez une courte biographie de l'intervenant...",
+    "photo": "Photo",
+    "imageUrl": "Photo de profil",
+    "rooms": "Salles assignées",
+    "form": {
+      "rooms": "Salles assignées"
+    },
+    "noRooms": "Aucune salle disponible",
+    "roomsDescription": "Sélectionnez une ou plusieurs salles pour cet intervenant",
+    "selectRooms": "Sélectionner des salles",
+    "linkedin": "LinkedIn",
+    "twitter": "Twitter",
+    "deleteTitle": "Supprimer l'intervenant",
+    "deleteDescription": "Êtes-vous sûr de vouloir supprimer cet intervenant ? Cette action ne peut pas être annulée.",
+    "searchPlaceholder": "Rechercher des intervenants...",
+    "noSpeakers": "Aucun intervenant trouvé",
+    "create": "Créer",
+    "save": "Enregistrer",
+    "updatePhoto": "Modifier la photo",
+    "updatePhotoDescription": "Sélectionnez une nouvelle photo pour cet intervenant",
+    "photoUpdated": "Photo mise à jour avec succès",
+    "photoError": "Erreur lors de la mise à jour de la photo",
+    "success": {
+      "create": "Intervenant créé avec succès",
+      "update": "Intervenant mis à jour avec succès",
+      "delete": "Intervenant supprimé avec succès",
+      "createDescription": "L'intervenant a été créé avec succès",
+      "updateDescription": "L'intervenant a été mis à jour avec succès",
+      "deleteDescription": "L'intervenant a été supprimé avec succès"
+    },
+    "error": {
+      "title": "Erreur",
+      "description": "Une erreur s'est produite lors du traitement de votre demande",
+      "save": "Échec de l'enregistrement de l'intervenant",
+      "delete": "Échec de la suppression de l'intervenant",
+      "load": "Échec du chargement des intervenants"
+    },
+    "table": {
+      "speaker": "Intervenant",
+      "roleCompany": "Rôle & Entreprise",
+      "rooms": "Salles",
+      "bio": "Biographie",
+      "social": "Réseaux sociaux",
+      "actions": "Actions"
+    }
+  },
+  "rooms": {
+    "title": "Gestion des salles",
+    "description": "Ajoutez et gérez les salles de votre événement",
+    "add": "Ajouter une salle",
+    "edit": "Modifier la salle",
+    "delete": "Supprimer la salle",
+    "list": {
+      "title": "Liste des salles",
+      "empty": "Aucune salle",
+      "search": "Rechercher une salle",
+      "columns": {
+        "name": "Nom",
+        "capacity": "Capacité",
+        "status": "Statut",
+        "actions": "Actions"
+      }
+    },
+    "form": {
+      "name": "Nom de la salle",
+      "description": "Description",
+      "capacity": "Capacité maximale",
+      "thumbnail": "Image de la salle",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "startTime": "Heure de début",
+      "endTime": "Heure de fin",
+      "speakers": "Intervenants",
+      "moderators": "Modérateurs",
+      "settings": {
+        "title": "Paramètres",
+        "isPublic": "Salle publique",
+        "chatEnabled": "Chat activé",
+        "recordingEnabled": "Enregistrement activé",
+        "allowQuestions": "Questions autorisées",
+        "originalLanguage": "Langue originale",
+        "availableLanguages": "Langues disponibles"
+      }
+    }
+  },
+  "media": {
+    "title": "Gestion des médias",
+    "description": "Gérez les médias de votre événement",
+    "upload": "Télécharger un média",
+    "delete": "Supprimer le média",
+    "list": {
+      "title": "Liste des médias",
+      "empty": "Aucun média",
+      "search": "Rechercher un média",
+      "columns": {
+        "name": "Nom",
+        "type": "Type",
+        "size": "Taille",
+        "actions": "Actions"
+      }
+    }
+  },
+  "error": "Erreur"
+}

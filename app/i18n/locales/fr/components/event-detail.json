@@ -45,7 +45,12 @@
     "filters": {
       "language": "Langue",
       "all": "Toutes"
-    }
+    },
+    "speakersCount": "{{count}} intervenant",
+    "speakersCount_plural": "{{count}} intervenants",
+    "oneSpeaker": "1 intervenant",
+    "multipleSpeakers": "{{count}} intervenants",
+    "noSpeakers": "Aucun intervenant"
   },
   "status": {
     "draft": "Brouillon",

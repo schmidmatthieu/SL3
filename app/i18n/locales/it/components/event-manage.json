@@ -1,0 +1,96 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "Gestisci il tuo evento",
+    "backToEvents": "Torna agli eventi",
+    "viewEvent": "Visualizza evento",
+    "actions": {
+      "startEvent": "Avvia evento",
+      "endEvent": "Termina evento",
+      "reopenEvent": "Riapri evento"
+    }
+  },
+  "stats": {
+    "status": {
+      "title": "Stato",
+      "active": "Attivo",
+      "scheduled": "Programmato",
+      "ended": "Terminato",
+      "draft": "Bozza"
+    },
+    "rooms": {
+      "title": "Sale",
+      "activeRooms": "Sale attive"
+    },
+    "duration": {
+      "title": "Durata",
+      "to": "a"
+    }
+  },
+  "quickActions": {
+    "manageRooms": "Gestisci sale",
+    "viewAnalytics": "Visualizza analisi",
+    "eventSettings": "Impostazioni",
+    "manageSpeakers": "Gestisci relatori",
+    "security": "Sicurezza"
+  },
+  "management": {
+    "title": "Gestione",
+    "tabs": {
+      "overview": "Panoramica",
+      "settings": "Impostazioni"
+    }
+  },
+  "speakers": {
+    "title": "Gestione Relatori",
+    "description": "Gestisci i relatori del tuo evento",
+    "addButton": "Aggiungi Relatore",
+    "editTitle": "Modifica Relatore",
+    "addTitle": "Aggiungi Nuovo Relatore",
+    "firstName": "Nome",
+    "lastName": "Cognome",
+    "role": "Ruolo",
+    "company": "Azienda",
+    "bio": "Bio",
+    "bioPlaceholder": "Inserisci una breve biografia del relatore...",
+    "photo": "Foto",
+    "rooms": "Sale Assegnate",
+    "form": {
+      "rooms": "Sale Assegnate"
+    },
+    "noRooms": "Nessuna sala disponibile",
+    "roomsDescription": "Seleziona una o più sale per questo relatore",
+    "selectRooms": "Seleziona sale",
+    "linkedin": "LinkedIn",
+    "twitter": "Twitter",
+    "deleteTitle": "Elimina Relatore",
+    "deleteDescription": "Sei sicuro di voler eliminare questo relatore? Questa azione non può essere annullata.",
+    "searchPlaceholder": "Cerca relatori...",
+    "noSpeakers": "Nessun relatore trovato",
+    "create": "Crea",
+    "save": "Salva",
+    "success": {
+      "create": "Relatore creato con successo",
+      "update": "Relatore aggiornato con successo",
+      "delete": "Relatore eliminato con successo",
+      "createDescription": "Il relatore è stato creato con successo",
+      "updateDescription": "Il relatore è stato aggiornato con successo",
+      "deleteDescription": "Il relatore è stato eliminato con successo"
+    },
+    "error": {
+      "title": "Errore",
+      "description": "Si è verificato un errore durante l'elaborazione della richiesta",
+      "save": "Impossibile salvare il relatore",
+      "delete": "Impossibile eliminare il relatore",
+      "load": "Impossibile caricare i relatori"
+    },
+    "table": {
+      "speaker": "Relatore",
+      "roleCompany": "Ruolo & Azienda",
+      "rooms": "Sale",
+      "bio": "Biografia",
+      "social": "Social",
+      "actions": "Azioni"
+    }
+  }
+}

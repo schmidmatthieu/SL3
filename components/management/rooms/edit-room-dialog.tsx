@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useRoomStore } from '@/store/room.store';
+import { useSpeakerStore } from '@/store/speaker.store';
 import { addHours, format } from 'date-fns';
 import { CalendarIcon, Settings } from 'lucide-react';
 
 import { Room } from '@/types/room';
+import { Speaker } from '@/types/speaker';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
@@ -24,6 +26,7 @@ import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/use-toast';
+import { MultiSelect, Option } from '@/components/ui/multi-select';
 
 const AVAILABLE_LANGUAGES = [
   { code: 'fr', label: 'Français' },
@@ -50,13 +53,58 @@ export function EditRoomDialog({ room, onClose }: EditRoomDialogProps) {
   const [isPublic, setIsPublic] = useState(room.settings.isPublic);
   const [chatEnabled, setChatEnabled] = useState(room.settings.chatEnabled);
   const [recordingEnabled, setRecordingEnabled] = useState(room.settings.recordingEnabled);
-  const [originalLanguage, setOriginalLanguage] = useState(room.settings.originalLanguage);
+  const [allowQuestions, setAllowQuestions] = useState(room.settings.allowQuestions);
+  const [originalLanguage, setOriginalLanguage] = useState(room.settings.originalLanguage || 'fr');
   const [availableLanguages, setAvailableLanguages] = useState<string[]>(
-    room.settings.availableLanguages
+    room.settings.availableLanguages || [],
+  );
+  const [selectedSpeakers, setSelectedSpeakers] = useState<Option[]>(
+    (room.speakers || []).map(id => ({ value: id, label: id }))
   );
 
-  const { updateRoom } = useRoomStore();
   const { toast } = useToast();
+  const { updateRoom } = useRoomStore();
+  const { getSpeakers } = useSpeakerStore();
+  const [speakers, setSpeakers] = useState<Speaker[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const loadSpeakers = async () => {
+      if (!room.eventId) return;
+      
+      setIsLoading(true);
+      try {
+        const eventSpeakers = await getSpeakers(room.eventId);
+        // Utiliser directement les speakers du store
+        const speakersFromStore = useSpeakerStore.getState().speakers;
+        setSpeakers(speakersFromStore);
+        
+        if (speakersFromStore?.length > 0) {
+          setSelectedSpeakers(
+            (room.speakers || []).map(id => {
+              const speaker = speakersFromStore.find(s => s._id === id);
+              return {
+                value: id,
+                label: speaker ? `${speaker.firstName} ${speaker.lastName}` : id
+              };
+            })
+          );
+        }
+      } catch (error) {
+        console.error('Failed to load speakers:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to load speakers',
+          variant: 'destructive',
+        });
+        setSpeakers([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadSpeakers();
+  }, [room.eventId, getSpeakers, toast]);
 
   const handleStartDateChange = (date: Date | undefined) => {
     if (date) {
@@ -86,101 +134,48 @@ export function EditRoomDialog({ room, onClose }: EditRoomDialogProps) {
     }
   };
 
-  const handleSave = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const startDateTime = new Date(startDate);
+    const [startHours, startMinutes] = startTime.split(':').map(Number);
+    startDateTime.setHours(startHours, startMinutes);
+
+    const endDateTime = new Date(endDate);
+    const [endHours, endMinutes] = endTime.split(':').map(Number);
+    endDateTime.setHours(endHours, endMinutes);
+
     try {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      const [startHours, startMinutes] = startTime.split(':').map(Number);
-      const [endHours, endMinutes] = endTime.split(':').map(Number);
-
-      start.setHours(startHours, startMinutes);
-      end.setHours(endHours, endMinutes);
-
-      // Ne mettre à jour que les champs qui ont été modifiés
-      const updatedFields: any = {
-        settings: {},
-      };
-
-      // Vérifier les changements dans les paramètres de settings
-      let hasSettingsChanges = false;
-
-      if (isPublic !== room.settings.isPublic) {
-        updatedFields.settings.isPublic = isPublic;
-        hasSettingsChanges = true;
-      }
-      if (chatEnabled !== room.settings.chatEnabled) {
-        updatedFields.settings.chatEnabled = chatEnabled;
-        hasSettingsChanges = true;
-      }
-      if (recordingEnabled !== room.settings.recordingEnabled) {
-        updatedFields.settings.recordingEnabled = recordingEnabled;
-        hasSettingsChanges = true;
-      }
-      if (parseInt(capacity) !== room.settings.maxParticipants) {
-        updatedFields.settings.maxParticipants = parseInt(capacity);
-        hasSettingsChanges = true;
-      }
-      if (originalLanguage !== room.settings.originalLanguage) {
-        updatedFields.settings.originalLanguage = originalLanguage;
-        hasSettingsChanges = true;
-      }
-      if (JSON.stringify(availableLanguages) !== JSON.stringify(room.settings.availableLanguages)) {
-        updatedFields.settings.availableLanguages = availableLanguages;
-        hasSettingsChanges = true;
-      }
-
-      // Ne pas envoyer settings s'il n'y a pas de changements
-      if (!hasSettingsChanges) {
-        delete updatedFields.settings;
-      }
-
-      // Vérifier les changements de champs basiques
-      if (name !== room.name) {
-        updatedFields.name = name;
-      }
-
-      if (description !== room.description) {
-        updatedFields.description = description;
-      }
-
-      if (thumbnail !== room.thumbnail) {
-        updatedFields.thumbnail = thumbnail;
-      }
-
-      // Vérifier les changements de dates
-      const newStartTime = start.toISOString();
-      const newEndTime = end.toISOString();
-
-      if (newStartTime !== room.startTime) {
-        updatedFields.startTime = newStartTime;
-      }
-
-      if (newEndTime !== room.endTime) {
-        updatedFields.endTime = newEndTime;
-      }
-
-      // Ne pas envoyer de mise à jour si aucun champ n'a été modifié
-      if (Object.keys(updatedFields).length === 0) {
-        toast({
-          title: 'Information',
-          description: 'Aucun changement à sauvegarder',
-        });
-        return;
-      }
-
-      await updateRoom(room._id, updatedFields);
+      await updateRoom(room._id, {
+        name,
+        description,
+        thumbnail,
+        startTime: startDateTime.toISOString(),
+        endTime: endDateTime.toISOString(),
+        settings: {
+          isPublic,
+          chatEnabled,
+          recordingEnabled,
+          allowQuestions,
+          maxParticipants: capacity ? parseInt(capacity) : undefined,
+          originalLanguage,
+          availableLanguages,
+        },
+        speakers: selectedSpeakers.map(s => s.value),
+      });
 
       toast({
-        title: 'Succès',
-        description: 'Room mise à jour avec succès',
+        title: 'Success',
+        description: 'Room updated successfully',
       });
 
       setOpen(false);
+      onClose?.();
     } catch (error) {
-      console.error('Error updating room:', error);
+      console.error('Failed to update room:', error);
       toast({
-        title: 'Erreur',
-        description: 'Erreur lors de la mise à jour: ' + error.message,
+        title: 'Error',
+        description: 'Failed to update room',
         variant: 'destructive',
       });
     }
@@ -201,11 +196,63 @@ export function EditRoomDialog({ room, onClose }: EditRoomDialogProps) {
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Room Name</Label>
-              <Input placeholder="Room name" value={name} onChange={e => setName(e.target.value)} />
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="name" className="text-right">
+              Name
+            </Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="col-span-3"
+            />
+          </div>
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="description" className="text-right">
+              Description
+            </Label>
+            <Input
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="col-span-3"
+            />
+          </div>
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="thumbnail" className="text-right">
+              Thumbnail
+            </Label>
+            <div className="col-span-3">
+              <ImageUploader
+                onImageSelected={setThumbnail}
+                currentImage={thumbnail}
+                className="w-full"
+              />
             </div>
+          </div>
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="speakers" className="text-right">
+              Speakers
+            </Label>
+            <div className="col-span-3">
+              <MultiSelect
+                id="speakers"
+                isLoading={isLoading}
+                options={speakers?.map(speaker => ({
+                  value: speaker._id,
+                  label: `${speaker.firstName} ${speaker.lastName}`,
+                })) || []}
+                value={selectedSpeakers}
+                onChange={setSelectedSpeakers}
+                placeholder="Select speakers..."
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Max Capacity</Label>
               <Input
@@ -213,27 +260,6 @@ export function EditRoomDialog({ room, onClose }: EditRoomDialogProps) {
                 placeholder="Max capacity"
                 value={capacity}
                 onChange={e => setCapacity(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4">
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Input
-                placeholder="Description"
-                value={description}
-                onChange={e => setDescription(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Image de la salle</Label>
-              <ImageUploader
-                currentImage={thumbnail}
-                onImageSelect={setThumbnail}
-                mediaType="room"
-                entityId={room._id}
-                entityName={name}
               />
             </div>
           </div>
@@ -319,7 +345,7 @@ export function EditRoomDialog({ room, onClose }: EditRoomDialogProps) {
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave}>Save Changes</Button>
+          <Button onClick={handleSubmit}>Save Changes</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

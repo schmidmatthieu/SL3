@@ -6,19 +6,20 @@ import { useEventStore } from '@/store/event.store';
 import { format } from 'date-fns';
 import {
   Activity,
-  AlertTriangle,
   BarChart,
   Calendar,
   Clock,
   Eye,
   Lock,
   MoreVertical,
-  Search,
   Settings,
   Shield,
   Unlock,
   Users,
+  ChevronRight,
+  Mic,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { Event } from '@/types/event';
 import { cn } from '@/lib/utils';
@@ -26,15 +27,14 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { BackButton } from '@/components/ui/back-button';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { EventStatusBadge } from '@/components/events/status/event-status-badge';
 
@@ -44,58 +44,52 @@ interface EventDashboardProps {
 }
 
 export function EventDashboard({ event, eventId }: EventDashboardProps) {
-  console.log('EventDashboard - Component mounted with event:', event);
   const router = useRouter();
   const { updateEventStatus } = useEventStore();
-  const [searchQuery, setSearchQuery] = useState('');
+  const { t } = useTranslation('components/event-manage');
 
   const formatDate = (date: Date | string | null | undefined) => {
     try {
-      if (!date) return 'No date set';
+      if (!date) return t('common:noDateSet');
       const dateObj = typeof date === 'string' ? new Date(date) : date;
-      if (isNaN(dateObj.getTime())) return 'Invalid date';
+      if (isNaN(dateObj.getTime())) return t('common:invalidDate');
       return format(dateObj, 'PPP');
     } catch (error) {
-      console.error('Error formatting date:', error, date);
-      return 'Invalid date';
+      console.error('Error formatting date:', error);
+      return t('common:invalidDate');
     }
   };
 
   const handleStatusChange = async (newStatus: string) => {
-    console.log('EventDashboard - Updating status to:', newStatus);
     try {
       await updateEventStatus(eventId, newStatus as Event['status']);
-      console.log('EventDashboard - Status updated successfully');
       router.refresh();
     } catch (error) {
-      console.error('EventDashboard - Error updating event status:', error);
+      console.error('Error updating event status:', error);
     }
   };
 
   const navigateToEventPage = (path: string) => {
-    if (!eventId) {
-      console.error('No event ID available');
-      return;
-    }
+    if (!eventId) return;
     router.push(`/events/${eventId}${path}`);
   };
 
   return (
-    <div className="container py-8">
-      <BackButton className="mb-6" />
-      <div className="flex justify-between items-center mb-8">
-        <div>
+    <div className="container py-8 space-y-8">
+      <div className="flex justify-between items-center">
+        <div className="space-y-1">
+          <BackButton />
           <h1 className="text-3xl font-bold tracking-tight">{event.title}</h1>
-          <p className="text-muted-foreground mt-2">{event.description}</p>
+          <p className="text-muted-foreground">{event.description}</p>
         </div>
-        <div className="flex gap-4">
+        <div className="flex items-center gap-4">
           <Button
             variant="outline"
             className="glass-effect"
-            onClick={() => navigateToEventPage('')}
+            onClick={() => navigateToEventPage('/settings')}
           >
-            <Eye className="mr-2 h-4 w-4" />
-            View Event
+            <Settings className="mr-2 h-4 w-4" />
+            {t('quickActions.eventSettings')}
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -103,37 +97,35 @@ export function EventDashboard({ event, eventId }: EventDashboardProps) {
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem onClick={() => navigateToEventPage('')}>
+                <Eye className="mr-2 h-4 w-4" />
+                {t('dashboard.viewEvent')}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => handleStatusChange('active')}>
-                <Lock className="mr-2 h-4 w-4" /> Start Event
+                <Lock className="mr-2 h-4 w-4" />
+                {t('dashboard.actions.startEvent')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleStatusChange('ended')}>
-                <Unlock className="mr-2 h-4 w-4" /> End Event
+                <Unlock className="mr-2 h-4 w-4" />
+                {t('dashboard.actions.endEvent')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleStatusChange('scheduled')}>
-                <Calendar className="mr-2 h-4 w-4" /> Reopen Event
+                <Calendar className="mr-2 h-4 w-4" />
+                {t('dashboard.actions.reopenEvent')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>
 
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold mb-2">{event.title}</h1>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">
-              {format(new Date(event.startDateTime), 'PPP')}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-3 mb-8">
+      <div className="grid gap-4 md:grid-cols-3">
         <Card className="glass-effect">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Status</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t('stats.status.title')}
+            </CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -142,100 +134,75 @@ export function EventDashboard({ event, eventId }: EventDashboardProps) {
         </Card>
         <Card className="glass-effect">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Rooms</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t('stats.rooms.title')}
+            </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{event.rooms?.length || 0}</div>
-            <p className="text-xs text-muted-foreground">Active Rooms</p>
+            <p className="text-xs text-muted-foreground">
+              {t('stats.rooms.activeRooms')}
+            </p>
           </CardContent>
         </Card>
         <Card className="glass-effect">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Duration</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              {t('stats.duration.title')}
+            </CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatDate(event.startDateTime)}</div>
-            <p className="text-xs text-muted-foreground">to {formatDate(event.endDateTime)}</p>
+            <p className="text-xs text-muted-foreground">
+              {t('stats.duration.to')} {formatDate(event.endDateTime)}
+            </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-        <Button
-          variant="outline"
-          className="h-20 glass-effect"
-          onClick={() => navigateToEventPage('/rooms')}
-        >
-          <Users className="mr-2 h-4 w-4" />
-          Manage Rooms
-        </Button>
-        <Button
-          variant="outline"
-          className="h-20 glass-effect"
-          onClick={() => navigateToEventPage('/analytics')}
-        >
-          <BarChart className="mr-2 h-4 w-4" />
-          View Analytics
-        </Button>
-        <Button
-          variant="outline"
-          className="h-20 glass-effect"
-          onClick={() => navigateToEventPage('/settings')}
-        >
-          <Settings className="mr-2 h-4 w-4" />
-          Event Settings
-        </Button>
-        <Button
-          variant="outline"
-          className="h-20 glass-effect"
-          onClick={() => navigateToEventPage('/security')}
-        >
-          <Shield className="mr-2 h-4 w-4" />
-          Security
-        </Button>
-      </div>
-
-      {/* Timeline and Speakers */}
-      <div className="grid gap-4 md:grid-cols-7">
-        <Card className="md:col-span-4 glass-effect">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="glass-effect hover:bg-accent/5 transition-colors cursor-pointer" onClick={() => navigateToEventPage('/rooms')}>
           <CardHeader>
-            <CardTitle>Event Timeline</CardTitle>
+            <div className="flex items-center justify-between">
+              <Users className="h-5 w-5" />
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <CardTitle className="text-lg">{t('quickActions.manageRooms')}</CardTitle>
+            <CardDescription>Gérez les salles et les streams</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center">
-                <div className="h-2 w-2 rounded-full bg-blue-500 mr-2" />
-                <span className="text-sm">Created on {formatDate(event.createdAt)}</span>
-              </div>
-              <div className="flex items-center">
-                <div className="h-2 w-2 rounded-full bg-green-500 mr-2" />
-                <span className="text-sm">Starts on {formatDate(event.startDateTime)}</span>
-              </div>
-              <div className="flex items-center">
-                <div className="h-2 w-2 rounded-full bg-red-500 mr-2" />
-                <span className="text-sm">Ends on {formatDate(event.endDateTime)}</span>
-              </div>
-            </div>
-          </CardContent>
         </Card>
-        <div className="md:col-span-3">
-          <Button
-            variant="outline"
-            className="w-full h-[200px] glass-effect"
-            onClick={() => navigateToEventPage('/speakers')}
-          >
-            <div className="flex flex-col items-center justify-center space-y-4">
-              <Users className="h-12 w-12" />
-              <div className="text-xl">Manage Speakers</div>
-              <div className="text-sm text-muted-foreground">
-                Add, edit, or remove event speakers
-              </div>
+        <Card className="glass-effect hover:bg-accent/5 transition-colors cursor-pointer" onClick={() => navigateToEventPage('/analytics')}>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <BarChart className="h-5 w-5" />
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </div>
-          </Button>
-        </div>
+            <CardTitle className="text-lg">{t('quickActions.viewAnalytics')}</CardTitle>
+            <CardDescription>Statistiques et analyses</CardDescription>
+          </CardHeader>
+        </Card>
+        <Card className="glass-effect hover:bg-accent/5 transition-colors cursor-pointer" onClick={() => navigateToEventPage('/speakers')}>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <Mic className="h-5 w-5" />
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <CardTitle className="text-lg">{t('quickActions.manageSpeakers')}</CardTitle>
+            <CardDescription>Gérez les orateurs de l'événement</CardDescription>
+          </CardHeader>
+        </Card>
+        <Card className="glass-effect hover:bg-accent/5 transition-colors cursor-pointer" onClick={() => navigateToEventPage('/security')}>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <Shield className="h-5 w-5" />
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <CardTitle className="text-lg">{t('quickActions.security')}</CardTitle>
+            <CardDescription>Sécurité et accès</CardDescription>
+          </CardHeader>
+        </Card>
       </div>
     </div>
   );

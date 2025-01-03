@@ -19,11 +19,21 @@ const fetchEvent = async (eventId: string): Promise<Event> => {
 };
 
 const fetchRooms = async (eventId: string): Promise<Room[]> => {
+  console.log('useEvent: Fetching rooms for event:', eventId);
   try {
-    console.log('useEvent: Fetching rooms for event:', eventId);
-    const { data } = await apiRequest<Room[]>(`/api/rooms/event/${eventId}`);
-    console.log('useEvent: Rooms data received:', data);
-    return data;
+    const response = await apiRequest<Room[]>(`/api/rooms/event/${eventId}`);
+    const data = response.data;
+    console.log('useEvent: Raw rooms data:', JSON.stringify(data, null, 2));
+    
+    // S'assurer que chaque room a un ID et un eventId
+    const processedData = data.map(room => ({
+      ...room,
+      id: room.id || room._id,
+      eventId: room.eventId || eventId
+    }));
+    
+    console.log('useEvent: Processed rooms data:', JSON.stringify(processedData, null, 2));
+    return processedData;
   } catch (error) {
     console.error('useEvent: Error fetching rooms:', error);
     return [];

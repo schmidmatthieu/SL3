@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { MediaUsageType } from '@/apps/api/src/modules/media/types/media.types';
 import { useMediaStore } from '@/store/media.store';
@@ -67,9 +67,54 @@ export function ImageUploader({
     }
   }, [isOpen, fetchAll, mediaType]);
 
+  const handleExistingImageSelect = useCallback((url: string) => {
+    console.log('handleExistingImageSelect called with:', { url, onImageSelect });
+    
+    if (!url) {
+      console.error('No URL provided');
+      return;
+    }
+
+    if (typeof onImageSelect !== 'function') {
+      console.error('onImageSelect is not a function:', onImageSelect);
+      return;
+    }
+
+    try {
+      if (entityId && mediaType !== 'unused') {
+        const mediaId = items.find(item => item.url === url)?._id;
+        if (mediaId) {
+          addUsage(mediaId, {
+            type: mediaType,
+            entityId,
+            entityName,
+          }).then(() => {
+            onImageSelect(url);
+            setIsOpen(false);
+          }).catch(err => {
+            console.error('Error adding media usage:', err);
+            setError(err.message);
+          });
+        } else {
+          onImageSelect(url);
+          setIsOpen(false);
+        }
+      } else {
+        onImageSelect(url);
+        setIsOpen(false);
+      }
+    } catch (err) {
+      console.error('Error selecting image:', err);
+      setError(err.message);
+    }
+  }, [entityId, mediaType, items, addUsage, onImageSelect, entityName, setIsOpen, setError]);
+
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file || typeof onImageSelect !== 'function') {
+      console.error('No file selected or onImageSelect is not a function');
+      return;
+    }
 
     try {
       setError(null);
@@ -87,11 +132,17 @@ export function ImageUploader({
       onImageSelect(url);
       setIsOpen(false);
     } catch (err) {
+      console.error('Error uploading file:', err);
       setError(err.message);
     }
   };
 
   const handleUrlSubmit = async () => {
+    if (!urlInput.trim() || typeof onImageSelect !== 'function') {
+      console.error('No URL provided or onImageSelect is not a function');
+      return;
+    }
+
     try {
       setError(null);
       const url = await uploadFromUrl(urlInput);
@@ -109,23 +160,9 @@ export function ImageUploader({
       setIsOpen(false);
       setUrlInput('');
     } catch (err) {
+      console.error('Error uploading from URL:', err);
       setError(err.message);
     }
-  };
-
-  const handleExistingImageSelect = async (url: string) => {
-    if (entityId && mediaType !== 'unused') {
-      const mediaId = items.find(item => item.url === url)?._id;
-      if (mediaId) {
-        await addUsage(mediaId, {
-          type: mediaType,
-          entityId,
-          entityName,
-        });
-      }
-    }
-    onImageSelect(url);
-    setIsOpen(false);
   };
 
   return (
@@ -300,16 +337,16 @@ export function ImageUploader({
           <TabsContent value="media" className="mt-0 border-0">
             <Card className="overflow-visible">
               <CardContent className="pt-6 px-6 pb-8">
-                <div className="h-[600px]">
-                  <MediaManagement
-                    onSelect={url => {
-                      handleExistingImageSelect(url);
-                    }}
-                    mediaType={mediaType}
-                    viewMode="grid"
-                    hideHeader
-                  />
-                </div>
+                <ScrollArea className="h-[600px] w-full">
+                  <div className="pr-4">
+                    <MediaManagement
+                      onSelect={handleExistingImageSelect}
+                      mediaType={mediaType}
+                      viewMode="grid"
+                      hideHeader
+                    />
+                  </div>
+                </ScrollArea>
               </CardContent>
             </Card>
           </TabsContent>

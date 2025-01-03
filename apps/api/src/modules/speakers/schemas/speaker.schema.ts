@@ -17,11 +17,20 @@ export type SpeakerDocument = Speaker & Document;
   },
 })
 export class Speaker extends Document {
-  @Prop({ required: true, type: String })
-  firstName: string;
+  @Prop({ required: false, type: String })
+  firstName?: string;
 
   @Prop({ required: true, type: String })
   lastName: string;
+
+  @Prop({ type: String })
+  role?: string;
+
+  @Prop({ type: String })
+  company?: string;
+
+  @Prop({ type: String })
+  bio?: string;
 
   @Prop({ type: String })
   imageUrl?: string =
@@ -29,6 +38,19 @@ export class Speaker extends Document {
 
   @Prop({ type: [String], default: [] })
   rooms?: string[];
+
+  @Prop({
+    type: {
+      linkedin: { type: String, required: false },
+      twitter: { type: String, required: false },
+    },
+    required: false,
+    _id: false,
+  })
+  socialLinks?: {
+    linkedin?: string;
+    twitter?: string;
+  };
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Event', required: true })
   eventId: string;

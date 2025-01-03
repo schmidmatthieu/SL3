@@ -54,19 +54,38 @@ export class CreateRoomDto {
   @IsOptional()
   thumbnail?: string;
 
-  @IsString()
-  @IsOptional()
-  startTime?: string;
-
-  @IsString()
-  @IsOptional()
-  endTime?: string;
-
   @IsEnum(RoomStatus)
   @IsOptional()
   status?: RoomStatus;
 
+  @IsString()
+  startTime: string;
+
+  @IsString()
+  endTime: string;
+
+  @IsString()
+  @IsOptional()
+  streamKey?: string;
+
+  @IsString()
+  @IsOptional()
+  streamUrl?: string;
+
   @ValidateNested()
   @Type(() => RoomSettingsDto)
-  settings: RoomSettingsDto;
+  @IsOptional()
+  settings?: RoomSettingsDto;
+
+  @IsString({ each: true })
+  @IsOptional()
+  speakers?: string[];
+
+  @IsString({ each: true })
+  @IsOptional()
+  moderators?: string[];
+
+  @IsString({ each: true })
+  @IsOptional()
+  participants?: string[];
 }

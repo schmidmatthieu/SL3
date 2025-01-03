@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useMediaStore } from '@/store/media.store';
 import cn from 'classnames';
 import { Check, Copy, Grid, Info, List, Pencil, Trash2, Upload } from 'lucide-react';
@@ -183,7 +183,35 @@ export function MediaManagement({
     });
   };
 
-  function renderUsageInfo(usages: MediaUsage[] = []) {
+  const handleSelect = useCallback((url: string) => {
+    console.log('MediaManagement handleSelect called with:', { url, onSelect });
+    
+    if (!url) {
+      console.error('No URL provided to handleSelect');
+      return;
+    }
+
+    if (typeof onSelect !== 'function') {
+      console.error('onSelect is not a function:', onSelect);
+      return;
+    }
+
+    onSelect(url);
+  }, [onSelect]);
+
+  const handleCardClick = useCallback((e: React.MouseEvent, url: string) => {
+    // Si l'événement vient d'un bouton, ne pas propager
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+
+    console.log('Card clicked with URL:', url);
+    if (typeof handleSelect === 'function') {
+      handleSelect(url);
+    }
+  }, [handleSelect]);
+
+  const renderUsageInfo = useCallback((usages: MediaUsage[] = []) => {
     if (!usages?.length) {
       return (
         <Badge
@@ -239,7 +267,7 @@ export function MediaManagement({
         </DialogContent>
       </Dialog>
     );
-  }
+  }, []);
 
   if (error) {
     return <div className="text-red-500">Erreur: {error}</div>;
@@ -349,8 +377,11 @@ export function MediaManagement({
               ? paginatedItems.map(item => (
                   <Card
                     key={item._id}
-                    className="group relative overflow-visible border hover:border-primary/50 transition-colors cursor-pointer"
-                    onClick={() => onSelect && onSelect(item.url)}
+                    className={cn(
+                      'group relative overflow-visible border hover:border-primary/50 transition-colors',
+                      onSelect && typeof onSelect === 'function' && 'cursor-pointer'
+                    )}
+                    onClick={(e) => handleCardClick(e, item.url)}
                   >
                     <CardContent className="p-0">
                       <div className="relative aspect-video bg-muted/30">
@@ -368,7 +399,8 @@ export function MediaManagement({
                               variant="ghost"
                               size="icon"
                               className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                              onClick={e => {
+                              onClick={(e) => {
+                                e.preventDefault();
                                 e.stopPropagation();
                                 copyToClipboard(item.url);
                               }}
@@ -379,7 +411,8 @@ export function MediaManagement({
                               variant="ghost"
                               size="icon"
                               className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                              onClick={e => {
+                              onClick={(e) => {
+                                e.preventDefault();
                                 e.stopPropagation();
                                 setEditingItem(item);
                               }}
@@ -390,7 +423,8 @@ export function MediaManagement({
                               variant="ghost"
                               size="icon"
                               className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive"
-                              onClick={e => {
+                              onClick={(e) => {
+                                e.preventDefault();
                                 e.stopPropagation();
                                 handleDelete(item._id);
                               }}
@@ -416,9 +450,9 @@ export function MediaManagement({
                     key={item._id}
                     className={cn(
                       'group relative overflow-visible hover:border-primary/50 transition-colors',
-                      onSelect && 'cursor-pointer'
+                      onSelect && typeof onSelect === 'function' && 'cursor-pointer'
                     )}
-                    onClick={() => onSelect && onSelect(item.url)}
+                    onClick={(e) => handleCardClick(e, item.url)}
                   >
                     <CardContent className="p-4">
                       <div className="flex items-center gap-6">
@@ -448,7 +482,8 @@ export function MediaManagement({
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8"
-                                onClick={e => {
+                                onClick={(e) => {
+                                  e.preventDefault();
                                   e.stopPropagation();
                                   copyToClipboard(item.url);
                                 }}
@@ -459,7 +494,8 @@ export function MediaManagement({
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8"
-                                onClick={e => {
+                                onClick={(e) => {
+                                  e.preventDefault();
                                   e.stopPropagation();
                                   setEditingItem(item);
                                 }}
@@ -470,7 +506,8 @@ export function MediaManagement({
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive"
-                                onClick={e => {
+                                onClick={(e) => {
+                                  e.preventDefault();
                                   e.stopPropagation();
                                   handleDelete(item._id);
                                 }}
@@ -488,32 +525,34 @@ export function MediaManagement({
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                />
-              </PaginationItem>
-              {Array.from({ length: totalPages }).map((_, i) => (
-                <PaginationItem key={i + 1}>
-                  <PaginationLink
-                    onClick={() => setCurrentPage(i + 1)}
-                    isActive={currentPage === i + 1}
-                  >
-                    {i + 1}
-                  </PaginationLink>
+          <div className="flex justify-center mt-6">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                  />
                 </PaginationItem>
-              ))}
-              <PaginationItem>
-                <PaginationNext
-                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+                {Array.from({ length: totalPages }).map((_, i) => (
+                  <PaginationItem key={i + 1}>
+                    <PaginationLink
+                      onClick={() => setCurrentPage(i + 1)}
+                      isActive={currentPage === i + 1}
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
         )}
 
         {/* Edit Dialog */}
