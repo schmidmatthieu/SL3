@@ -65,6 +65,9 @@ lerna-debug.log*
 apps/api/public/uploads/*
 !apps/api/public/uploads/.gitkeep
 
+# MongoDB temporary files
+apps/api/temp/mongodb-data/
+
 # System Files
 .DS_Store
 Thumbs.db
