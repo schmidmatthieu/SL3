@@ -11,6 +11,7 @@ export interface Event {
   endDateTime: string;
   status: EventStatus;
   imageUrl?: string;
+  location?: string; // Optional location field for virtual or physical events
   rooms: Room[];
   createdBy: string;
   createdAt: string;

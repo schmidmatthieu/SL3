@@ -41,6 +41,9 @@
 - [x] Refactoring des composants d'événements pour meilleure modularité
 - [x] Amélioration de la gestion des statuts d'événements
 - [x] Implémentation de la validation d'URL
+- [x] Optimisation de la timeline des événements
+- [x] Amélioration de l'UX avec sélection désactivée et styles cohérents
+- [x] Refactoring des traductions avec namespace commun
 
 ### Gestion des Intervenants (Phase 4)
 
