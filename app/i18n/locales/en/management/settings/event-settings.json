@@ -1,6 +1,10 @@
 {
   "eventSettings": {
     "title": "Event Settings",
+    "page": {
+      "notFound": "Event not found.",
+      "description": "Manage your event settings and details"
+    },
     "basicInfo": {
       "featured": {
         "title": "Feature Event",

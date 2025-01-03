@@ -1,0 +1,55 @@
+{
+  "hero": {
+    "register": "Für Event registrieren",
+    "share": "Teilen"
+  },
+  "description": {
+    "about": "Über",
+    "details": "Event-Details"
+  },
+  "timeline": {
+    "title": "Veranstaltungsplan",
+    "today": "Heute",
+    "day": "Tag",
+    "overview": "Übersicht",
+    "noSessions": "Keine Sitzungen geplant",
+    "multiDay": {
+      "endsOn": "endet am",
+      "startsOn": "beginnt am",
+      "at": "um"
+    }
+  },
+  "speakers": {
+    "title": "Referenten",
+    "noSpeakers": "Keine Referenten"
+  },
+  "rooms": {
+    "title": "Räume",
+    "noRooms": "Keine Räume verfügbar",
+    "create": "Raum erstellen",
+    "edit": "Raum bearbeiten",
+    "delete": "Raum löschen",
+    "confirmDelete": "Sind Sie sicher, dass Sie diesen Raum löschen möchten?",
+    "status": {
+      "live": "Live",
+      "upcoming": "Bevorstehend",
+      "paused": "Pausiert",
+      "ended": "Beendet"
+    },
+    "filters": {
+      "language": "Sprache",
+      "all": "Alle"
+    }
+  },
+  "status": {
+    "draft": "Entwurf",
+    "scheduled": "Geplant",
+    "active": "Aktiv",
+    "ended": "Beendet",
+    "cancelled": "Abgesagt",
+    "postponed": "Verschoben"
+  },
+  "common": {
+    "virtual": "Virtuelle Veranstaltung"
+  }
+}

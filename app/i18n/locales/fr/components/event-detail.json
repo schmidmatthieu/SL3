@@ -1,0 +1,55 @@
+{
+  "hero": {
+    "register": "S'inscrire à l'événement",
+    "share": "Partager"
+  },
+  "description": {
+    "about": "À propos",
+    "details": "Détails de l'événement"
+  },
+  "timeline": {
+    "title": "Programme de l'événement",
+    "today": "Aujourd'hui",
+    "day": "Jour",
+    "overview": "Vue d'ensemble",
+    "noSessions": "Aucune session programmée",
+    "multiDay": {
+      "endsOn": "fini le",
+      "startsOn": "début le",
+      "at": "à"
+    }
+  },
+  "speakers": {
+    "title": "Intervenants",
+    "noSpeakers": "Aucun intervenant"
+  },
+  "rooms": {
+    "title": "Salles",
+    "noRooms": "Aucune salle disponible",
+    "create": "Créer une salle",
+    "edit": "Modifier la salle",
+    "delete": "Supprimer la salle",
+    "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette salle ?",
+    "status": {
+      "live": "En direct",
+      "upcoming": "À venir",
+      "paused": "En pause",
+      "ended": "Terminé"
+    },
+    "filters": {
+      "language": "Langue",
+      "all": "Toutes"
+    }
+  },
+  "status": {
+    "draft": "Brouillon",
+    "scheduled": "Planifié",
+    "active": "En cours",
+    "ended": "Terminé",
+    "cancelled": "Annulé",
+    "postponed": "Reporté"
+  },
+  "common": {
+    "virtual": "Événement virtuel"
+  }
+}

@@ -11,10 +11,11 @@ const translations = languages.reduce(
   (acc, lang) => {
     acc[lang] = {
       translation: require(`./i18n/locales/${lang}/translation.json`),
+      'components/event-detail': require(`./i18n/locales/${lang}/components/event-detail.json`),
     };
     return acc;
   },
-  {} as Record<string, { translation: any }>
+  {} as Record<string, { translation: any; 'components/event-detail': any }>
 );
 
 i18next
@@ -25,6 +26,7 @@ i18next
     fallbackLng,
     supportedLngs: languages,
     defaultNS: 'translation',
+    ns: ['translation', 'components/event-detail'],
     interpolation: {
       escapeValue: false,
     },

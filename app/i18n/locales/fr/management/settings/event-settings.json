@@ -1,6 +1,10 @@
 {
   "eventSettings": {
     "title": "Paramètres de l'événement",
+    "page": {
+      "notFound": "Événement non trouvé.",
+      "description": "Gérez les paramètres et les détails de votre événement"
+    },
     "basicInfo": {
       "featured": {
         "title": "Mettre en avant",

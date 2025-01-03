@@ -1,6 +1,10 @@
 {
   "eventSettings": {
     "title": "Impostazioni Evento",
+    "page": {
+      "notFound": "Evento non trovato.",
+      "description": "Gestisci le impostazioni e i dettagli del tuo evento"
+    },
     "basicInfo": {
       "featured": {
         "title": "Evento in Evidenza",
