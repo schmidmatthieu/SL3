@@ -10,22 +10,29 @@ Notre application utilise une approche modulaire pour les traductions, organisé
 /app/i18n/
   ├── locales/
   │   ├── fr/
-  │   │   ├── common.json        # Traductions communes
-  │   │   ├── components/        # Traductions spécifiques aux composants
-  │   │   │   ├── event-settings.json
-  │   │   │   ├── media-management.json
+  │   │   ├── translation.json     # Traductions globales
+  │   │   ├── components/          # Traductions spécifiques aux composants
+  │   │   │   ├── event-detail.json
   │   │   │   └── ...
+  │   │   └── management/          # Traductions pour la gestion
+  │   │       └── ...
   │   ├── en/
-  │   │   ├── common.json
+  │   │   ├── translation.json
   │   │   ├── components/
   │   │   │   └── ...
+  │   │   └── management/
+  │   │       └── ...
   │   ├── de/
-  │   │   ├── common.json
+  │   │   ├── translation.json
   │   │   ├── components/
   │   │   │   └── ...
+  │   │   └── management/
+  │   │       └── ...
   │   └── it/
-  │       ├── common.json
-  │       └── components/
+  │       ├── translation.json
+  │       ├── components/
+  │       │   └── ...
+  │       └── management/
   │           └── ...
 ```
 
@@ -58,31 +65,42 @@ Notre application utilise une approche modulaire pour les traductions, organisé
    }
    ```
 
+3. Ajouter le namespace dans la configuration i18n (`app/i18n.ts`):
+   ```typescript
+   const translations = languages.reduce(
+     (acc, lang) => {
+       acc[lang] = {
+         translation: require(`./i18n/locales/${lang}/translation.json`),
+         'components/mon-composant': require(`./i18n/locales/${lang}/components/mon-composant.json`),
+       };
+       return acc;
+     },
+     {} as Record<string, { translation: any; 'components/mon-composant': any }>
+   );
+   ```
+
 ### 2. Utilisation dans les Composants
 
 ```typescript
 import { useTranslation } from 'react-i18next';
 
 export function MonComposant() {
-  // Charger les traductions communes et spécifiques au composant
-  const { t } = useTranslation(['common', 'components/mon-composant']);
+  // Utiliser le namespace spécifique au composant
+  const { t } = useTranslation('components/mon-composant');
 
   return (
     <div>
-      {/* Utiliser les traductions spécifiques au composant */}
-      <h1>{t('components/mon-composant:title')}</h1>
-      <p>{t('components/mon-composant:description')}</p>
-
-      {/* Utiliser les traductions communes */}
-      <button>{t('common:buttons.save')}</button>
+      <h1>{t('title')}</h1>
+      <p>{t('description')}</p>
+      <button>{t('actions.submit')}</button>
     </div>
   );
 }
 ```
 
-### 3. Éléments Communs
+### 3. Traductions Globales
 
-Le fichier `common.json` contient les traductions partagées:
+Le fichier `translation.json` contient les traductions globales:
 
 ```json
 {
@@ -107,25 +125,23 @@ Le fichier `common.json` contient les traductions partagées:
 ## Bonnes Pratiques
 
 1. **Organisation**
-
    - Créer un fichier de traduction par composant
    - Utiliser des clés descriptives et cohérentes
    - Grouper les traductions par contexte
+   - Placer les traductions globales dans `translation.json`
 
 2. **Nommage des Clés**
-
    - Utiliser des noms explicites
    - Suivre une structure hiérarchique
    - Éviter les espaces et caractères spéciaux
 
 3. **Maintenance**
-
    - Maintenir tous les fichiers de langue synchronisés
    - Documenter les changements importants
    - Supprimer les clés non utilisées
 
 4. **Performance**
-   - Charger uniquement les traductions nécessaires
+   - Charger uniquement les namespaces nécessaires
    - Utiliser le lazy loading quand possible
    - Éviter les traductions redondantes
 
@@ -143,13 +159,13 @@ Le fichier `common.json` contient les traductions partagées:
 ```
 /app/i18n/locales/
   ├── fr/
-  │   ├── common.json
+  │   ├── translation.json
   │   └── components/
-  │       └── event-settings.json
+  │       └── event-detail.json
   ├── en/
-  │   ├── common.json
+  │   ├── translation.json
   │   └── components/
-  │       └── event-settings.json
+  │       └── event-detail.json
   └── ...
 ```
 
@@ -158,26 +174,19 @@ Le fichier `common.json` contient les traductions partagées:
 ```typescript
 import { useTranslation } from 'react-i18next';
 
-export function EventSettings() {
-  const { t } = useTranslation(['common', 'components/event-settings']);
+export function EventDetail() {
+  const { t } = useTranslation('components/event-detail');
 
   return (
     <div>
-      <h1>{t('components/event-settings:title')}</h1>
-
-      <form>
-        <label>{t('components/event-settings:form.name')}</label>
-        <input type="text" />
-
-        <div className="actions">
-          <button type="submit">
-            {t('common:buttons.save')}
-          </button>
-          <button type="button">
-            {t('common:buttons.cancel')}
-          </button>
-        </div>
-      </form>
+      <h1>{t('title')}</h1>
+      <div className="description">
+        {t('description')}
+      </div>
+      <div className="actions">
+        <button>{t('actions.register')}</button>
+        <button>{t('actions.share')}</button>
+      </div>
     </div>
   );
 }

@@ -40,7 +40,18 @@
 ```
 /
 ├── app/                    # Routes et pages Next.js
+│   └── [feature]/         # Pages et layouts par feature
+│       ├── page.tsx       # Page principale
+│       ├── layout.tsx     # Layout de la feature
+│       └── [id]/          # Routes dynamiques
+│           ├── page.tsx
+│           └── layout.tsx
 ├── components/            # Composants React
+│   └── [feature]/        # Composants par feature
+│       ├── [component]/   # Dossier par composant majeur
+│       │   ├── index.tsx  # Export principal
+│       │   └── sub-components/ # Sous-composants
+│       └── ui/           # Composants UI réutilisables
 ├── config/               # Configurations
 ├── hooks/                # Custom hooks React
 ├── lib/                  # Utilitaires et helpers

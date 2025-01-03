@@ -13,7 +13,7 @@
 ### Structure
 
 ```typescript
-// component.test.tsx
+// components/[feature]/[component]/__tests__/index.test.tsx
 describe('ComponentName', () => {
   // Grouper par fonctionnalité
   describe('rendering', () => {
@@ -32,6 +32,20 @@ describe('ComponentName', () => {
     });
   });
 });
+```
+
+### Structure des Tests
+
+```
+components/[feature]/
+└── [component]/
+    ├── index.tsx
+    ├── types.ts
+    ├── hooks.ts
+    └── __tests__/          # Dossier de tests
+        ├── index.test.tsx  # Tests du composant principal
+        ├── hooks.test.ts   # Tests des hooks
+        └── utils.test.ts   # Tests des utilitaires
 ```
 
 ### Bonnes Pratiques
@@ -243,4 +257,3 @@ module.exports = {
     },
   },
 };
-```

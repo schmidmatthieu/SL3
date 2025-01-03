@@ -58,23 +58,27 @@ const spacing = {
 #### Structure Modulaire
 
 ```
-ui/
-├── atoms/
+components/
+├── ui/                    # Composants UI réutilisables
 │   ├── button/
-│   │   ├── button.tsx
-│   │   ├── button.test.tsx
-│   │   └── button.stories.tsx
-│   └── input/
-├── molecules/
-│   └── form-field/
-└── organisms/
-    └── data-table/
+│   │   ├── index.tsx     # Export principal
+│   │   ├── types.ts      # Types du composant
+│   │   └── __tests__/    # Tests unitaires
+│   ├── input/
+│   │   └── index.tsx
+│   └── form/
+│       ├── index.tsx
+│       └── field.tsx
+└── [feature]/            # Composants spécifiques aux features
+    └── [component]/
+        ├── index.tsx
+        └── sub-components/
 ```
 
 #### Variants
 
 ```typescript
-// Exemple de variant button
+// components/ui/button/index.tsx
 const buttonVariants = cva('inline-flex items-center justify-center', {
   variants: {
     variant: {

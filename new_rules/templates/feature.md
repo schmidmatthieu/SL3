@@ -60,8 +60,25 @@ export class FeatureController {
 
 ## Traductions
 
+1. Structure des fichiers :
+```
+app/i18n/locales/
+├── fr/
+│   ├── translation.json           # Traductions globales de la feature
+│   └── components/               # Traductions des composants
+│       └── feature-name/
+│           ├── list.json
+│           ├── detail.json
+│           └── form.json
+└── [lang]/                      # Autres langues
+    ├── translation.json
+    └── components/
+        └── feature-name/
+```
+
+2. Exemple de traduction de composant :
 ```json
-// components/feature-name.json
+// app/i18n/locales/[lang]/components/feature-name/list.json
 {
   "section": {
     "title": "",
@@ -73,6 +90,22 @@ export class FeatureController {
     "delete": ""
   }
 }
+```
+
+3. Configuration i18n :
+```typescript
+const translations = languages.reduce(
+  (acc, lang) => {
+    acc[lang] = {
+      translation: require(`./i18n/locales/${lang}/translation.json`),
+      'components/feature-name/list': require(`./i18n/locales/${lang}/components/feature-name/list.json`),
+      'components/feature-name/detail': require(`./i18n/locales/${lang}/components/feature-name/detail.json`),
+      'components/feature-name/form': require(`./i18n/locales/${lang}/components/feature-name/form.json`),
+    };
+    return acc;
+  },
+  {} as Record<string, any>
+);
 ```
 
 ## Tests
@@ -108,10 +141,10 @@ describe('Feature E2E', () => {
 
 ## Documentation
 
-- [ ] Guide utilisateur
+- [ ] Guide d'utilisation
 - [ ] Documentation technique
-- [ ] Exemples d'utilisation
-- [ ] Troubleshooting
+- [ ] Exemples de code
+- [ ] Cas d'utilisation
 
 ## Déploiement
 

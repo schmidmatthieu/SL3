@@ -21,7 +21,7 @@ module.exports = {
     'max-lines-per-function': [
       'error',
       {
-        max: 50,
+        max: 100,
         skipBlankLines: true,
         skipComments: true,
       },
@@ -34,7 +34,7 @@ module.exports = {
 
 ```
 error  File has too many lines (350). Maximum allowed is 300  max-lines
-error  Function has too many lines (75). Maximum allowed is 50  max-lines-per-function
+error  Function has too many lines (175). Maximum allowed is 100  max-lines-per-function
 ```
 
 ### Process de Correction
@@ -67,16 +67,17 @@ error  Function has too many lines (75). Maximum allowed is 50  max-lines-per-fu
 
 3. **Structure Recommandée**
    ```
-   component/
-   ├── modules/
-   │   ├── module-a/
-   │   │   ├── index.tsx
-   │   │   └── styles.ts
-   │   ├── module-b/
-   │   └── module-c/
-   ├── hooks/
-   ├── utils/
-   └── index.tsx
+   components/[feature]/
+   ├── [component]/
+   │   ├── index.tsx        # Composant principal
+   │   ├── sub-components/  # Sous-composants
+   │   │   ├── module-a.tsx
+   │   │   ├── module-b.tsx
+   │   │   └── module-c.tsx
+   │   ├── hooks.ts        # Hooks spécifiques
+   │   ├── utils.ts        # Utilitaires
+   │   └── types.ts        # Types
+   └── ui/                 # Composants UI réutilisables
    ```
 
 ### Exceptions

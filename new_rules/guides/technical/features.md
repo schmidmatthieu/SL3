@@ -224,3 +224,56 @@
 - Image optimization
 - Cache stratégies
 - Bundle optimization
+
+## 🗂️ Organisation du Code
+
+### Structure des Features
+
+```
+app/[feature]/              # Pages et routes
+├── page.tsx               # Page principale
+├── layout.tsx            # Layout de la feature
+└── [id]/                # Routes dynamiques
+    ├── page.tsx
+    └── layout.tsx
+
+components/[feature]/       # Composants
+├── [component]/          # Composant majeur
+│   ├── index.tsx        # Export principal
+│   ├── sub-components/  # Sous-composants
+│   ├── hooks.ts        # Hooks spécifiques
+│   └── types.ts        # Types
+└── ui/                  # UI réutilisable
+
+app/i18n/locales/[lang]/  # Traductions
+├── translation.json     # Global
+└── components/         # Par composant
+    └── [feature]/
+        └── [component].json
+```
+
+### Exemple : Feature Events
+
+```
+app/events/
+├── page.tsx            # Liste des événements
+├── layout.tsx         # Layout commun
+└── [eventId]/        # Page de détail
+    └── page.tsx
+
+components/events/
+├── event-detail/      # Composants de détail
+│   ├── index.tsx
+│   ├── description.tsx
+│   ├── timeline.tsx
+│   └── speakers.tsx
+└── event-list/       # Composants de liste
+    ├── index.tsx
+    └── filters.tsx
+
+app/i18n/locales/fr/
+├── translation.json
+└── components/
+    └── events/
+        ├── event-detail.json
+        └── event-list.json

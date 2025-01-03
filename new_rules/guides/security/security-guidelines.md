@@ -20,7 +20,7 @@
 ### JWT Configuration
 
 ```typescript
-// config/jwt.config.ts
+// lib/config/jwt.config.ts
 export const jwtConfig = {
   secret: process.env.JWT_SECRET,
   expiresIn: '15m',
@@ -32,7 +32,7 @@ export const jwtConfig = {
 ### Middleware d'Authentication
 
 ```typescript
-// middleware/auth.middleware.ts
+// app/middleware/auth.middleware.ts
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
@@ -55,7 +55,7 @@ export class AuthMiddleware implements NestMiddleware {
 ### Guards RBAC
 
 ```typescript
-// guards/roles.guard.ts
+// lib/guards/roles.guard.ts
 @Injectable()
 export class RolesGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
@@ -72,7 +72,7 @@ export class RolesGuard implements CanActivate {
 ### Encryption
 
 ```typescript
-// utils/encryption.ts
+// lib/utils/encryption.ts
 export class Encryption {
   static async hash(data: string): Promise<string> {
     return bcrypt.hash(data, 12);
@@ -87,7 +87,7 @@ export class Encryption {
 ### Validation des Données
 
 ```typescript
-// dto/user.dto.ts
+// types/dto/user.dto.ts
 export class CreateUserDTO {
   @IsString()
   @MinLength(8)

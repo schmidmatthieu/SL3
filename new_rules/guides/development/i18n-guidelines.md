@@ -8,56 +8,81 @@
 i18n/
 ├── locales/
 │   ├── fr/
-│   │   ├── common.json
-│   │   └── components/
-│   │       ├── event-settings/
-│   │       │   ├── form.json
-│   │       │   └── validation.json
-│   │       └── media-manager/
-│   │           ├── upload.json
-│   │           └── gallery.json
+│   │   ├── translation.json       # Traductions globales
+│   │   ├── components/           # Traductions spécifiques aux composants
+│   │   │   └── event-detail.json
+│   │   └── management/          # Traductions pour la gestion
 │   ├── en/
+│   │   ├── translation.json
+│   │   ├── components/
+│   │   └── management/
 │   ├── de/
+│   │   ├── translation.json
+│   │   ├── components/
+│   │   └── management/
 │   └── it/
-└── config.ts
+│       ├── translation.json
+│       ├── components/
+│       └── management/
+└── settings.ts
 ```
 
 ### Règles de Nommage
 
-- Fichiers : kebab-case
+- Fichiers : kebab-case (ex: event-detail.json)
 - Clés : camelCase
-- Namespaces : dot.notation
+- Namespaces : utiliser le chemin complet (ex: 'components/event-detail')
 
 ## Configuration
 
 ### Setup i18next
 
 ```typescript
-// i18n/config.ts
-export const i18nConfig = {
-  defaultLocale: 'fr',
-  locales: ['fr', 'en', 'de', 'it'],
-  namespaces: ['common', 'components'],
-  defaultNamespace: 'common',
-};
-```
+// i18n.ts
+import i18next from 'i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
+import { initReactI18next } from 'react-i18next';
 
-### Chargement Dynamique
+import { fallbackLng, languages } from './i18n/settings';
 
-```typescript
-// Chargement des traductions par module
-const loadTranslations = async (locale: string, component: string) => {
-  const module = await import(`@/i18n/locales/${locale}/components/${component}`);
-  return module.default;
-};
+// Import all translations
+const translations = languages.reduce(
+  (acc, lang) => {
+    acc[lang] = {
+      translation: require(`./i18n/locales/${lang}/translation.json`),
+      'components/event-detail': require(`./i18n/locales/${lang}/components/event-detail.json`),
+    };
+    return acc;
+  },
+  {} as Record<string, { translation: any; 'components/event-detail': any }>
+);
+
+i18next
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    debug: process.env.NODE_ENV === 'development',
+    fallbackLng,
+    supportedLngs: languages,
+    defaultNS: 'translation',
+    ns: ['translation', 'components/event-detail'],
+    interpolation: {
+      escapeValue: false,
+    },
+    resources: translations,
+    detection: {
+      order: ['localStorage', 'navigator'],
+      caches: ['localStorage'],
+    },
+  });
 ```
 
 ## Structure des Fichiers
 
-### Common
+### Traductions Globales
 
 ```json
-// common.json
+// translation.json
 {
   "actions": {
     "save": "Sauvegarder",
@@ -81,18 +106,18 @@ const loadTranslations = async (locale: string, component: string) => {
 ### Composants
 
 ```json
-// components/event-settings/form.json
+// components/event-detail.json
 {
-  "title": "Paramètres de l'événement",
-  "fields": {
-    "name": {
-      "label": "Nom de l'événement",
-      "placeholder": "Entrez le nom"
-    },
-    "description": {
-      "label": "Description",
-      "placeholder": "Décrivez votre événement"
-    }
+  "title": "Détails de l'événement",
+  "description": "Description de l'événement",
+  "actions": {
+    "register": "S'inscrire",
+    "share": "Partager"
+  },
+  "sections": {
+    "speakers": "Intervenants",
+    "schedule": "Programme",
+    "location": "Lieu"
   }
 }
 ```
@@ -102,22 +127,19 @@ const loadTranslations = async (locale: string, component: string) => {
 ### Dans les Composants
 
 ```typescript
-// components/event-settings/event-form.tsx
-function EventForm() {
-  const { t } = useTranslation([
-    'common',
-    'components.event-settings.form'
-  ]);
+// components/events/event-detail/description.tsx
+function EventDescription() {
+  const { t } = useTranslation('components/event-detail');
 
   return (
-    <form>
-      <h2>{t('components.event-settings.form:title')}</h2>
-      <Input
-        label={t('components.event-settings.form:fields.name.label')}
-        placeholder={t('components.event-settings.form:fields.name.placeholder')}
-      />
-      {/* ... */}
-    </form>
+    <div>
+      <h2>{t('title')}</h2>
+      <p>{t('description')}</p>
+      <div className="actions">
+        <button>{t('actions.register')}</button>
+        <button>{t('actions.share')}</button>
+      </div>
+    </div>
   );
 }
 ```
@@ -133,9 +155,9 @@ t('validation.minLength', { count: 3 });
 
 ### 1. Modularité
 
-- Un fichier par composant/module
-- Séparer les validations
-- Grouper les messages communs
+- Un fichier par composant majeur
+- Regrouper les traductions par fonctionnalité
+- Utiliser le fichier translation.json pour les éléments globaux
 
 ### 2. Maintenance
 
@@ -145,7 +167,7 @@ t('validation.minLength', { count: 3 });
 
 ### 3. Performance
 
-- Charger les traductions à la demande
+- Charger uniquement les namespaces nécessaires
 - Mettre en cache les traductions
 - Optimiser la taille des fichiers
 
@@ -154,37 +176,10 @@ t('validation.minLength', { count: 3 });
 ```typescript
 describe('Translations', () => {
   it('should load component translations', async () => {
-    const translations = await loadTranslations('fr', 'event-settings');
+    const translations = await import('@/i18n/locales/fr/components/event-detail.json');
     expect(translations).toBeDefined();
   });
 });
-```
-
-## Processus de Traduction
-
-### 1. Extraction
-
-```bash
-# Extraire les clés de traduction
-i18next-extract 'src/**/*.{ts,tsx}'
-```
-
-### 2. Validation
-
-```typescript
-// utils/validateTranslations.ts
-const validateTranslations = (locale: string, reference: string = 'fr') => {
-  // Vérifier les clés manquantes
-};
-```
-
-### 3. Import/Export
-
-```typescript
-// utils/exportTranslations.ts
-const exportTranslations = async (locale: string) => {
-  // Export au format XLSX/CSV
-};
 ```
 
 ## Gestion des Erreurs
@@ -234,4 +229,3 @@ function LocalizedComponent() {
     </div>
   );
 }
-```

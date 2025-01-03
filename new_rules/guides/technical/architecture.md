@@ -9,39 +9,53 @@ L'architecture de SL3 est conçue pour être modulaire, performante et maintenab
 ### Organisation Standard
 
 ```
-components/
-├── [feature]/
-│   ├── components/           # Composants React
-│   │   ├── feature-form.tsx
-│   │   ├── feature-list.tsx
-│   │   └── feature-item.tsx
-│   └── types/               # Types et interfaces
-│       └── feature.types.ts
-├── ui/                      # Composants UI réutilisables
-└── shared/                  # Composants partagés
-
-app/
-├── [feature]/              # Routes Next.js
-│   ├── page.tsx
-│   └── layout.tsx
-└── i18n/                   # Traductions
+app/                        # Application Next.js
+├── [feature]/             # Routes Next.js (ex: events)
+│   ├── page.tsx           # Page principale de la feature
+│   ├── layout.tsx         # Layout de la feature
+│   └── [id]/             # Routes dynamiques (ex: [eventId])
+│       ├── page.tsx
+│       └── layout.tsx
+├── api/                   # Routes API
+└── i18n/                  # Traductions
     └── locales/
         ├── fr/
-        │   ├── common.json
-        │   └── components/
-        └── [lang]/
+        │   ├── translation.json    # Traductions globales
+        │   ├── components/         # Traductions des composants
+        │   │   └── event-detail.json
+        │   └── management/         # Traductions de gestion
+        └── [lang]/                # Autres langues (en, de, it)
+            ├── translation.json
+            ├── components/
+            └── management/
 
-store/                      # État global Zustand
+components/                # Composants React
+├── [feature]/            # Composants spécifiques aux features
+│   └── events/           # Exemple pour les événements
+│       ├── event-detail/ # Composants de détail d'événement
+│       │   ├── index.tsx     # Export des composants
+│       │   ├── description.tsx
+│       │   ├── hero-banner.tsx
+│       │   ├── timeline.tsx
+│       │   ├── speakers.tsx
+│       │   └── rooms.tsx
+│       └── event-list/   # Composants de liste d'événements
+│           ├── index.tsx
+│           └── filters.tsx
+├── ui/                   # Composants UI réutilisables
+└── shared/              # Composants partagés
+
+store/                    # État global Zustand
 ├── feature.store.ts
 └── index.ts
 
-hooks/                      # Hooks personnalisés
+hooks/                    # Hooks personnalisés
 └── use-feature.ts
 
-services/                   # Services métier
+services/                # Services métier
 └── feature.service.ts
 
-types/                      # Types globaux
+types/                   # Types globaux
 └── index.ts
 ```
 
@@ -54,41 +68,48 @@ La modularisation est un principe FONDAMENTAL de notre architecture. Tout fichie
 #### Règles de Modularisation
 
 1. **Limite de Taille**
-
    - Maximum 300 lignes par fichier
    - Inclut les imports et exports
    - Exclut les commentaires et documentation
 
 2. **Stratégie de Division**
-
    - Séparer par responsabilité
    - Un module = une fonction principale
    - Maintenir la cohésion fonctionnelle
    - Éviter les dépendances circulaires
 
-3. **Exemple de Modularisation**
+3. **Exemple de Modularisation pour les Events**
 
 ```typescript
-// Avant: event-settings.tsx (400+ lignes)
+// Structure des composants d'événements
+components/events/
+├── event-form/
+│   ├── index.tsx           # Export principal
+│   ├── form.tsx           # Formulaire principal
+│   ├── metadata.tsx       # Gestion des métadonnées
+│   ├── scheduling.tsx     # Planification
+│   └── media.tsx          # Gestion des médias
+├── event-list/
+│   ├── index.tsx
+│   ├── list.tsx
+│   └── filters.tsx
+└── event-detail/
+    ├── index.tsx
+    ├── hero-banner.tsx
+    ├── description.tsx
+    ├── timeline.tsx
+    └── speakers.tsx
 
-// Après:
-event-settings/
-├── components/
-│   ├── event-form.tsx         # Formulaire principal
-│   ├── event-metadata.tsx     # Gestion des métadonnées
-│   ├── event-scheduling.tsx   # Planification
-│   └── event-media.tsx        # Gestion des médias
-├── hooks/
-│   ├── use-event-form.ts      # Logique du formulaire
-│   └── use-event-validation.ts # Validation
-├── utils/
-│   ├── event-transforms.ts    # Transformations de données
-│   └── event-validators.ts    # Fonctions de validation
-└── index.tsx                  # Export principal
+// Pages d'événements
+app/events/
+├── page.tsx               # Liste des événements
+├── layout.tsx
+└── [eventId]/
+    ├── page.tsx          # Détail d'un événement
+    └── layout.tsx
 ```
 
 4. **Process de Refactoring**
-
    - Identifier les responsabilités distinctes
    - Créer une structure de dossiers appropriée
    - Extraire les composants logiques

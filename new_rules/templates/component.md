@@ -17,9 +17,18 @@ interface ComponentProps {
 ```tsx
 export function ComponentName({ prop1, prop2 }: ComponentProps) {
   // Hooks et logique
+  const { t } = useTranslation('components/component-name');
 
   return (
-    // JSX
+    // JSX avec traductions
+    <div>
+      <h2>{t('title')}</h2>
+      <p>{t('description')}</p>
+      <div className="actions">
+        <button>{t('actions.submit')}</button>
+        <button>{t('actions.cancel')}</button>
+      </div>
+    </div>
   );
 }
 ```
@@ -32,8 +41,17 @@ export function ComponentName({ prop1, prop2 }: ComponentProps) {
 
 ## Traductions
 
+1. Ajouter le fichier de traduction pour chaque langue :
+```bash
+touch app/i18n/locales/fr/components/component-name.json
+touch app/i18n/locales/en/components/component-name.json
+touch app/i18n/locales/de/components/component-name.json
+touch app/i18n/locales/it/components/component-name.json
+```
+
+2. Structure du fichier de traduction :
 ```json
-// components/component-name.json
+// app/i18n/locales/[lang]/components/component-name.json
 {
   "title": "",
   "description": "",
@@ -42,6 +60,20 @@ export function ComponentName({ prop1, prop2 }: ComponentProps) {
     "cancel": ""
   }
 }
+```
+
+3. Ajouter le namespace dans i18n.ts :
+```typescript
+const translations = languages.reduce(
+  (acc, lang) => {
+    acc[lang] = {
+      translation: require(`./i18n/locales/${lang}/translation.json`),
+      'components/component-name': require(`./i18n/locales/${lang}/components/component-name.json`),
+    };
+    return acc;
+  },
+  {} as Record<string, { translation: any; 'components/component-name': any }>
+);
 ```
 
 ## Tests

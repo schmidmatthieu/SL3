@@ -15,10 +15,10 @@
 
 ```typescript
 // Lazy loading des routes
-const EventPage = lazy(() => import('@/pages/event'));
+const EventPage = lazy(() => import('@/app/events/page'));
 
 // Lazy loading des composants lourds
-const HeavyComponent = lazy(() => import('@/components/heavy'));
+const HeavyComponent = lazy(() => import('@/components/events/event-detail/heavy-component'));
 ```
 
 ### Image Optimization
@@ -285,4 +285,3 @@ export default function () {
 
   test.run();
 }
-```
