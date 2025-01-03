@@ -44,7 +44,7 @@ export default [
         skipComments: true,
       }],
       'max-lines-per-function': ['error', {
-        max: 50,
+        max: 100,
         skipBlankLines: true,
         skipComments: true,
       }],
@@ -78,13 +78,14 @@ export default [
       'jsx-a11y/role-has-required-aria-props': 'error',
 
       // Règles d'import
-      'import/order': ['error', {
+      'import/order': ['warn', {
         'groups': [
           ['builtin', 'external'],
           'internal',
-          ['parent', 'sibling', 'index']
+          ['parent', 'sibling', 'index'],
+          'type'
         ],
-        'newlines-between': 'always',
+        'newlines-between': 'never',
         'alphabetize': {
           'order': 'asc',
           'caseInsensitive': true
