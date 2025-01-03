@@ -35,7 +35,13 @@ export class UpdateEventDto {
   })
   endDateTime?: string;
 
-  @IsUrl({}, { message: 'imageUrl must be a valid URL' })
+  @IsUrl({
+    require_tld: false,
+    require_protocol: false,
+    allow_underscores: true,
+    allow_trailing_dot: true,
+    allow_protocol_relative_urls: true,
+  }, { message: 'imageUrl must be a valid URL' })
   @IsOptional()
   imageUrl?: string;
 

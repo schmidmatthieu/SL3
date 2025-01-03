@@ -7,10 +7,9 @@ import cn from 'classnames'; // Added classnames import
 import { useEvents } from '@/hooks/useEvents';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { BackButton } from '@/components/ui/back-button';
-import { Badge } from '@/components/ui/badge'; // Added Badge import
-
 import { Skeleton } from '@/components/ui/skeleton';
 import { EventSettings } from '@/components/management/settings/event-settings';
+import { EventStatusBadge } from '@/components/events/status/event-status-badge';
 
 export default function SettingsPage() {
   const params = useParams();
@@ -80,15 +79,7 @@ export default function SettingsPage() {
               </p>
             </div>
           </div>
-          <Badge
-            variant={currentEvent.status === 'cancelled' ? 'destructive' : 'default'}
-            className={cn(
-              'text-sm font-medium',
-              currentEvent.status === 'active' ? 'bg-third text-black' : ''
-            )}
-          >
-            {currentEvent.status}
-          </Badge>
+          <EventStatusBadge event={currentEvent} className="text-sm font-medium" />
         </div>
       </div>
       <EventSettings event={currentEvent} />

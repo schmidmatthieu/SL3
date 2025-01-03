@@ -6,7 +6,7 @@
 6. Use tailwind
 7. Use Shadcn/ui
 8. Code in a monorepo
-9. Always add the translations in the 4 languages for all new components
+9. Always add the translations in the 4 languages for all new components in the app/i18n folder
 10. Always do responsive design
 11. Use the color variante defined in the tailwind config
 12. Always code with SEO and accessibility in mind
@@ -14,3 +14,4 @@
 14. Never write hard text in the component, always use the translation keys
 15. When a file is more than 300 lines suggest to split in in multiple clean and functional files
 16. Never write my URL in the code but use my .env variables
+17. Use pnpm

@@ -36,6 +36,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { EventStatusBadge } from '@/components/events/status/event-status-badge';
 
 interface EventDashboardProps {
   event: Event;
@@ -68,32 +69,6 @@ export function EventDashboard({ event, eventId }: EventDashboardProps) {
       router.refresh();
     } catch (error) {
       console.error('EventDashboard - Error updating event status:', error);
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'active':
-        return 'bg-green-500';
-      case 'ended':
-        return 'bg-red-500';
-      case 'scheduled':
-        return 'bg-blue-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
-
-  const getDisplayStatus = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'active':
-        return 'Live';
-      case 'ended':
-        return 'Ended';
-      case 'scheduled':
-        return 'Scheduled';
-      default:
-        return status;
     }
   };
 
@@ -143,6 +118,17 @@ export function EventDashboard({ event, eventId }: EventDashboardProps) {
         </div>
       </div>
 
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold mb-2">{event.title}</h1>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500">
+              {format(new Date(event.startDateTime), 'PPP')}
+            </span>
+          </div>
+        </div>
+      </div>
+
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-3 mb-8">
         <Card className="glass-effect">
@@ -151,10 +137,7 @@ export function EventDashboard({ event, eventId }: EventDashboardProps) {
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="flex items-center space-x-2">
-              <div className={cn('h-3 w-3 rounded-full', getStatusColor(event.status))} />
-              <div className="text-2xl font-bold">{getDisplayStatus(event.status)}</div>
-            </div>
+            <EventStatusBadge event={event} className="mt-2" />
           </CardContent>
         </Card>
         <Card className="glass-effect">

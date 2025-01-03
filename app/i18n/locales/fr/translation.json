@@ -747,7 +747,8 @@
         },
         "imageUrl": {
           "label": "URL de l'image",
-          "placeholder": "https://example.com/image.jpg"
+          "placeholder": "https://example.com/image.jpg",
+          "error": "L'URL de l'image n'est pas valide"
         }
       },
       "errors": {
@@ -1229,7 +1230,8 @@
         "timezone": "Fuseau horaire",
         "location": "Lieu",
         "type": "Type d'événement",
-        "imageUrl": "URL de l'image"
+        "imageUrl": "URL de l'image",
+        "invalidImageUrl": "L'URL de l'image n'est pas valide"
       },
       "registration": {
         "title": "Paramètres d'inscription",

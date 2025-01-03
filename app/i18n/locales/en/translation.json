@@ -733,7 +733,8 @@
         },
         "imageUrl": {
           "label": "Image URL",
-          "placeholder": "https://example.com/image.jpg"
+          "placeholder": "https://example.com/image.jpg",
+          "error": "Invalid URL"
         }
       },
       "errors": {
@@ -1211,7 +1212,8 @@
         "timezone": "Timezone",
         "location": "Location",
         "type": "Event Type",
-        "imageUrl": "Event Image URL"
+        "imageUrl": "Event Image URL",
+        "invalidImageUrl": "The image URL is not valid"
       },
       "registration": {
         "title": "Registration Settings",
