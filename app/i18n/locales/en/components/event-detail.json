@@ -14,8 +14,8 @@
     "participationProgress": "Registration progress"
   },
   "timeline": {
-    "title": "Event schedule",
-    "today": "Today",
+    "title": "Event Schedule",
+    "today": "Now",
     "day": "Day",
     "overview": "Overview",
     "noSessions": "No sessions scheduled",

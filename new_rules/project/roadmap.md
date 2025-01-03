@@ -2,7 +2,7 @@
 
 ## État du Projet
 
-- **Dernière mise à jour** : 2025-01-02
+- **Dernière mise à jour** : 2025-01-03
 - **Version** : Beta
 - **État Global** : En développement actif
 
@@ -44,6 +44,12 @@
 - [x] Optimisation de la timeline des événements
 - [x] Amélioration de l'UX avec sélection désactivée et styles cohérents
 - [x] Refactoring des traductions avec namespace commun
+- [x] Timeline responsive avec tranches horaires adaptatives
+- [x] Correction des chevauchements d'événements en vue mobile
+- [x] Centrage automatique sur l'heure actuelle ou le début de l'événement
+- [x] Amélioration de l'affichage des rooms dans la timeline
+- [x] Optimisation de la hauteur de la timeline
+- [x] Gestion intelligente du bouton "Maintenant" avec navigation contextuelle
 
 ### Gestion des Intervenants (Phase 4)
 
