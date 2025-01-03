@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format, isSameDay, differenceInMinutes, addMinutes, setHours, eachDayOfInterval, startOfWeek, endOfWeek, isWithinInterval, differenceInDays, startOfDay, endOfDay, getHours, getMinutes, isAfter, isBefore } from 'date-fns';
 import { fr, enUS, de, it } from 'date-fns/locale';
-import { ChevronLeft, ChevronRight, Calendar, Clock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, Clock, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 
 import { Event } from '@/types/event';
@@ -19,6 +19,13 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useTimelineStore } from '@/store/timeline-store';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const LOCALES = { fr, en: enUS, de, it };
 
@@ -27,9 +34,29 @@ interface TimelineProps {
 }
 
 // Constantes pour la timeline
-const HOUR_START = 0; // Minuit
-const HOUR_END = 24; // Minuit le lendemain
+const HOUR_START = 0;
+const HOUR_END = 24;
 const HOURS_IN_DAY = HOUR_END - HOUR_START;
+
+// Configuration des vues selon la taille d'écran
+const TIMELINE_CONFIG = {
+  desktop: {
+    breakpoint: 1920,
+    hoursVisible: 24
+  },
+  laptop: {
+    breakpoint: 1280,
+    hoursVisible: 12
+  },
+  tablet: {
+    breakpoint: 768,
+    hoursVisible: 6
+  },
+  mobile: {
+    breakpoint: 0,
+    hoursVisible: 4
+  }
+} as const;
 
 // Fonction pour calculer la position horizontale
 const calculatePosition = (time: Date, currentDay: Date) => {
@@ -72,6 +99,9 @@ export function Timeline({ event }: TimelineProps) {
   const { t, i18n } = useTranslation('components/event-detail');
   const timelineRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [viewMode, setViewMode] = useState<keyof typeof TIMELINE_CONFIG>('desktop');
+  const [currentHourStart, setCurrentHourStart] = useState(8);
+  
   const {
     zoom,
     setZoom,
@@ -89,10 +119,49 @@ export function Timeline({ event }: TimelineProps) {
     eventEndDate,
   } = useTimelineStore();
 
-  // Initialiser les dates de l'événement
+  // Initialiser les dates de l'événement pour la navigation
   useEffect(() => {
     setEventDates(new Date(event.startDateTime), new Date(event.endDateTime));
   }, [event.startDateTime, event.endDateTime, setEventDates]);
+
+  // Détecter la taille d'écran et définir le mode de vue
+  useEffect(() => {
+    const checkViewMode = () => {
+      const width = window.innerWidth;
+      if (width >= TIMELINE_CONFIG.desktop.breakpoint) {
+        setViewMode('desktop');
+      } else if (width >= TIMELINE_CONFIG.laptop.breakpoint) {
+        setViewMode('laptop');
+      } else if (width >= TIMELINE_CONFIG.tablet.breakpoint) {
+        setViewMode('tablet');
+      } else {
+        setViewMode('mobile');
+      }
+    };
+    
+    checkViewMode();
+    window.addEventListener('resize', checkViewMode);
+    
+    return () => window.removeEventListener('resize', checkViewMode);
+  }, []);
+
+  // Initialiser l'heure de début en fonction de l'événement
+  useEffect(() => {
+    const now = new Date();
+    const start = new Date(event.startDateTime);
+    const end = new Date(event.endDateTime);
+    const hoursVisible = TIMELINE_CONFIG[viewMode].hoursVisible;
+
+    // Si l'événement est en cours, centrer sur l'heure actuelle
+    if (now >= start && now <= end) {
+      const currentHour = now.getHours();
+      setCurrentHourStart(Math.max(0, Math.min(24 - hoursVisible, currentHour - Math.floor(hoursVisible / 2))));
+    } else {
+      // Sinon, centrer sur l'heure de début de l'événement
+      const startHour = start.getHours();
+      setCurrentHourStart(Math.max(0, Math.min(24 - hoursVisible, startHour)));
+    }
+  }, [event.startDateTime, event.endDateTime, viewMode]);
 
   // Gérer le zoom avec la molette de la souris
   useEffect(() => {
@@ -116,6 +185,25 @@ export function Timeline({ event }: TimelineProps) {
       }
     };
   }, [zoom, setZoom, minZoom, maxZoom]);
+
+  const navigateHours = (direction: 'forward' | 'backward') => {
+    const hoursVisible = TIMELINE_CONFIG[viewMode].hoursVisible;
+    setCurrentHourStart(prev => {
+      const newStart = direction === 'forward' 
+        ? prev + hoursVisible 
+        : prev - hoursVisible;
+      
+      return Math.max(0, Math.min(24 - hoursVisible, newStart));
+    });
+  };
+
+  const getVisibleHours = () => {
+    if (viewMode === 'desktop') {
+      return Array.from({ length: HOURS_IN_DAY });
+    }
+    
+    return Array.from({ length: TIMELINE_CONFIG[viewMode].hoursVisible });
+  };
 
   // Calculer les jours à afficher
   const getVisibleDays = () => {
@@ -142,25 +230,51 @@ export function Timeline({ event }: TimelineProps) {
       const roomEnd = new Date(room.endTime);
       
       // Chercher une ligne existante où on peut placer la room
-      const availableRow = rows.findIndex(row => {
-        // Vérifier le chevauchement avec toutes les rooms de la ligne
-        return !row.some(existingRoom => {
-          const existingStart = new Date(existingRoom.startTime);
-          const existingEnd = new Date(existingRoom.endTime);
-          
-          // Il y a chevauchement si la room commence avant la fin d'une room existante
-          // et finit après le début d'une room existante
-          return (
-            roomStart < existingEnd && roomEnd > existingStart
-          );
+      let availableRow = -1;
+      
+      // En mode non-desktop, on vérifie aussi la visibilité dans la tranche horaire
+      const isVisibleInTimeSlot = viewMode === 'desktop' || (() => {
+        const startHour = getHours(roomStart) + getMinutes(roomStart) / 60;
+        const endHour = getHours(roomEnd) + getMinutes(roomEnd) / 60;
+        const visibleHours = TIMELINE_CONFIG[viewMode].hoursVisible;
+        
+        return !(startHour >= currentHourStart + visibleHours || endHour <= currentHourStart);
+      })();
+
+      if (isVisibleInTimeSlot) {
+        availableRow = rows.findIndex(row => {
+          // Vérifier le chevauchement avec toutes les rooms de la ligne
+          return !row.some(existingRoom => {
+            const existingStart = new Date(existingRoom.startTime);
+            const existingEnd = new Date(existingRoom.endTime);
+            
+            // En mode non-desktop, on ne considère que la portion visible
+            if (viewMode !== 'desktop') {
+              const startHour = Math.max(currentHourStart, getHours(roomStart) + getMinutes(roomStart) / 60);
+              const endHour = Math.min(
+                currentHourStart + TIMELINE_CONFIG[viewMode].hoursVisible,
+                getHours(roomEnd) + getMinutes(roomEnd) / 60
+              );
+              const existingStartHour = Math.max(currentHourStart, getHours(existingStart) + getMinutes(existingStart) / 60);
+              const existingEndHour = Math.min(
+                currentHourStart + TIMELINE_CONFIG[viewMode].hoursVisible,
+                getHours(existingEnd) + getMinutes(existingEnd) / 60
+              );
+              
+              return startHour < existingEndHour && endHour > existingStartHour;
+            }
+            
+            // En mode desktop, on vérifie le chevauchement complet
+            return roomStart < existingEnd && roomEnd > existingStart;
+          });
         });
-      });
+      }
 
       if (availableRow !== -1) {
         // Ajouter à une ligne existante
         rows[availableRow].push(room);
-      } else {
-        // Créer une nouvelle ligne
+      } else if (isVisibleInTimeSlot) {
+        // Créer une nouvelle ligne seulement si la room est visible
         rows.push([room]);
       }
     });
@@ -169,13 +283,25 @@ export function Timeline({ event }: TimelineProps) {
   };
 
   // Calculer la hauteur en fonction des lignes nécessaires
-  const roomRows = useMemo(() => organizeRoomsInRows(event.rooms), [event.rooms]);
-  
+  const roomRows = useMemo(() => organizeRoomsInRows(event.rooms), [
+    event.rooms,
+    viewMode,
+    currentHourStart
+  ]);
+
   const timelineHeight = useMemo(() => {
     const rowCount = roomRows.length;
     // 32px par ligne + 40px pour l'en-tête + 40px de padding en bas
     return Math.max((rowCount * 32) + 40 + 40, 200);
   }, [roomRows.length]);
+
+  const canNavigateBack = useMemo(() => {
+    return !isSameDay(currentDate, eventStartDate);
+  }, [currentDate, eventStartDate]);
+
+  const canNavigateForward = useMemo(() => {
+    return !isSameDay(currentDate, eventEndDate);
+  }, [currentDate, eventEndDate]);
 
   const getStatusColor = (status: Room['status']) => {
     switch (status) {
@@ -195,14 +321,6 @@ export function Timeline({ event }: TimelineProps) {
   };
 
   const locale = LOCALES[i18n.language as keyof typeof LOCALES] || enUS;
-
-  const canNavigateBack = useMemo(() => {
-    return !isSameDay(currentDate, eventStartDate);
-  }, [currentDate, eventStartDate]);
-
-  const canNavigateForward = useMemo(() => {
-    return !isSameDay(currentDate, eventEndDate);
-  }, [currentDate, eventEndDate]);
 
   const RoomItem = ({ room, event, position, width, index }: {
     room: Room;
@@ -285,7 +403,7 @@ export function Timeline({ event }: TimelineProps) {
       <div className="container max-w-[1400px] pl-6">
         <div className="flex flex-col gap-4">
           {/* En-tête avec contrôles */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <div className="flex items-center">
                 <Button
@@ -318,8 +436,51 @@ export function Timeline({ event }: TimelineProps) {
               </Button>
             </div>
 
-            <div className="text-sm text-primary-200 font-semibold">
-              {format(currentDate, 'EEEE d MMMM', { locale })}
+            <div className="flex items-center gap-4">
+              {viewMode !== 'desktop' && (
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => navigateHours('backward')}
+                    disabled={currentHourStart === 0}
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Select
+                    value={currentHourStart.toString()}
+                    onValueChange={(value) => setCurrentHourStart(parseInt(value))}
+                  >
+                    <SelectTrigger className="w-[100px]">
+                      <SelectValue>
+                        {`${currentHourStart}h-${currentHourStart + TIMELINE_CONFIG[viewMode].hoursVisible}h`}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: Math.floor(24 / TIMELINE_CONFIG[viewMode].hoursVisible) }).map((_, i) => {
+                        const start = i * TIMELINE_CONFIG[viewMode].hoursVisible;
+                        const end = Math.min(start + TIMELINE_CONFIG[viewMode].hoursVisible, 24);
+                        return (
+                          <SelectItem key={start} value={start.toString()}>
+                            {`${start}h-${end}h`}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => navigateHours('forward')}
+                    disabled={currentHourStart >= 24 - TIMELINE_CONFIG[viewMode].hoursVisible}
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+              <div className="text-sm text-primary-600 dark:text-primary-300 font-semibold">
+                {format(currentDate, 'EEEE d MMMM', { locale })}
+              </div>
             </div>
           </div>
 
@@ -333,19 +494,23 @@ export function Timeline({ event }: TimelineProps) {
               className="relative bg-muted/30 rounded-lg overflow-hidden"
               style={{
                 height: `${timelineHeight}px`,
+                minHeight: viewMode !== 'desktop' ? '400px' : '200px', // Hauteur minimum plus grande en mode non-desktop
               }}
             >
               {/* En-tête avec les heures */}
               <div className="sticky top-0 border-b border-border/50 bg-background/30 backdrop-blur-sm">
                 <div className="flex">
-                  {Array.from({ length: HOURS_IN_DAY }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="flex-1 text-xs text-muted-foreground p-2 text-center border-r border-border/50 last:border-r-0"
-                    >
-                      {`${String(i).padStart(2, '0')}:00`}
-                    </div>
-                  ))}
+                  {getVisibleHours().map((_, i) => {
+                    const hour = viewMode !== 'desktop' ? currentHourStart + i : i;
+                    return (
+                      <div
+                        key={hour}
+                        className="flex-1 text-xs text-muted-foreground p-2 text-center border-r border-border/50 last:border-r-0"
+                      >
+                        {`${String(hour).padStart(2, '0')}:00`}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -356,15 +521,18 @@ export function Timeline({ event }: TimelineProps) {
                   width: '100%',
                 }}
               >
-                {Array.from({ length: HOURS_IN_DAY }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="absolute top-0 bottom-0 border-l border-border/10"
-                    style={{
-                      left: `${(i / HOURS_IN_DAY) * 100}%`,
-                    }}
-                  />
-                ))}
+                {getVisibleHours().map((_, i) => {
+                  const hour = viewMode !== 'desktop' ? currentHourStart + i : i;
+                  return (
+                    <div
+                      key={hour}
+                      className="absolute top-0 bottom-0 border-l border-border/10"
+                      style={{
+                        left: `${((i) / (viewMode === 'desktop' ? HOURS_IN_DAY : TIMELINE_CONFIG[viewMode].hoursVisible)) * 100}%`,
+                      }}
+                    />
+                  );
+                })}
               </div>
 
               {/* Curseur de temps actuel */}
@@ -372,7 +540,10 @@ export function Timeline({ event }: TimelineProps) {
                 <div 
                   className="current-time-cursor absolute top-0 bottom-0 w-px bg-primary/80 z-20"
                   style={{ 
-                    left: `${(getHours(new Date()) / HOURS_IN_DAY) * 100}%`,
+                    left: viewMode !== 'desktop'
+                      ? `${((getHours(new Date()) - currentHourStart) / TIMELINE_CONFIG[viewMode].hoursVisible) * 100}%`
+                      : `${(getHours(new Date()) / HOURS_IN_DAY) * 100}%`,
+                    display: viewMode !== 'desktop' && (getHours(new Date()) < currentHourStart || getHours(new Date()) >= currentHourStart + TIMELINE_CONFIG[viewMode].hoursVisible) ? 'none' : 'block'
                   }}
                 >
                   <div className="absolute top-0 -translate-x-1/2 w-2 h-2 rounded-full bg-primary" />
@@ -400,17 +571,33 @@ export function Timeline({ event }: TimelineProps) {
 
                   if (!isVisible) return null;
 
-                  // Calculer la position et la largeur
-                  const position = calculatePosition(startTime, currentDate);
-                  const width = calculateWidth(startTime, endTime, currentDate);
+                  // Calculer la position et la largeur pour la vue adaptative
+                  const hourPosition = viewMode !== 'desktop'
+                    ? (getHours(startTime) + getMinutes(startTime) / 60 - currentHourStart) / TIMELINE_CONFIG[viewMode].hoursVisible
+                    : (getHours(startTime) + getMinutes(startTime) / 60) / HOURS_IN_DAY;
+                  
+                  const hourWidth = viewMode !== 'desktop'
+                    ? (differenceInMinutes(endTime, startTime) / 60) / TIMELINE_CONFIG[viewMode].hoursVisible
+                    : (differenceInMinutes(endTime, startTime) / 60) / HOURS_IN_DAY;
+
+                  // Ne pas afficher si l'événement est complètement en dehors de la plage visible
+                  if (viewMode !== 'desktop') {
+                    const startHour = getHours(startTime) + getMinutes(startTime) / 60;
+                    const endHour = getHours(endTime) + getMinutes(endTime) / 60;
+                    const visibleHours = TIMELINE_CONFIG[viewMode].hoursVisible;
+                    
+                    if (startHour >= currentHourStart + visibleHours || endHour <= currentHourStart) {
+                      return null;
+                    }
+                  }
 
                   return (
                     <RoomItem
                       key={room._id}
                       room={room}
                       event={event}
-                      position={position}
-                      width={width}
+                      position={Math.max(0, hourPosition * 100)}
+                      width={Math.min(100, hourWidth * 100)}
                       index={rowIndex}
                     />
                   );
