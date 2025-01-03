@@ -44,7 +44,8 @@ export interface RoomSettings {
 }
 
 export interface Room {
-  _id: string;
+  id?: string;
+  _id?: string;
   name: string;
   eventId: string;
   description?: string;
