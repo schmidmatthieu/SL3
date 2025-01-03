@@ -1,15 +1,78 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { EventSettingsProps } from './types/event-settings.types';
-import { useEventForm } from './hooks/useEventForm';
-import { EventBasicInfo } from './components/EventBasicInfo';
-import { EventDateTime } from './components/EventDateTime';
-import { EventStatusActions } from './components/EventStatusActions';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import '@/app/i18n/client';
 
-export function EventSettings({ event: initialEvent }: EventSettingsProps) {
+import { EventSettingsButtons } from './components/EventSettingsButtons';
+import { EventSettingsForm } from './components/EventSettingsForm';
+import { useEventForm } from './hooks/useEventForm';
+import type { EventSettingsProps } from './types/event-settings.types';
+
+// Extracted form rendering logic
+const renderEventForm = (
+  formData: EventSettingsProps['event'],
+  setFormData: (data: EventSettingsProps['event']) => void,
+  initialEvent: EventSettingsProps['event'],
+  isFormDisabled: boolean,
+  handleFeaturedChange: (featured: boolean) => void,
+  handleStartDateChange: (date: Date) => void,
+  handleEndDateChange: (date: Date) => void,
+  isLoading: boolean,
+  isDeleting: boolean,
+  isCancelling: boolean,
+  handleCancel: () => void,
+  handleDelete: () => void,
+  handleReactivate: () => void,
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void,
+): React.ReactElement => (
+  <form 
+    onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      void handleSubmit(e);
+    }}
+    className="space-y-6"
+    aria-busy={isLoading}
+  >
+    <EventSettingsForm
+      formData={formData}
+      setFormData={setFormData}
+      event={initialEvent}
+      isFormDisabled={isFormDisabled}
+      handleFeaturedChange={handleFeaturedChange}
+      handleStartDateChange={handleStartDateChange}
+      handleEndDateChange={handleEndDateChange}
+    />
+
+    <EventSettingsButtons
+      event={initialEvent}
+      isLoading={isLoading}
+      isDeleting={isDeleting}
+      isCancelling={isCancelling}
+      isFormDisabled={isFormDisabled}
+      onCancel={handleCancel}
+      onDelete={handleDelete}
+      onReactivate={handleReactivate}
+    />
+  </form>
+);
+
+/**
+ * @component EventSettings
+ * @description Main component for managing event settings. Orchestrates form and action components.
+ *
+ * @modularization
+ * - Component divided into sub-modules:
+ *   - EventSettingsForm: Form fields and inputs
+ *   - EventSettingsButtons: Action buttons and status management
+ *
+ * @accessibility
+ * - Form labels and ARIA roles
+ * - Keyboard navigation support
+ * - Loading state indicators
+ */
+export function EventSettings({ event: initialEvent }: EventSettingsProps): React.ReactElement {
+  const { t } = useTranslation('management/settings/event-settings');
   const {
     formData,
     setFormData,
@@ -25,51 +88,29 @@ export function EventSettings({ event: initialEvent }: EventSettingsProps) {
     handleEndDateChange,
   } = useEventForm(initialEvent);
 
-  const { t } = useTranslation('management/settings/event-settings');
+  const isFormDisabled = useMemo(
+    () => isLoading || isDeleting || isCancelling,
+    [isLoading, isDeleting, isCancelling]
+  );
 
   return (
-    <div>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold">{t('eventSettings.title')}</h2>
-        </div>
-        <EventBasicInfo 
-          formData={formData} 
-          setFormData={setFormData} 
-          event={initialEvent}
-          onFeaturedChange={handleFeaturedChange}
-        />
-        <EventDateTime 
-          formData={formData} 
-          handleStartDateChange={handleStartDateChange}
-          handleEndDateChange={handleEndDateChange}
-        />
-        <div className="flex flex-col-reverse gap-4 sm:flex-row sm:justify-between sm:items-center pt-6">
-          <EventStatusActions
-            event={initialEvent}
-            isLoading={isLoading}
-            isDeleting={isDeleting}
-            isCancelling={isCancelling}
-            onCancel={handleCancel}
-            onDelete={handleDelete}
-            onReactivate={handleReactivate}
-          />
-
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="w-full sm:w-auto bg-primary text-white hover:bg-primary-600 transition-colors"
-          >
-            {isLoading ? (
-              <span className="flex items-center gap-2">
-                <span className="animate-spin">⏳</span> {t('eventSettings.actions.saving')}
-              </span>
-            ) : (
-              t('eventSettings.actions.save')
-            )}
-          </Button>
-        </div>
-      </form>
+    <div role="region" aria-label={t('eventSettings.title')}>
+      {renderEventForm(
+        formData,
+        setFormData,
+        initialEvent,
+        isFormDisabled,
+        handleFeaturedChange,
+        handleStartDateChange,
+        handleEndDateChange,
+        isLoading,
+        isDeleting,
+        isCancelling,
+        handleCancel,
+        handleDelete,
+        handleReactivate,
+        handleSubmit,
+      )}
     </div>
   );
 }

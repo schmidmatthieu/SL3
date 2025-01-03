@@ -9,7 +9,7 @@ import { Language } from '@/types/room';
 import { Button } from '@/components/ui/button';
 import { RoomCard } from '@/components/events/room-card';
 import { RoomFilters } from '@/components/events/room-filters';
-import { Timeline } from '@/components/events/timeline';
+import { Timeline } from '@/components/events/event-detail/timeline';
 
 interface EventDetailsProps {
   event: Event;

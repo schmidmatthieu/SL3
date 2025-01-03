@@ -2,24 +2,36 @@
 
 import { use, useEffect, useState } from 'react';
 import { notFound, useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
+import { format } from 'date-fns';
+import { fr, enUS, de, it } from 'date-fns/locale';
 
 import { getAuthToken } from '@/lib/auth';
 import { useEvent } from '@/hooks/useEvent';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { EventDetails } from '@/components/events/event-details';
+import { Button } from '@/components/ui/button';
+import { HeroBanner, EventDescription, Timeline, Speakers, Rooms } from '@/components/events/event-detail';
 
 interface EventPageProps {
   params: Promise<{ eventId: string }>;
 }
 
+const locales = {
+  fr,
+  en: enUS,
+  de,
+  it,
+};
+
 export default function EventPage({ params }: EventPageProps) {
   const router = useRouter();
+  const { i18n, t } = useTranslation(['common', 'components/event-detail']);
   const resolvedParams = use(params);
   const eventId = resolvedParams.eventId;
   const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   const { event, isLoading, isError, error } = useEvent(eventId);
+  const locale = locales[i18n.language as keyof typeof locales] || enUS;
 
   useEffect(() => {
     const authToken = getAuthToken();
@@ -28,13 +40,22 @@ export default function EventPage({ params }: EventPageProps) {
     }
   }, []);
 
-  useEffect(() => {
-    console.log('EventPage: Component mounted');
-    console.log('EventPage: Event ID:', eventId);
-    console.log('EventPage: Event data:', event);
-    console.log('EventPage: Loading state:', isLoading);
-    console.log('EventPage: Error state:', { isError, error });
-  }, [eventId, event, isLoading, isError, error]);
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: event?.title,
+          text: event?.description,
+          url: window.location.href,
+        });
+      } catch (err) {
+        console.error('Error sharing:', err);
+      }
+    } else {
+      // Fallback - Copier le lien dans le presse-papier
+      navigator.clipboard.writeText(window.location.href);
+    }
+  };
 
   if (!isAuthenticated) {
     return (
@@ -51,8 +72,11 @@ export default function EventPage({ params }: EventPageProps) {
 
   if (isLoading) {
     return (
-      <div className="container py-6">
-        <div className="animate-pulse rounded-md bg-muted h-[300px] w-full" />
+      <div className="space-y-8">
+        <Skeleton className="w-full h-[60vh]" />
+        <div className="container">
+          <Skeleton className="h-48 w-full" />
+        </div>
       </div>
     );
   }
@@ -62,10 +86,30 @@ export default function EventPage({ params }: EventPageProps) {
     return notFound();
   }
 
-  console.log('EventPage: Rendering event details', event);
   return (
-    <div className="container py-6">
-      <EventDetails event={event} />
-    </div>
+    <main className="min-h-screen">
+      <HeroBanner
+        title={event.title}
+        imageUrl={event.imageUrl || '/images/default-event-banner.jpg'}
+        date={format(new Date(event.startDateTime), 'PPP', { locale })}
+        location={event.location || t('common:virtual')}
+        onRegister={() => {/* Implémenter la logique d'inscription */}}
+        onShare={handleShare}
+      />
+
+      <EventDescription
+        description={event.description}
+        startDateTime={event.startDateTime}
+        endDateTime={event.endDateTime}
+        status={event.status}
+      />
+
+      {event.rooms && event.rooms.length > 0 && (
+        <>
+          <Timeline event={event} />
+          <Rooms event={event} />
+        </>
+      )}
+    </main>
   );
 }
