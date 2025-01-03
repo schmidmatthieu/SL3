@@ -1,0 +1,36 @@
+{
+  "eventSettings": {
+    "title": "Event-Einstellungen",
+    "basicInfo": {
+      "featured": {
+        "title": "Event hervorheben",
+        "description": "Das Event wird in der Liste zuerst angezeigt"
+      },
+      "title": "Event-Titel",
+      "titlePlaceholder": "Event-Titel eingeben",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Beschreiben Sie Ihr Event",
+      "image": "Event-Bild"
+    },
+    "dateTime": {
+      "startDate": "Startdatum und -uhrzeit",
+      "endDate": "Enddatum und -uhrzeit"
+    },
+    "actions": {
+      "save": "Änderungen speichern",
+      "saving": "Speichern...",
+      "delete": "Event löschen",
+      "deleting": "Löschen...",
+      "cancel": "Event absagen",
+      "cancelling": "Absagen...",
+      "reactivate": "Event reaktivieren",
+      "reactivating": "Reaktivieren..."
+    },
+    "deleteDialog": {
+      "title": "Löschen bestätigen?",
+      "description": "Diese Aktion ist unwiderruflich. Das Event und alle zugehörigen Daten werden permanent gelöscht.",
+      "confirm": "Löschen",
+      "cancel": "Abbrechen"
+    }
+  }
+}

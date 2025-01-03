@@ -1,0 +1,36 @@
+{
+  "eventSettings": {
+    "title": "Event Settings",
+    "basicInfo": {
+      "featured": {
+        "title": "Feature Event",
+        "description": "The event will appear first in the list"
+      },
+      "title": "Event Title",
+      "titlePlaceholder": "Enter event title",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe your event",
+      "image": "Event Image"
+    },
+    "dateTime": {
+      "startDate": "Start Date and Time",
+      "endDate": "End Date and Time"
+    },
+    "actions": {
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "delete": "Delete Event",
+      "deleting": "Deleting...",
+      "cancel": "Cancel Event",
+      "cancelling": "Cancelling...",
+      "reactivate": "Reactivate Event",
+      "reactivating": "Reactivating..."
+    },
+    "deleteDialog": {
+      "title": "Confirm Deletion?",
+      "description": "This action is irreversible. The event and all associated data will be permanently deleted.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    }
+  }
+}

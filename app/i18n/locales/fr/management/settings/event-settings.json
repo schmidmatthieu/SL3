@@ -1,0 +1,57 @@
+{
+  "eventSettings": {
+    "title": "Paramètres de l'événement",
+    "basicInfo": {
+      "featured": {
+        "title": "Mettre en avant",
+        "description": "L'événement apparaîtra en premier dans la liste"
+      },
+      "title": "Titre de l'événement",
+      "titlePlaceholder": "Entrez le titre de l'événement",
+      "description": "Description",
+      "descriptionPlaceholder": "Décrivez votre événement",
+      "image": "Image de l'événement"
+    },
+    "dateTime": {
+      "startDate": "Date et heure de début",
+      "endDate": "Date et heure de fin"
+    },
+    "actions": {
+      "save": "Enregistrer les modifications",
+      "saving": "Enregistrement...",
+      "delete": "Supprimer l'événement",
+      "deleting": "Suppression...",
+      "cancel": "Annuler l'événement",
+      "cancelling": "Annulation...",
+      "reactivate": "Réactiver l'événement",
+      "reactivating": "Réactivation..."
+    },
+    "deleteDialog": {
+      "title": "Confirmer la suppression ?",
+      "description": "Cette action est irréversible. L'événement et toutes les données associées seront définitivement supprimés.",
+      "confirm": "Supprimer",
+      "cancel": "Annuler"
+    },
+    "messages": {
+      "success": "Succès",
+      "successDescription": "Les modifications ont été enregistrées avec succès",
+      "error": "Erreur",
+      "errorDescription": "Une erreur est survenue lors de la mise à jour de l'événement",
+      "dateError": "La date de début doit être antérieure à la date de fin",
+      "invalidDates": "Les dates de début et de fin doivent être valides",
+      "invalidDate": "Date invalide",
+      "startDateError": "La date de début sélectionnée n'est pas valide",
+      "endDateError": "La date de fin sélectionnée n'est pas valide",
+      "deleteSuccess": "L'événement a été supprimé avec succès",
+      "deleteError": "Erreur lors de la suppression de l'événement",
+      "cancelSuccess": "L'événement a été annulé avec succès",
+      "cancelError": "Erreur lors de l'annulation de l'événement",
+      "reactivateSuccess": "L'événement a été réactivé avec succès",
+      "reactivateError": "Erreur lors de la réactivation de l'événement",
+      "featuredSuccess": "Le statut de mise en avant a été mis à jour avec succès",
+      "featuredError": "Erreur lors de la mise à jour du statut de mise en avant",
+      "missingEventId": "ID de l'événement manquant",
+      "invalidImageUrl": "L'URL de l'image n'est pas valide"
+    }
+  }
+}

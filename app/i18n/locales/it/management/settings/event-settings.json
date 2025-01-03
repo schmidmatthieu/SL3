@@ -1,0 +1,36 @@
+{
+  "eventSettings": {
+    "title": "Impostazioni Evento",
+    "basicInfo": {
+      "featured": {
+        "title": "Evento in Evidenza",
+        "description": "L'evento apparirà per primo nella lista"
+      },
+      "title": "Titolo dell'Evento",
+      "titlePlaceholder": "Inserisci il titolo dell'evento",
+      "description": "Descrizione",
+      "descriptionPlaceholder": "Descrivi il tuo evento",
+      "image": "Immagine dell'Evento"
+    },
+    "dateTime": {
+      "startDate": "Data e Ora di Inizio",
+      "endDate": "Data e Ora di Fine"
+    },
+    "actions": {
+      "save": "Salva Modifiche",
+      "saving": "Salvataggio...",
+      "delete": "Elimina Evento",
+      "deleting": "Eliminazione...",
+      "cancel": "Annulla Evento",
+      "cancelling": "Annullamento...",
+      "reactivate": "Riattiva Evento",
+      "reactivating": "Riattivazione..."
+    },
+    "deleteDialog": {
+      "title": "Confermare l'Eliminazione?",
+      "description": "Questa azione è irreversibile. L'evento e tutti i dati associati verranno eliminati permanentemente.",
+      "confirm": "Elimina",
+      "cancel": "Annulla"
+    }
+  }
+}
