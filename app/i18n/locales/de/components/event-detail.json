@@ -5,7 +5,13 @@
   },
   "description": {
     "about": "Über",
-    "details": "Event-Details"
+    "details": "Event-Details",
+    "startDate": "Beginnt am {{date}}",
+    "startTime": "Beginnt um {{time}}",
+    "endTime": "Endet um {{time}}",
+    "endDate": "Endet am {{date}}",
+    "participants": "{{current}}/{{max}} Teilnehmer",
+    "participationProgress": "Anmeldefortschritt"
   },
   "timeline": {
     "title": "Veranstaltungsplan",

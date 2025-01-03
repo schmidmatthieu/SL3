@@ -5,7 +5,13 @@
   },
   "description": {
     "about": "À propos",
-    "details": "Détails de l'événement"
+    "details": "Détails de l'événement",
+    "startDate": "Commence le {{date}}",
+    "startTime": "Début à {{time}}",
+    "endTime": "Fin à {{time}}",
+    "endDate": "Se termine le {{date}}",
+    "participants": "{{current}}/{{max}} participants",
+    "participationProgress": "Progression des inscriptions"
   },
   "timeline": {
     "title": "Programme de l'événement",
@@ -43,7 +49,7 @@
   },
   "status": {
     "draft": "Brouillon",
-    "scheduled": "Planifié",
+    "scheduled": "Programmé",
     "active": "En cours",
     "ended": "Terminé",
     "cancelled": "Annulé",
