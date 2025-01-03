@@ -38,6 +38,9 @@
 - [x] Traductions des événements
 - [x] Amélioration de la gestion des dates (validation ISO 8601)
 - [x] Tests unitaires et d'intégration du module events
+- [x] Refactoring des composants d'événements pour meilleure modularité
+- [x] Amélioration de la gestion des statuts d'événements
+- [x] Implémentation de la validation d'URL
 
 ### Gestion des Intervenants (Phase 4)
 
