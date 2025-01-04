@@ -1,23 +1,19 @@
 'use client';
 
-import { cn } from '@/lib/utils';
-import { Event, EventStatus } from '@/types/event';
 import { useTranslation } from 'react-i18next';
+import { Room } from '@/types/room';
 import { Badge } from '@/components/ui/badge';
-import { useEventStatus } from '@/hooks/useEventStatus';
+import { cn } from '@/lib/utils';
+import { Clock, Radio, Ban, CheckCircle2, PauseCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Radio, Clock, Ban, CheckCircle2 } from 'lucide-react';
 
-interface EventStatusBadgeProps {
-  event: Event;
-  className?: string;
-  showLabel?: boolean;
+interface RoomStatusBadgeProps {
+  status: Room['status'];
 }
 
-const getStatusConfig = (status: EventStatus) => {
-  console.log('getStatusConfig - status:', status);
-  switch (status.toLowerCase()) {
-    case 'active':
+const getStatusConfig = (status: Room['status']) => {
+  switch (status) {
+    case 'live':
       return {
         icon: Radio,
         baseColor: 'bg-third text-black',
@@ -28,7 +24,7 @@ const getStatusConfig = (status: EventStatus) => {
           pulse: true
         }
       };
-    case 'scheduled':
+    case 'upcoming':
       return {
         icon: Clock,
         baseColor: 'bg-blue-500 text-white dark:bg-blue-600',
@@ -37,6 +33,17 @@ const getStatusConfig = (status: EventStatus) => {
           rotate: false,
           scale: false,
           pulse: false
+        }
+      };
+    case 'paused':
+      return {
+        icon: PauseCircle,
+        baseColor: 'bg-yellow-500 text-black',
+        pulseColor: 'bg-yellow-400/50',
+        animation: {
+          rotate: false,
+          scale: true,
+          pulse: true
         }
       };
     case 'ended':
@@ -62,7 +69,6 @@ const getStatusConfig = (status: EventStatus) => {
         }
       };
     default:
-      console.log('Unknown status:', status);
       return {
         icon: Clock,
         baseColor: 'bg-secondary text-black',
@@ -76,28 +82,10 @@ const getStatusConfig = (status: EventStatus) => {
   }
 };
 
-export function EventStatusBadge({ event, className, showLabel = true }: EventStatusBadgeProps) {
-  console.log('EventStatusBadge - event:', event);
+export function RoomStatusBadge({ status }: RoomStatusBadgeProps) {
   const { t } = useTranslation('components/event-detail');
-  const currentStatus = useEventStatus(event);
-  console.log('EventStatusBadge - currentStatus:', currentStatus);
-  const config = getStatusConfig(currentStatus);
+  const config = getStatusConfig(status);
   const Icon = config.icon;
-
-  const getDisplayStatus = (status: EventStatus) => {
-    const statusKey = status.toLowerCase();
-    console.log('getDisplayStatus - statusKey:', statusKey);
-    if (statusKey === 'active') {
-      return t('events.status.live');
-    }
-    if (statusKey === 'scheduled') {
-      return t('events.status.upcoming');
-    }
-
-    const translation = t(`events.status.${statusKey}`);
-    console.log('getDisplayStatus - translation:', translation);
-    return translation;
-  };
 
   return (
     <div className="relative inline-flex items-center">
@@ -124,8 +112,7 @@ export function EventStatusBadge({ event, className, showLabel = true }: EventSt
           config.baseColor,
           "relative flex items-center gap-1.5 px-3 py-1 transition-all duration-200",
           "hover:scale-105",
-          "font-medium",
-          className
+          "font-medium"
         )}
       >
         <motion.div
@@ -140,7 +127,7 @@ export function EventStatusBadge({ event, className, showLabel = true }: EventSt
         >
           <Icon className="w-3.5 h-3.5" />
         </motion.div>
-        {showLabel && <span>{getDisplayStatus(currentStatus)}</span>}
+        <span>{t(`rooms.status.${status}`)}</span>
       </Badge>
     </div>
   );
