@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import { RoomSpeakersDisplay } from './components/room-speakers-display';
+import { RoomStatusBadge } from '@/components/rooms/room-status-badge';
 
 const DEFAULT_ROOM_IMAGE =
   'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=2000&auto=format&fit=crop';
@@ -130,16 +131,9 @@ export function RoomCard({
             alt={room.name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
-          <Badge
-            className={cn(
-              'absolute top-4 right-4',
-              'transition-all duration-300',
-              'group-hover:scale-105 font-medium',
-              getStatusColor(room.status)
-            )}
-          >
-            {statusTranslation}
-          </Badge>
+          <div className="absolute top-4 right-4 z-10">
+            <RoomStatusBadge status={room.status} />
+          </div>
 
           <div className="absolute bottom-4 right-4 opacity-0 transform translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
             <DropdownMenu>
@@ -192,13 +186,6 @@ export function RoomCard({
               </div>
             </div>
 
-            {console.log('Room data:', {
-              id: room.id || room._id,
-              name: room.name,
-              speakers: room.speakers,
-              hasValidSpeakers: room.speakers && room.speakers.length > 0,
-              eventId: room.eventId || eventId
-            })}
             {room.speakers && room.speakers.length > 0 && (
               <>
                 {console.log('Rendering RoomSpeakersDisplay with:', {

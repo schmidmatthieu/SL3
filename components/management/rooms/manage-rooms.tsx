@@ -35,9 +35,10 @@ import { ImageUploader } from '@/components/ui/image-uploader';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Spinner } from '@/components/ui/spinner'; // Correction de l'import du Spinner
+import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/use-toast';
+import { RoomStatusBadge } from '@/components/rooms/room-status-badge';
 
 import { useRoomSync } from '../../../hooks/useRoomSync';
 import { useRoomStore } from '../../../store/room.store';
@@ -228,23 +229,6 @@ export function ManageRooms({ eventId }: { eventId: string }) {
 
   const formatDate = (date: string) => {
     return format(new Date(date), 'dd MMM yyyy HH:mm');
-  };
-
-  const getStatusColor = (status: RoomStatus) => {
-    switch (status) {
-      case 'live':
-        return 'bg-third text-black';
-      case 'paused':
-        return 'bg-yellow-500 text-black';
-      case 'ended':
-        return 'bg-secondary text-black';
-      case 'cancelled':
-        return 'bg-destructive text-destructive-foreground dark:bg-destructive/90';
-      case 'upcoming':
-        return 'bg-blue-500 text-white dark:bg-blue-600';
-      default:
-        return 'bg-secondary text-black';
-    }
   };
 
   const getStatusActions = (room: Room) => {
@@ -599,14 +583,7 @@ export function ManageRooms({ eventId }: { eventId: string }) {
                       <h3 className="font-medium text-foreground">{room.name}</h3>
                       <p className="text-sm text-muted-foreground">{room.description}</p>
                       <div className="mt-2 flex items-center gap-2">
-                        <span
-                          className={cn(
-                            'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                            getStatusColor(room.status)
-                          )}
-                        >
-                          {room.status}
-                        </span>
+                        <RoomStatusBadge status={room.status} />
                         {room.settings?.chatEnabled && (
                           <Badge
                             variant="outline"
