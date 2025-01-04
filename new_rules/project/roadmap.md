@@ -2,7 +2,7 @@
 
 ## État du Projet
 
-- **Dernière mise à jour** : 2025-01-03
+- **Dernière mise à jour** : 2025-01-04
 - **Version** : Beta
 - **État Global** : En développement actif
 
@@ -50,12 +50,19 @@
 - [x] Amélioration de l'affichage des rooms dans la timeline
 - [x] Optimisation de la hauteur de la timeline
 - [x] Gestion intelligente du bouton "Maintenant" avec navigation contextuelle
+- [x] Amélioration des badges de statut avec animations et icônes
+- [x] Uniformisation des badges de statut dans tous les composants
+- [x] Optimisation de la visibilité des badges sur les cards
 
 ### Gestion des Intervenants (Phase 4)
 
 - [x] Interface de gestion des speakers
 - [x] Association speakers-événements
 - [x] Profils des intervenants
+- [x] Upload et gestion des photos de profil
+- [x] Synchronisation Zustand-Backend pour les médias
+- [x] Validation des URLs des réseaux sociaux
+- [x] Amélioration de l'UX du formulaire speaker
 
 ### Gestion des Médias (Phase 5)
 
@@ -64,6 +71,9 @@
 - [x] Interface de gestion des médias
 - [x] Correction des bugs d'upload
 - [x] Amélioration de l'UI de gestion des médias
+- [x] Intégration avec le module speakers
+- [x] Gestion des usages des médias
+- [x] Optimisation des uploads avec Multer
 
 ### UI/UX (Continu)
 
@@ -73,6 +83,9 @@
 - [x] Amélioration de l'accessibilité
 - [x] Thème et styles globaux
 - [x] Composants modaux
+- [x] Animations et transitions fluides
+- [x] Feedback visuel amélioré pour les états actifs
+- [x] Cohérence visuelle entre les composants
 
 ## Objectifs MVP - En Cours
 
@@ -112,6 +125,48 @@
 - [ ] Métriques basiques
   - Status : Planifié
   - Notes : KPIs essentiels
+
+### Priorité Moyenne
+
+#### Améliorations UX
+
+- [ ] Animations et transitions
+- [ ] Mode hors ligne basique
+- [ ] Notifications temps réel
+- [ ] Amélioration des formulaires
+
+#### Documentation
+
+- [ ] Documentation API
+- [ ] Guide développeur
+- [ ] Documentation utilisateur
+
+### Priorité Basse
+
+#### Analytics
+
+- [ ] Suivi des sessions
+- [ ] Métriques d'engagement
+- [ ] Rapports d'utilisation
+
+## Backlog
+
+### Fonctionnalités Futures
+
+- [ ] Intégration OAuth
+- [ ] Support multi-langues étendu
+- [ ] Système de paiement
+- [ ] API publique
+- [ ] Applications mobiles
+- [ ] Mode multi-tenants
+
+### Améliorations Techniques
+
+- [ ] Migration vers tRPC
+- [ ] Optimisation des performances
+- [ ] Infrastructure serverless
+- [ ] CI/CD avancé
+- [ ] Monitoring et alerting
 
 ## Fonctionnalités Post-MVP
 
