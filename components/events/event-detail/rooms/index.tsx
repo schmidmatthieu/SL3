@@ -70,6 +70,17 @@ export function Rooms({ event }: RoomsProps) {
     );
   }
 
+  // S'assurer que nous avons un eventId valide
+  const eventId = event.id || event._id;
+  if (!eventId) {
+    console.error('Event is missing ID:', event);
+    return (
+      <div className="text-center py-12 text-destructive">
+        {t('rooms.error')}
+      </div>
+    );
+  }
+
   // Obtenir toutes les langues uniques
   const allLanguages = Array.from(
     new Set(
@@ -136,14 +147,17 @@ export function Rooms({ event }: RoomsProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filteredRooms.map(room => (
-            <RoomCard
-              key={room._id}
-              room={room}
-              eventId={event._id}
-              userLanguage={i18n.language as any}
-            />
-          ))}
+          {filteredRooms.map(room => {
+            console.log('Rendering room card:', { roomId: room.id || room._id, eventId });
+            return (
+              <RoomCard
+                key={room._id}
+                room={room}
+                eventId={eventId}
+                userLanguage={i18n.language as any}
+              />
+            );
+          })}
         </div>
       </div>
     </section>

@@ -1,37 +1,113 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import { useEventStore } from '@/store/event.store';
 
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { RoomDetails } from '@/components/events/room-details';
 
 interface RoomContentProps {
-  eventId: string;
-  roomId: string;
+  eventId?: string;
+  roomId?: string;
 }
 
-export function RoomContent({ eventId, roomId }: RoomContentProps) {
+export function RoomContent({ eventId: propsEventId, roomId: propsRoomId }: RoomContentProps) {
   const router = useRouter();
-  const { event, isLoading, error, fetchEvent } = useEventStore();
+  const params = useParams();
+  const eventId = propsEventId || (params?.eventId as string);
+  const roomId = propsRoomId || (params?.roomId as string);
+
+  const { currentEvent, isLoading, error, fetchEvent } = useEventStore();
+  const [retryCount, setRetryCount] = useState(0);
+  const [localError, setLocalError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log('RoomContent mounted with:', { eventId, roomId });
-    if (eventId) {
-      console.log('Fetching event:', eventId);
-      fetchEvent(eventId);
-    }
-  }, [eventId, fetchEvent]);
+    const init = async () => {
+      if (!eventId || eventId === 'undefined') {
+        const errorMessage = `ID de l'événement invalide: ${eventId}`;
+        console.error(errorMessage, { eventId, params });
+        setLocalError(errorMessage);
+        return;
+      }
 
-  useEffect(() => {
-    if (error) {
-      console.error('Error loading event:', error);
-      router.push('/events');
-    }
-  }, [error, router]);
+      if (!roomId || roomId === 'undefined') {
+        const errorMessage = `ID de la salle invalide: ${roomId}`;
+        console.error(errorMessage, { roomId, params });
+        setLocalError(errorMessage);
+        return;
+      }
 
-  console.log('Current state:', { event, isLoading, error });
+      try {
+        console.log('Chargement de la salle:', { eventId, roomId, params });
+        await fetchEvent(eventId);
+        setLocalError(null);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement de la salle';
+        console.error('Erreur dans le chargement:', err);
+        setLocalError(errorMessage);
+      }
+    };
+
+    init();
+  }, [eventId, roomId, fetchEvent, retryCount, params]);
+
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1);
+    setLocalError(null);
+  };
+
+  const handleBack = () => {
+    router.back();
+  };
+
+  const handleNavigateToEvents = () => {
+    router.push('/events');
+  };
+
+  if (localError) {
+    return (
+      <div className="container py-8">
+        <Alert variant="destructive" className="mb-4">
+          <AlertTitle>Erreur</AlertTitle>
+          <AlertDescription>
+            {localError}
+          </AlertDescription>
+        </Alert>
+        <div className="flex gap-4">
+          <Button onClick={handleRetry} variant="default">
+            Réessayer
+          </Button>
+          <Button onClick={handleNavigateToEvents} variant="outline">
+            Retour aux événements
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container py-8">
+        <Alert variant="destructive" className="mb-4">
+          <AlertTitle>Erreur de chargement</AlertTitle>
+          <AlertDescription>
+            {error}
+          </AlertDescription>
+        </Alert>
+        <div className="flex gap-4">
+          <Button onClick={handleRetry} variant="default">
+            Réessayer
+          </Button>
+          <Button onClick={handleBack} variant="outline">
+            Retour
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -51,31 +127,21 @@ export function RoomContent({ eventId, roomId }: RoomContentProps) {
     );
   }
 
-  if (!event) {
-    console.log('No event data available');
+  if (!currentEvent) {
     return (
       <div className="container py-8">
-        <p>Loading event data...</p>
+        <Alert variant="default" className="mb-4">
+          <AlertTitle>Événement non trouvé</AlertTitle>
+          <AlertDescription>
+            L'événement demandé n'a pas été trouvé. Veuillez vérifier l'URL ou retourner à la liste des événements.
+          </AlertDescription>
+        </Alert>
+        <Button onClick={handleNavigateToEvents} variant="outline">
+          Retour aux événements
+        </Button>
       </div>
     );
   }
 
-  const room = event.rooms.find(r => r.id === roomId);
-  console.log('Found room:', room);
-
-  if (!room) {
-    console.log('Room not found, redirecting...');
-    router.push(`/events/${eventId}`);
-    return (
-      <div className="container py-8">
-        <p>Room not found</p>
-      </div>
-    );
-  }
-
-  return (
-    <main className="min-h-screen">
-      <RoomDetails event={event} roomId={roomId} />
-    </main>
-  );
+  return <RoomDetails event={currentEvent} roomId={roomId} />;
 }

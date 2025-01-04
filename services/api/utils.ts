@@ -1,14 +1,27 @@
 export const getAuthHeaders = () => {
-  const cookies = document.cookie.split(';');
-  const tokenCookie = cookies.find(cookie => cookie.trim().startsWith('token='));
-  const token = tokenCookie ? tokenCookie.split('=')[1] : null;
+  try {
+    const cookies = document.cookie.split(';');
+    const tokenCookie = cookies.find(cookie => cookie.trim().startsWith('token='));
+    const token = tokenCookie ? decodeURIComponent(tokenCookie.split('=')[1].trim()) : null;
 
-  // Don't set Content-Type for FormData, let the browser set it with the boundary
-  const headers: Record<string, string> = {};
-  if (token) {
+    console.log('Auth token status:', token ? 'Present' : 'Missing');
+
+    const headers: Record<string, string> = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+
+    if (!token) {
+      console.warn('No authentication token found in cookies');
+      throw new ApiError('No authentication token found', 401);
+    }
+
     headers['Authorization'] = `Bearer ${token}`;
+    return headers;
+  } catch (error) {
+    console.error('Error getting auth headers:', error);
+    throw new ApiError('Authentication failed', 401);
   }
-  return headers;
 };
 
 class ApiError extends Error {
@@ -24,65 +37,48 @@ class ApiError extends Error {
 
 export const handleApiResponse = async (response: Response) => {
   const contentType = response.headers.get('content-type');
-  console.log('API Response:', {
-    url: response.url,
-    status: response.status,
-    statusText: response.statusText,
-    contentType,
-    headers: Object.fromEntries(response.headers.entries()),
-  });
+  const isJson = contentType?.includes('application/json');
 
   if (!response.ok) {
     let errorMessage = `HTTP error! status: ${response.status} ${response.statusText}`;
+    let errorData;
+
     try {
-      if (contentType && contentType.includes('application/json')) {
-        const errorData = await response.json();
-        console.error('API Error Response:', {
-          status: response.status,
-          statusText: response.statusText,
-          data: errorData,
-          headers: Object.fromEntries(response.headers.entries()),
-        });
+      if (isJson) {
+        errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
-        throw new ApiError(errorMessage, response.status, errorData);
       } else {
-        const textError = await response.text();
-        console.error('API Error Response (text):', {
-          status: response.status,
-          statusText: response.statusText,
-          text: textError,
-          headers: Object.fromEntries(response.headers.entries()),
-        });
-        throw new ApiError(textError || errorMessage, response.status);
+        errorData = await response.text();
       }
-    } catch (e) {
-      if (e instanceof ApiError) throw e;
-      console.error('Error handling API response:', e);
-      throw new ApiError(errorMessage, response.status);
+
+      console.error('API Error:', {
+        url: response.url,
+        status: response.status,
+        statusText: response.statusText,
+        data: errorData,
+        headers: Object.fromEntries(response.headers.entries()),
+      });
+
+      // Gérer spécifiquement les erreurs d'authentification
+      if (response.status === 401) {
+        window.location.href = '/login';
+        throw new ApiError('Session expired. Please login again.', response.status, errorData);
+      }
+
+      throw new ApiError(errorMessage, response.status, errorData);
+    } catch (error) {
+      if (error instanceof ApiError) throw error;
+      throw new ApiError('Failed to process response', response.status, error);
     }
   }
 
   try {
-    if (contentType && contentType.includes('application/json')) {
-      const data = await response.json();
-      console.log('API Success Response:', {
-        status: response.status,
-        data,
-      });
-      return data;
-    } else if (response.status === 204) {
-      return null; // No content
-    } else {
-      const text = await response.text();
-      console.warn('Unexpected response type:', {
-        contentType,
-        text,
-        status: response.status,
-      });
-      return text;
+    if (isJson) {
+      return await response.json();
     }
-  } catch (e) {
-    console.error('Error parsing response:', e);
-    throw new ApiError('Invalid response format', response.status);
+    return await response.text();
+  } catch (error) {
+    console.error('Error parsing response:', error);
+    throw new ApiError('Failed to parse response', 500, error);
   }
 };

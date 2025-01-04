@@ -27,27 +27,36 @@ const getInitialLanguage = () => {
 };
 
 // Prevent initialization on server
-if (typeof window !== 'undefined') {
-  i18next
-    .use(initReactI18next)
-    .use(LanguageDetector)
-    .use(
-      resourcesToBackend(
-        (language: string, namespace: string) => import(`./locales/${language}/${namespace}.json`)
-      )
+const i18nInstance = i18next
+  .use(initReactI18next)
+  .use(LanguageDetector)
+  .use(
+    resourcesToBackend(
+      (language: string, namespace: string) => import(`./locales/${language}/${namespace}.json`)
     )
-    .init({
-      ...getOptions(),
-      detection: {
-        order: ['localStorage', 'navigator'],
-        caches: ['localStorage'],
-      },
-      lng: getInitialLanguage(),
-      fallbackLng: 'en',
-      supportedLngs: languages,
-      load: 'languageOnly',
-      debug: process.env.NODE_ENV === 'development',
-    });
+  );
+
+if (typeof window !== 'undefined') {
+  i18nInstance.init({
+    ...getOptions(),
+    detection: {
+      order: ['localStorage', 'navigator'],
+      caches: ['localStorage'],
+    },
+    lng: getInitialLanguage(),
+    fallbackLng: 'en',
+    supportedLngs: languages,
+    load: 'languageOnly',
+    debug: process.env.NODE_ENV === 'development',
+  });
+} else {
+  i18nInstance.init({
+    ...getOptions(),
+    lng: 'en',
+    fallbackLng: 'en',
+    supportedLngs: languages,
+    load: 'languageOnly',
+  });
 }
 
-export default i18next;
+export default i18nInstance;

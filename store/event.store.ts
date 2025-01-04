@@ -12,7 +12,7 @@ interface EventState {
   error: string | null;
   fetchEvents: () => Promise<void>;
   fetchMyEvents: () => Promise<void>;
-  fetchEvent: (eventId: string) => Promise<void>;
+  fetchEvent: (eventId: string) => Promise<Event | null>;
   createEvent: (data: Partial<Event>) => Promise<Event>;
   updateEvent: (eventId: string, data: Partial<Event>) => Promise<Event>;
   deleteEvent: (eventId: string) => Promise<void>;
@@ -52,13 +52,26 @@ export const useEventStore = create<EventState>()(
       },
 
       fetchEvent: async (eventId: string) => {
+        if (!eventId) {
+          set({ error: 'Event ID is required', isLoading: false });
+          return null;
+        }
+
         try {
           set({ isLoading: true, error: null });
           const event = await eventService.getById(eventId);
+          console.log('eventStore: Event data received', { event });
+          
+          if (!event) {
+            throw new Error('Event not found');
+          }
+
           set({ currentEvent: event, isLoading: false });
+          return event;
         } catch (error) {
-          console.error('Error fetching event:', error);
+          console.error('eventStore: Error fetching event', { error });
           set({ error: error.message, isLoading: false, currentEvent: null });
+          throw error;
         }
       },
 
@@ -66,8 +79,11 @@ export const useEventStore = create<EventState>()(
         try {
           set({ isLoading: true, error: null });
           const event = await eventService.create(data);
-          const events = [...get().events, event];
-          set({ events, isLoading: false });
+          set(state => ({
+            events: [...state.events, event],
+            currentEvent: event,
+            isLoading: false,
+          }));
           return event;
         } catch (error) {
           console.error('Error creating event:', error);
@@ -80,20 +96,16 @@ export const useEventStore = create<EventState>()(
         try {
           set({ isLoading: true, error: null });
           const updatedEvent = await eventService.update(eventId, data);
-
-          // Mettre à jour à la fois events et currentEvent
           set(state => ({
             events: state.events.map(event =>
-              event.id === eventId || event._id === eventId ? { ...event, ...updatedEvent } : event
+              event.id === eventId ? { ...event, ...updatedEvent } : event
             ),
             currentEvent:
-              state.currentEvent &&
-              (state.currentEvent.id === eventId || state.currentEvent._id === eventId)
+              state.currentEvent?.id === eventId
                 ? { ...state.currentEvent, ...updatedEvent }
                 : state.currentEvent,
             isLoading: false,
           }));
-
           return updatedEvent;
         } catch (error) {
           console.error('Error updating event:', error);
@@ -106,20 +118,16 @@ export const useEventStore = create<EventState>()(
         try {
           set({ isLoading: true, error: null });
           const updatedEvent = await eventService.updateStatus(eventId, status);
-
-          // Mettre à jour à la fois events et currentEvent
           set(state => ({
             events: state.events.map(event =>
-              event.id === eventId || event._id === eventId ? { ...event, ...updatedEvent } : event
+              event.id === eventId ? { ...event, status: updatedEvent.status } : event
             ),
             currentEvent:
-              state.currentEvent &&
-              (state.currentEvent.id === eventId || state.currentEvent._id === eventId)
-                ? { ...state.currentEvent, ...updatedEvent }
+              state.currentEvent?.id === eventId
+                ? { ...state.currentEvent, status: updatedEvent.status }
                 : state.currentEvent,
             isLoading: false,
           }));
-
           return updatedEvent;
         } catch (error) {
           console.error('Error updating event status:', error);
@@ -132,8 +140,11 @@ export const useEventStore = create<EventState>()(
         try {
           set({ isLoading: true, error: null });
           await eventService.delete(eventId);
-          const events = get().events.filter(event => event.id !== eventId);
-          set({ events, currentEvent: null, isLoading: false });
+          set(state => ({
+            events: state.events.filter(event => event.id !== eventId),
+            currentEvent: state.currentEvent?.id === eventId ? null : state.currentEvent,
+            isLoading: false,
+          }));
         } catch (error) {
           console.error('Error deleting event:', error);
           set({ error: error.message, isLoading: false });
@@ -144,13 +155,17 @@ export const useEventStore = create<EventState>()(
       createRoom: async (eventId: string, roomData: Partial<Room>) => {
         try {
           set({ isLoading: true, error: null });
-          const newRoom = await eventService.createRoom(eventId, roomData);
-
-          // Rafraîchir l'événement complet pour avoir les données à jour
-          await get().fetchEvent(eventId);
-
-          set({ isLoading: false });
-          return newRoom;
+          const room = await eventService.createRoom(eventId, roomData);
+          set(state => ({
+            currentEvent: state.currentEvent
+              ? {
+                  ...state.currentEvent,
+                  rooms: [...(state.currentEvent.rooms || []), room],
+                }
+              : null,
+            isLoading: false,
+          }));
+          return room;
         } catch (error) {
           console.error('Error creating room:', error);
           set({ error: error.message, isLoading: false });

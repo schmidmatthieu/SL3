@@ -1,0 +1,18 @@
+{
+  "error": {
+    "title": "Error"
+  },
+  "status": {
+    "live": "LIVE"
+  },
+  "description": {
+    "title": "Description"
+  },
+  "info": {
+    "title": "Information",
+    "viewers": "{{count}} viewers"
+  },
+  "speakers": {
+    "title": "Speakers"
+  }
+}

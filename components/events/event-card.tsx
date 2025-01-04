@@ -42,7 +42,7 @@ export function EventCard({ event }: EventCardProps) {
       )}
     >
       {event.featured && (
-        <div className="absolute top-4 left-4 z-20">
+        <div className="absolute top-4 left-4 z-[15]">
           <Badge variant="default" className="bg-primary text-white font-medium shadow-sm">
             {t('events.card.featured')}
           </Badge>

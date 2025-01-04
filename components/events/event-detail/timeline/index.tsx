@@ -30,8 +30,26 @@ export function Timeline({ event }: TimelineProps) {
   const timelineRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
+  // Vérifier que les dates sont valides
+  if (!event?.startDateTime || !event?.endDateTime) {
+    console.error('Timeline: Invalid event dates', { event });
+    return null;
+  }
+
+  const startDate = new Date(event.startDateTime);
+  const endDate = new Date(event.endDateTime);
+
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+    console.error('Timeline: Invalid date format', { startDate, endDate });
+    return null;
+  }
+
   const viewMode = useTimelineView();
-  const { currentHourStart, setCurrentHourStart, navigateHours } = useTimelineHours(viewMode, event);
+  const { currentHourStart, setCurrentHourStart, navigateHours } = useTimelineHours(viewMode, {
+    ...event,
+    startDateTime: startDate.toISOString(),
+    endDateTime: endDate.toISOString()
+  });
   
   const {
     zoom,

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { Event } from '@/types/event';
 import { Room } from '@/types/room';
+import { Speaker } from '@/types/speaker'; // Ajout de l'importation du type Speaker
 import { apiRequest } from '@/lib/utils';
 
 const fetchEvent = async (eventId: string): Promise<Event> => {
@@ -40,6 +41,28 @@ const fetchRooms = async (eventId: string): Promise<Room[]> => {
   }
 };
 
+const fetchSpeakers = async (eventId: string): Promise<Speaker[]> => {
+  console.log('useEvent: Fetching speakers for event:', eventId);
+  try {
+    const response = await apiRequest<Speaker[]>(`/api/events/${eventId}/speakers`);
+    const data = response.data;
+    console.log('useEvent: Raw speakers data:', JSON.stringify(data, null, 2));
+    
+    // S'assurer que chaque speaker a un ID et un eventId
+    const processedData = data.map(speaker => ({
+      ...speaker,
+      id: speaker.id || speaker._id,
+      eventId: speaker.eventId || eventId
+    }));
+    
+    console.log('useEvent: Processed speakers data:', JSON.stringify(processedData, null, 2));
+    return processedData;
+  } catch (error) {
+    console.error('useEvent: Error fetching speakers:', error);
+    return [];
+  }
+};
+
 export function useEvent(eventId?: string) {
   const [event, setEvent] = useState<Event | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -49,31 +72,39 @@ export function useEvent(eventId?: string) {
 
   const loadEvent = useCallback(async () => {
     if (!eventId) {
-      console.log('useEvent: No eventId provided');
-      setEvent(null);
       setIsLoading(false);
+      setIsError(true);
+      setError('No event ID provided');
       return;
     }
 
+    setIsLoading(true);
+    setIsError(false);
+    setError(null);
+
     try {
-      console.log('useEvent: Starting to load event:', eventId);
-      setIsLoading(true);
-      setIsError(false);
-      setError(null);
+      const [eventData, roomsData, speakersData] = await Promise.all([
+        fetchEvent(eventId),
+        fetchRooms(eventId),
+        fetchSpeakers(eventId)
+      ]);
 
-      const [eventData, roomsData] = await Promise.all([fetchEvent(eventId), fetchRooms(eventId)]);
+      // S'assurer que les dates sont correctement formatées
+      const formattedEvent = {
+        ...eventData,
+        startDateTime: eventData.startDateTime ? new Date(eventData.startDateTime).toISOString() : null,
+        endDateTime: eventData.endDateTime ? new Date(eventData.endDateTime).toISOString() : null,
+        rooms: roomsData,
+        speakers: speakersData
+      };
 
-      const eventWithRooms = { ...eventData, rooms: roomsData };
-      console.log('useEvent: Setting combined event data:', eventWithRooms);
-      setEvent(eventWithRooms);
-      setIsError(false);
-      setError(null);
+      console.log('useEvent: Formatted event data:', formattedEvent);
+      setEvent(formattedEvent);
+      setIsLoading(false);
     } catch (err) {
       console.error('useEvent: Error in loadEvent:', err);
       setIsError(true);
-      setError(err instanceof Error ? err.message : 'Failed to load event');
-      setEvent(null);
-    } finally {
+      setError(err instanceof Error ? err.message : 'An error occurred');
       setIsLoading(false);
     }
   }, [eventId]);

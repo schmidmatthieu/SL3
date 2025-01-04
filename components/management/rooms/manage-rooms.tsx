@@ -38,7 +38,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/use-toast';
-import { RoomStatusBadge } from '@/components/rooms/room-status-badge';
+import { RoomStatusBadge } from '@/components/room/room-status-badge';
 
 import { useRoomSync } from '../../../hooks/useRoomSync';
 import { useRoomStore } from '../../../store/room.store';

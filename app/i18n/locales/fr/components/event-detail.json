@@ -27,6 +27,10 @@
   },
   "speakers": {
     "title": "Intervenants",
+    "search": "Rechercher un intervenant...",
+    "noResults": "Aucun intervenant trouvé",
+    "bio": "Biographie",
+    "sessions": "Sessions",
     "noSpeakers": "Aucun intervenant"
   },
   "rooms": {
@@ -40,11 +44,17 @@
       "live": "En direct",
       "upcoming": "À venir",
       "paused": "En pause",
-      "ended": "Terminé"
+      "ended": "Terminé",
+      "cancelled": "Annulé"
     },
     "filters": {
       "language": "Langue",
-      "all": "Toutes"
+      "all": "Toutes les langues",
+      "fr": "Français",
+      "en": "Anglais",
+      "de": "Allemand",
+      "it": "Italien",
+      "es": "Espagnol"
     },
     "speakersCount": "{{count}} intervenant",
     "speakersCount_plural": "{{count}} intervenants",
@@ -59,6 +69,14 @@
     "ended": "Terminé",
     "cancelled": "Annulé",
     "postponed": "Reporté"
+  },
+  "events": {
+    "status": {
+      "live": "En direct",
+      "upcoming": "À venir",
+      "ended": "Terminé",
+      "cancelled": "Annulé"
+    }
   },
   "common": {
     "virtual": "Événement virtuel"

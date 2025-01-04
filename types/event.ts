@@ -1,4 +1,5 @@
 import { Room } from './room';
+import { Speaker } from './speaker';
 
 export type EventStatus = 'draft' | 'scheduled' | 'active' | 'ended' | 'cancelled' | 'postponed';
 
@@ -13,6 +14,7 @@ export interface Event {
   imageUrl?: string;
   location?: string; // Optional location field for virtual or physical events
   rooms: Room[];
+  speakers: Speaker[];
   createdBy: string;
   createdAt: string;
   updatedAt: string;

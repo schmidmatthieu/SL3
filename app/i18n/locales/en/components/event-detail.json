@@ -1,17 +1,17 @@
 {
   "hero": {
-    "register": "Register for event",
+    "register": "Register for Event",
     "share": "Share"
   },
   "description": {
     "about": "About",
-    "details": "Event details",
+    "details": "Event Details",
     "startDate": "Starts on {{date}}",
     "startTime": "Starts at {{time}}",
     "endTime": "Ends at {{time}}",
     "endDate": "Ends on {{date}}",
     "participants": "{{current}}/{{max}} participants",
-    "participationProgress": "Registration progress"
+    "participationProgress": "Registration Progress"
   },
   "timeline": {
     "title": "Event Schedule",
@@ -27,24 +27,34 @@
   },
   "speakers": {
     "title": "Speakers",
+    "search": "Search for a speaker...",
+    "noResults": "No speakers found",
+    "bio": "Biography",
+    "sessions": "Sessions",
     "noSpeakers": "No speakers"
   },
   "rooms": {
     "title": "Rooms",
     "noRooms": "No rooms available",
-    "create": "Create room",
-    "edit": "Edit room",
-    "delete": "Delete room",
+    "create": "Create Room",
+    "edit": "Edit Room",
+    "delete": "Delete Room",
     "confirmDelete": "Are you sure you want to delete this room?",
     "status": {
       "live": "Live",
       "upcoming": "Upcoming",
       "paused": "Paused",
-      "ended": "Ended"
+      "ended": "Ended",
+      "cancelled": "Cancelled"
     },
     "filters": {
       "language": "Language",
-      "all": "All"
+      "all": "All Languages",
+      "fr": "French",
+      "en": "English",
+      "de": "German",
+      "it": "Italian",
+      "es": "Spanish"
     },
     "speakersCount": "{{count}} speaker",
     "speakersCount_plural": "{{count}} speakers",
@@ -59,6 +69,14 @@
     "ended": "Ended",
     "cancelled": "Cancelled",
     "postponed": "Postponed"
+  },
+  "events": {
+    "status": {
+      "live": "Live",
+      "upcoming": "Upcoming",
+      "ended": "Ended",
+      "cancelled": "Cancelled"
+    }
   },
   "common": {
     "virtual": "Virtual event"

@@ -2,5 +2,9 @@
   "virtual": "Virtuale",
   "loading": "Caricamento...",
   "error": "Errore",
-  "success": "Successo"
+  "success": "Successo",
+  "close": "Chiudi",
+  "previous": "Precedente",
+  "next": "Successivo",
+  "page": "Pagina {{number}}"
 }

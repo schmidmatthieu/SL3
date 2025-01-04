@@ -27,6 +27,10 @@
   },
   "speakers": {
     "title": "Relatori",
+    "search": "Cerca un relatore...",
+    "noResults": "Nessun relatore trovato",
+    "bio": "Biografia",
+    "sessions": "Sessioni",
     "noSpeakers": "Nessun relatore"
   },
   "rooms": {
@@ -40,7 +44,8 @@
       "live": "In diretta",
       "upcoming": "In arrivo",
       "paused": "In pausa",
-      "ended": "Terminato"
+      "ended": "Terminato",
+      "cancelled": "Annullato"
     },
     "filters": {
       "language": "Lingua",
@@ -56,6 +61,14 @@
     "ended": "Terminato",
     "cancelled": "Annullato",
     "postponed": "Rinviato"
+  },
+  "events": {
+    "status": {
+      "live": "In diretta",
+      "upcoming": "In arrivo",
+      "ended": "Terminato",
+      "cancelled": "Annullato"
+    }
   },
   "common": {
     "virtual": "Evento virtuale"

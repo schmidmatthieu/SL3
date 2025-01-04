@@ -27,6 +27,10 @@
   },
   "speakers": {
     "title": "Referenten",
+    "search": "Referenten suchen...",
+    "noResults": "Keine Referenten gefunden",
+    "bio": "Biografie",
+    "sessions": "Sitzungen",
     "noSpeakers": "Keine Referenten"
   },
   "rooms": {
@@ -40,7 +44,8 @@
       "live": "Live",
       "upcoming": "Bevorstehend",
       "paused": "Pausiert",
-      "ended": "Beendet"
+      "ended": "Beendet",
+      "cancelled": "Abgesagt"
     },
     "filters": {
       "language": "Sprache",
@@ -56,6 +61,14 @@
     "ended": "Beendet",
     "cancelled": "Abgesagt",
     "postponed": "Verschoben"
+  },
+  "events": {
+    "status": {
+      "live": "Live",
+      "upcoming": "Bevorstehend",
+      "ended": "Beendet",
+      "cancelled": "Abgesagt"
+    }
   },
   "common": {
     "virtual": "Virtuelle Veranstaltung"

@@ -37,21 +37,21 @@ export const roomService = {
   // Récupérer toutes les rooms d'un événement
   getEventRooms: async (eventId: string): Promise<Room[]> => {
     return fetchWithAuth(
-      `${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.events}/${eventId}/rooms`
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/rooms`
     );
   },
 
   // Récupérer une room spécifique
   getById: async (eventId: string, roomId: string): Promise<Room> => {
     return fetchWithAuth(
-      `${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.events}/${eventId}/rooms/${roomId}`
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/rooms/${roomId}`
     );
   },
 
   // Créer une nouvelle room
-  create: async (data: CreateRoomDTO): Promise<Room> => {
+  create: async (eventId: string, data: CreateRoomDTO): Promise<Room> => {
     return fetchWithAuth(
-      `${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.events}/${data.eventId}/rooms`,
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/rooms`,
       {
         method: 'POST',
         headers: {
@@ -65,9 +65,9 @@ export const roomService = {
   // Mettre à jour une room
   update: async (eventId: string, roomId: string, data: UpdateRoomDTO): Promise<Room> => {
     return fetchWithAuth(
-      `${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.events}/${eventId}/rooms/${roomId}`,
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/rooms/${roomId}`,
       {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -79,7 +79,7 @@ export const roomService = {
   // Supprimer une room
   delete: async (eventId: string, roomId: string): Promise<void> => {
     return fetchWithAuth(
-      `${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.events}/${eventId}/rooms/${roomId}`,
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/rooms/${roomId}`,
       {
         method: 'DELETE',
       }
@@ -89,7 +89,7 @@ export const roomService = {
   // Démarrer le streaming d'une room
   startStream: async (eventId: string, roomId: string): Promise<Room> => {
     return fetchWithAuth(
-      `${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.events}/${eventId}/rooms/${roomId}/stream/start`,
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.stream}/rooms/${roomId}/start`,
       {
         method: 'POST',
       }
@@ -99,7 +99,7 @@ export const roomService = {
   // Arrêter le streaming d'une room
   stopStream: async (eventId: string, roomId: string): Promise<Room> => {
     return fetchWithAuth(
-      `${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.events}/${eventId}/rooms/${roomId}/stream/stop`,
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.stream}/rooms/${roomId}/stop`,
       {
         method: 'POST',
       }
@@ -118,7 +118,7 @@ export const roomService = {
     languages: string[];
   }> => {
     return fetchWithAuth(
-      `${API_CONFIG.baseUrl}/api${API_CONFIG.endpoints.events}/${eventId}/rooms/${roomId}/stream`
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.stream}/rooms/${roomId}`
     );
   },
 };

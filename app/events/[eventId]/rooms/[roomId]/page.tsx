@@ -1,19 +1,30 @@
-'use server';
+'use client';
 
-import { Suspense } from 'react';
+import { Suspense, use } from 'react';
+import { useParams } from 'next/navigation';
 
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { RoomContent } from './room-content';
 
 interface RoomPageProps {
-  params: {
+  params: Promise<{
     eventId: string;
     roomId: string;
-  };
+  }>;
 }
 
-export default async function RoomPage({ params }: RoomPageProps) {
+export default function RoomPage({ params }: RoomPageProps) {
+  // Utiliser useParams pour obtenir les paramètres côté client
+  const routeParams = useParams();
+  const resolvedParams = use(params);
+  
+  // Fusionner les paramètres de la route avec les paramètres résolus
+  const eventId = (routeParams?.eventId as string) || resolvedParams.eventId;
+  const roomId = (routeParams?.roomId as string) || resolvedParams.roomId;
+
+  console.log('RoomPage params:', { eventId, roomId, routeParams });
+  
   return (
     <Suspense
       fallback={
@@ -38,7 +49,7 @@ export default async function RoomPage({ params }: RoomPageProps) {
         </div>
       }
     >
-      <RoomContent eventId={params.eventId} roomId={params.roomId} />
+      <RoomContent eventId={eventId} roomId={roomId} />
     </Suspense>
   );
 }

@@ -88,28 +88,39 @@ export default function EventPage({ params }: EventPageProps) {
 
   return (
     <main className="min-h-screen">
-      <HeroBanner
-        title={event.title}
-        imageUrl={event.imageUrl || '/images/default-event-banner.jpg'}
-        date={format(new Date(event.startDateTime), 'PPP', { locale })}
-        location={event.location || t('common:virtual')}
-        onRegister={() => {/* Implémenter la logique d'inscription */}}
-        onShare={handleShare}
-      />
-
-      <EventDescription
-        description={event.description}
-        startDateTime={event.startDateTime}
-        endDateTime={event.endDateTime}
-        status={event.status}
-      />
-
-      {event.rooms && event.rooms.length > 0 && (
+      {isLoading ? (
+        <div className="space-y-4">
+          <Skeleton className="h-[400px] w-full" />
+        </div>
+      ) : isError ? (
+        <div className="text-center py-8">
+          <p className="text-red-500">{t('error.loading_event')}</p>
+        </div>
+      ) : event ? (
         <>
-          <Timeline event={event} />
-          <Rooms event={event} />
+          <HeroBanner
+            title={event.title}
+            imageUrl={event.imageUrl || '/images/default-event-banner.jpg'}
+            date={format(new Date(event.startDateTime), 'PPP', { locale })}
+            location={event.location || t('common:virtual')}
+            onRegister={() => {/* Implémenter la logique d'inscription */}}
+            onShare={handleShare}
+          />
+          <div className="container mx-auto px-4 py-8 space-y-8">
+            <EventDescription
+              description={event.description}
+              startDateTime={event.startDateTime}
+              endDateTime={event.endDateTime}
+              status={event.status}
+            />
+            {event.startDateTime && event.endDateTime && (
+              <Timeline event={event} />
+            )}
+            <Speakers speakers={event.speakers || []} rooms={event.rooms || []} />
+            <Rooms event={event} />
+          </div>
         </>
-      )}
+      ) : null}
     </main>
   );
 }

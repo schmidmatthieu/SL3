@@ -11,18 +11,22 @@ interface EventCardHeaderProps {
 }
 
 export function EventCardHeader({ event }: EventCardHeaderProps) {
+  console.log('EventCardHeader - Rendering with event:', event);
+  
   return (
-    <div className="relative w-full h-48 overflow-hidden pointer-events-none">
-      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent z-10" />
+    <div className="relative w-full h-48">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent z-[1]" />
       <img
         src={event.imageUrl || DEFAULT_EVENT_IMAGE}
         alt={event.title}
         className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
       />
-      <EventStatusBadge 
-        event={event}
-        className="absolute top-4 right-4 z-10"
-      />
+      <div className="absolute top-0 right-0 p-4 z-[20]">
+        <EventStatusBadge 
+          event={event}
+          className="shadow-sm"
+        />
+      </div>
     </div>
   );
 }

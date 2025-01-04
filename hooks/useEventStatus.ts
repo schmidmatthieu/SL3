@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
-import { Event } from '@/types/event';
+'use client';
 
-export const useEventStatus = (event: Event) => {
-  const [currentStatus, setCurrentStatus] = useState(event.status);
+import { useState, useEffect } from 'react';
+import { Event, EventStatus } from '@/types/event';
 
-  const calculateStatus = () => {
+export const useEventStatus = (event: Event): EventStatus => {
+  const [currentStatus, setCurrentStatus] = useState<EventStatus>(event.status);
+
+  const calculateStatus = (): EventStatus => {
     const now = new Date();
     const startDate = new Date(event.startDateTime);
     const endDate = new Date(event.endDateTime);
@@ -27,9 +29,7 @@ export const useEventStatus = (event: Event) => {
   useEffect(() => {
     // Calculer le statut initial
     const status = calculateStatus();
-    if (status !== currentStatus) {
-      setCurrentStatus(status);
-    }
+    setCurrentStatus(status);
 
     // Mettre à jour le statut toutes les minutes
     const interval = setInterval(() => {
@@ -37,7 +37,7 @@ export const useEventStatus = (event: Event) => {
       if (newStatus !== currentStatus) {
         setCurrentStatus(newStatus);
       }
-    }, 60000); // 60000ms = 1 minute
+    }, 60000);
 
     return () => clearInterval(interval);
   }, [event.startDateTime, event.endDateTime, event.status]);

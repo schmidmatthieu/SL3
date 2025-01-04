@@ -1,0 +1,18 @@
+{
+  "error": {
+    "title": "Erreur"
+  },
+  "status": {
+    "live": "EN DIRECT"
+  },
+  "description": {
+    "title": "Description"
+  },
+  "info": {
+    "title": "Informations",
+    "viewers": "{{count}} spectateurs"
+  },
+  "speakers": {
+    "title": "Intervenants"
+  }
+}

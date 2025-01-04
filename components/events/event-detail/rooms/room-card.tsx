@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import { RoomSpeakersDisplay } from './components/room-speakers-display';
-import { RoomStatusBadge } from '@/components/rooms/room-status-badge';
+import { RoomStatusBadge } from '@/components/room/room-status-badge';
 
 const DEFAULT_ROOM_IMAGE =
   'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=2000&auto=format&fit=crop';
@@ -50,26 +50,24 @@ interface RoomCardProps {
   userLanguage?: keyof typeof ROOM_STATUS_TRANSLATIONS.upcoming;
 }
 
-const getStatusColor = (status: Room['status']) => {
+function getStatusColor(status: Room['status']) {
   switch (status) {
-    case 'live':
-      return 'bg-third text-black';
     case 'upcoming':
-      return 'bg-blue-500 text-white dark:bg-blue-600';
-    case 'paused':
-      return 'bg-yellow-500 text-black';
+      return 'text-blue-600 dark:text-blue-400';
+    case 'live':
+      return 'text-green-600 dark:text-green-400';
     case 'ended':
-      return 'bg-secondary text-black';
+      return 'text-orange-600 dark:text-orange-400';
     case 'cancelled':
-      return 'bg-destructive text-destructive-foreground dark:bg-destructive/90';
+      return 'text-red-600 dark:text-red-400';
     default:
-      return 'bg-secondary text-black';
+      return 'text-gray-600 dark:text-gray-400';
   }
-};
+}
 
-const formatTime = (date: string) => {
-  return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-};
+function formatTime(date: string) {
+  return new Date(date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+}
 
 export function RoomCard({
   room,
@@ -98,13 +96,14 @@ export function RoomCard({
     if (room.status === 'cancelled') {
       return;
     }
-    router.push(`/events/${eventId}/rooms/${room._id}`);
+    console.log('Navigating to room:', { eventId: roomEventId, roomId });
+    router.push(`/events/${roomEventId}/rooms/${roomId}`);
   };
 
   const handleAccessClick = (e: React.MouseEvent, type: 'mod' | 'speaker') => {
     e.stopPropagation();
     if (type === 'mod' || room.status !== 'cancelled') {
-      router.push(`/events/${eventId}/rooms/${room._id}/${type}`);
+      router.push(`/events/${roomEventId}/rooms/${roomId}/${type}`);
     }
   };
 
@@ -190,11 +189,11 @@ export function RoomCard({
               <>
                 {console.log('Rendering RoomSpeakersDisplay with:', {
                   speakerIds: room.speakers,
-                  eventId: room.eventId || eventId
+                  eventId: roomEventId
                 })}
                 <RoomSpeakersDisplay 
                   speakerIds={room.speakers} 
-                  eventId={room.eventId || eventId}
+                  eventId={roomEventId}
                   className="group"
                 />
               </>
