@@ -5,12 +5,14 @@ import { SpeakersController } from './speakers.controller';
 import { Speaker, SpeakerSchema } from './schemas/speaker.schema';
 import { MediaModule } from '../media/media.module';
 import { RoomModule } from '../rooms/room.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Speaker.name, schema: SpeakerSchema }]),
-    MediaModule,
     forwardRef(() => RoomModule),
+    MediaModule,
+    ConfigModule,
   ],
   controllers: [SpeakersController],
   providers: [SpeakersService],

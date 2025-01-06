@@ -20,13 +20,17 @@ import { CreateSpeakerDto } from './dto/create-speaker.dto';
 import { UpdateSpeakerDto } from './dto/update-speaker.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Speaker } from './schemas/speaker.schema';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('events/:eventId/speakers')
 @UseGuards(JwtAuthGuard)
 export class SpeakersController {
   private readonly logger = new Logger(SpeakersController.name);
 
-  constructor(private readonly speakersService: SpeakersService) {}
+  constructor(
+    private readonly speakersService: SpeakersService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Post()
   async create(
@@ -92,15 +96,23 @@ export class SpeakersController {
           callback(null, `${uniqueSuffix}${extname(file.originalname)}`);
         },
       }),
+      fileFilter: (req, file, callback) => {
+        if (!file.mimetype.match(/^image\/(jpg|jpeg|png|gif)$/)) {
+          callback(new Error('Only image files are allowed!'), false);
+          return;
+        }
+        callback(null, true);
+      },
     }),
   )
   async uploadImage(
     @Param('eventId') eventId: string,
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
-  ): Promise<{ imageUrl: string }> {
-    this.logger.log(`Uploading image for speaker ${id} in event: ${eventId}`);
-    const imageUrl = await this.speakersService.uploadImage(id, file);
-    return { imageUrl };
+  ): Promise<Speaker> {
+    this.logger.log(`Uploading image for speaker ${id} in event ${eventId}`);
+    const baseUrl = this.configService.get('API_URL') || 'http://localhost:3001';
+    const imageUrl = `${baseUrl}/uploads/${file.filename}`;
+    return this.speakersService.updateImage(id, imageUrl);
   }
 }
