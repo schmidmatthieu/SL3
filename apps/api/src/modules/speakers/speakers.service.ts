@@ -259,4 +259,44 @@ export class SpeakersService {
 
     return imageUrl;
   }
+
+  async updateImage(id: string, imageUrl: string): Promise<Speaker> {
+    this.logger.log(`Updating image for speaker ${id}`);
+    
+    const speaker = await this.speakerModel.findById(id);
+    if (!speaker) {
+      throw new NotFoundException('Speaker not found');
+    }
+
+    // Supprimer l'ancienne utilisation si elle existe
+    if (speaker.imageUrl) {
+      const oldFilename = speaker.imageUrl.split('/').pop();
+      if (oldFilename) {
+        const oldMedia = await this.mediaService.findByFilename(oldFilename);
+        if (oldMedia) {
+          await this.mediaService.removeUsage(oldMedia._id.toString(), id);
+        }
+      }
+    }
+
+    // Ajouter la nouvelle utilisation
+    const newFilename = imageUrl.split('/').pop();
+    if (newFilename) {
+      const newMedia = await this.mediaService.findByFilename(newFilename);
+      if (newMedia) {
+        await this.mediaService.addUsage(newMedia._id.toString(), {
+          type: 'speaker',
+          entityId: id,
+          entityName: `${speaker.firstName} ${speaker.lastName}`,
+        });
+      }
+    }
+
+    const updatedSpeaker = await this.speakerModel
+      .findByIdAndUpdate(id, { imageUrl }, { new: true })
+      .exec();
+
+    this.logger.log('Speaker image updated:', updatedSpeaker);
+    return updatedSpeaker;
+  }
 }

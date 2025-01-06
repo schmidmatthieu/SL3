@@ -4,6 +4,8 @@ import { Room } from '@/types/room';
 import { API_CONFIG } from './config';
 import { getAuthHeaders, handleApiResponse } from './utils';
 
+const DEFAULT_EVENT_IMAGE = 'http://localhost:3001/uploads/url_1736013052197.jpeg';
+
 const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   try {
     console.log('Fetching:', url);
@@ -101,17 +103,23 @@ export const eventService = {
   },
 
   create: async (data: Partial<Event>): Promise<Event> => {
-    console.log('eventService.create: Données reçues:', data);
+    const eventData = {
+      ...data,
+      imageUrl: data.imageUrl || DEFAULT_EVENT_IMAGE,
+    };
 
-    // Les dates arrivent déjà au format ISO string du formulaire
-    // Pas besoin de les convertir à nouveau
-    const response = await fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
+    console.log('Creating event with data:', eventData);
+
+    const response = await fetchWithAuth(
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(eventData),
+      }
+    );
 
     return transformEventResponse(response);
   },

@@ -46,6 +46,11 @@ export function AdminDashboard() {
     return null;
   }
 
+  const handleMediaSelect = (url: string) => {
+    // Vous pouvez ajouter ici la logique pour gérer la sélection d'un média
+    console.log('Media selected:', url);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="border-b">
@@ -118,7 +123,7 @@ export function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="media" className="space-y-6">
-            <MediaManagement />
+            <MediaManagement onSelect={handleMediaSelect} />
           </TabsContent>
         </Tabs>
       </div>

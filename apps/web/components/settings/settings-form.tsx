@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/store/auth-store';
-import { useProfileStore } from '@/store/profile';
+import { useProfileStore } from '@/store/profile.store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTheme } from 'next-themes';
 import { useForm } from 'react-hook-form';

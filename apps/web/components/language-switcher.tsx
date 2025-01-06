@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useProfileStore } from '@/store/profile';
+import { useProfileStore } from '@/store/profile.store';
 import { Globe as Globe2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 

@@ -2,11 +2,11 @@
   "name": "nextjs",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
+ "scripts": {
+    "dev": "cd apps/web && next dev -p 3000",
+    "build": "cd apps/web && next build",
+    "start": "cd apps/web && next start",
+    "lint": "cd apps/web && next lint",
     "lint:step1": "eslint apps/api/src/modules/events/events.service.ts",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\""

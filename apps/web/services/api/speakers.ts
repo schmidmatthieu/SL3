@@ -3,8 +3,8 @@ import { API_CONFIG } from './config';
 import { getAuthHeaders, handleApiResponse } from './utils';
 
 class SpeakerService {
-  private async fetchWithAuth(url: string, options: RequestInit = {}) {
-    const headers = await getAuthHeaders();
+  private async fetchWithAuth(url: string, options: RequestInit = {}, isMultipart = false) {
+    const headers = await getAuthHeaders(isMultipart);
     const response = await fetch(url, {
       ...options,
       headers: {
@@ -80,7 +80,8 @@ class SpeakerService {
       {
         method: 'POST',
         body: formData,
-      }
+      },
+      true // isMultipart = true
     );
   }
 }

@@ -1,10 +1,16 @@
 /** @type {import('next').NextConfig} */
+const path = require('path');
+
 const nextConfig = {
   // Remove output: 'export' to enable middleware and server components
   eslint: {
     ignoreDuringBuilds: true,
   },
   reactStrictMode: true,
+  env: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+  },
   images: {
     unoptimized: true,
     remotePatterns: [

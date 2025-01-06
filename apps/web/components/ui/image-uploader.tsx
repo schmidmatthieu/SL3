@@ -67,44 +67,22 @@ export function ImageUploader({
     }
   }, [isOpen, fetchAll, mediaType]);
 
-  const handleExistingImageSelect = useCallback((url: string) => {
-    console.log('handleExistingImageSelect called with:', { url, onImageSelect });
-    
-    if (!url) {
-      console.error('No URL provided');
-      return;
-    }
-
-    if (typeof onImageSelect !== 'function') {
-      console.error('onImageSelect is not a function:', onImageSelect);
-      return;
-    }
-
+  const handleExistingImageSelect = useCallback(async (url: string) => {
     try {
       if (entityId && mediaType !== 'unused') {
         const mediaId = items.find(item => item.url === url)?._id;
         if (mediaId) {
-          addUsage(mediaId, {
+          await addUsage(mediaId, {
             type: mediaType,
             entityId,
             entityName,
-          }).then(() => {
-            onImageSelect(url);
-            setIsOpen(false);
-          }).catch(err => {
-            console.error('Error adding media usage:', err);
-            setError(err.message);
           });
-        } else {
-          onImageSelect(url);
-          setIsOpen(false);
         }
-      } else {
-        onImageSelect(url);
-        setIsOpen(false);
       }
+      onImageSelect(url);
+      setIsOpen(false);
     } catch (err) {
-      console.error('Error selecting image:', err);
+      console.error('Error selecting existing image:', err);
       setError(err.message);
     }
   }, [entityId, mediaType, items, addUsage, onImageSelect, entityName, setIsOpen, setError]);

@@ -6,7 +6,6 @@ import {
   Matches,
   MinLength,
   IsBoolean,
-  IsUrl,
 } from 'class-validator';
 import { EventStatus } from '../schemas/event.schema';
 
@@ -34,8 +33,9 @@ export class CreateEventDto {
   })
   endDateTime: string;
 
-  @IsUrl({}, { message: 'imageUrl must be a valid URL' })
+  @IsString()
   @IsOptional()
+  @Matches(/^https?:\/\/.*$/, { message: 'imageUrl must start with http:// or https://' })
   imageUrl?: string;
 
   @IsBoolean()

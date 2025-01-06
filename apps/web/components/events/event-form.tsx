@@ -57,6 +57,8 @@ const roundToNextHour = (date: Date): Date => {
   return roundedDate;
 };
 
+const DEFAULT_EVENT_IMAGE = 'http://localhost:3001/uploads/url_1736013052197.jpeg';
+
 export function EventForm({ onComplete }: { onComplete?: () => void }) {
   const now = new Date();
   const roundedNow = roundToNextHour(now);
@@ -70,7 +72,7 @@ export function EventForm({ onComplete }: { onComplete?: () => void }) {
       description: '',
       startDateTime: roundedNow,
       endDateTime: tomorrow,
-      imageUrl: '',
+      imageUrl: DEFAULT_EVENT_IMAGE,
     },
   });
 
