@@ -1,0 +1,22 @@
+import { Metadata } from 'next';
+
+import { Separator } from '@/components/core/ui/separator';
+import { SettingsForm } from '@/components/features/users/profils/settings-form';
+
+export const metadata: Metadata = {
+  title: 'Settings',
+  description: 'Manage your account settings and preferences.',
+};
+
+export default function SettingsPage() {
+  return (
+    <div className="container max-w-screen-lg mx-auto py-6 space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
+        <p className="text-muted-foreground">Manage your account settings and preferences.</p>
+      </div>
+      <Separator />
+      <SettingsForm />
+    </div>
+  );
+}

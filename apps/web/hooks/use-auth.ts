@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/store/auth-store';
+import { useAuthStore } from '@/lib/store/auth-store';
 
 export function useAuth() {
   const { user, profile, loading, signOut: storeSignOut } = useAuthStore();

@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect } from 'react';
-import { getAuthHeaders } from '@/services/api/utils';
-import { useAuthStore } from '@/store/auth-store';
-import { useRoomStore } from '@/store/room.store';
+import { getAuthHeaders } from '@/lib/api/utils';
+import { useAuthStore } from '@/lib/store/auth-store';
+import { useRoomStore } from '@/lib/store/room.store';
 
 import { Room, RoomSettings } from '@/types/room';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/components/core/ui/use-toast';
 
 interface UseRoomsResult {
   rooms: Room[];

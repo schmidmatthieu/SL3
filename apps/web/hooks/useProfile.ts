@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useProfileStore } from '@/store/profile.store';
+import { useProfileStore } from '@/lib/store/profile.store';
 
 import { useAuth } from '@/hooks/use-auth';
 

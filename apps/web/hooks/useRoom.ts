@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useEventStore } from '@/store/event.store';
+import { useEventStore } from '@/lib/store/event.store';
 
 import { Room } from '@/types/room';
 

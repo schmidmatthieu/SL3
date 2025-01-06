@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { useEventStore } from '../store/event.store';
+import { useEventStore } from '@/lib/store/event.store';
 
 export const useEvents = (fetchOnMount = true) => {
   const {

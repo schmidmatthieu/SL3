@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
-import { useEventStore } from '../store/event.store';
-import { useRoomStore } from '../store/room.store';
+import { useEventStore } from '@/lib/store/event.store';
+import { useRoomStore } from '@/lib/store/room.store';
 
 export const useRoomSync = (eventId: string) => {
   const roomStore = useRoomStore();

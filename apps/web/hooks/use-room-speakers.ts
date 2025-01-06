@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Speaker } from '@/types/speaker';
-import { useSpeakerStore } from '@/store/speaker.store';
+import { useSpeakerStore } from '@/lib/store/speaker.store';
 
 export function useRoomSpeakers(eventId: string, speakerIds?: string[]) {
   const [speakers, setSpeakers] = useState<Speaker[]>([]);
