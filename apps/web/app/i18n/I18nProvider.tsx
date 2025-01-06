@@ -1,7 +1,7 @@
 'use client';
 
 import { PropsWithChildren, useEffect, useState } from 'react';
-import { useProfileStore } from '@/store/profile.store';
+import { useProfileStore } from '@/lib/store/profile.store';
 import { I18nextProvider } from 'react-i18next';
 
 import i18next from './client';

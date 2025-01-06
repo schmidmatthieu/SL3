@@ -5,12 +5,12 @@ import cn from 'classnames';
 import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
 
-import { AnimatedBackground } from '@/components/ui/animated-background';
-import { Toaster } from '@/components/ui/toaster';
-import { AuthProvider } from '@/components/auth/auth-provider';
-import { Footer } from '@/components/layout/footer';
-import { Header } from '@/components/layout/header';
-import { ThemeProvider } from '@/components/providers/theme-provider';
+import { AnimatedBackground } from '@/components/core/ui/animated-background';
+import { Toaster } from '@/components/core/ui/toaster';
+import { AuthProvider } from '@/components/features/users/auth/auth-provider';
+import { Footer } from '@/components/core/layout/footer';
+import { Header } from '@/components/core/layout/header';
+import { ThemeProvider } from '@/components/core/layout/theme-provider';
 import { I18nProvider } from './i18n/I18nProvider';
 
 export const metadata: Metadata = {
