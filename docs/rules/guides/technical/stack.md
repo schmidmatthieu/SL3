@@ -38,106 +38,154 @@
 ## Structure du Projet
 
 ```
-/
-├── app/                    # Routes et pages Next.js
-│   └── [feature]/         # Pages et layouts par feature
-│       ├── page.tsx       # Page principale
-│       ├── layout.tsx     # Layout de la feature
-│       └── [id]/          # Routes dynamiques
-│           ├── page.tsx
-│           └── layout.tsx
-├── components/            # Composants React
-│   └── [feature]/        # Composants par feature
-│       ├── [component]/   # Dossier par composant majeur
-│       │   ├── index.tsx  # Export principal
-│       │   └── sub-components/ # Sous-composants
-│       └── ui/           # Composants UI réutilisables
-├── config/               # Configurations
-├── hooks/                # Custom hooks React
-├── lib/                  # Utilitaires et helpers
-├── middleware/           # Middleware Next.js
-├── new_rules/           # Documentation et règles
-├── public/              # Assets statiques
-├── services/            # Services métier
-├── store/               # Stores Zustand
-├── styles/              # Styles globaux
-├── types/               # Types TypeScript
-├── utils/               # Utilitaires généraux
-└── apps/                # Backend NestJS
-    └── api/
+# Structure Globale
+├── apps/
+│   ├── web/                  # Application Next.js frontend
+│   │   ├── app/             
+│   │   │   ├── (auth)/     
+│   │   │   │   ├── events/
+│   │   │   │   │   ├── page.tsx          # Liste des événements
+│   │   │   │   │   ├── create/           # Création d'événement
+│   │   │   │   │   └── [slug]/           # Page d'événement
+│   │   │   │   │       ├── page.tsx
+│   │   │   │   │       ├── layout.tsx
+│   │   │   │   │       ├── event-page-client.tsx
+│   │   │   │   │       ├── @modal/        # Modales contextuelles
+│   │   │   │   │       ├── [roomSlug]/    # Page de room
+│   │   │   │   │       │   ├── page.tsx
+│   │   │   │   │       │   ├── room-content.tsx
+│   │   │   │   │       │   ├── speaker/   # Vue speaker
+│   │   │   │   │       │   └── mod/       # Vue modérateur
+│   │   │   │   │       └── manage/        # Gestion événement
+│   │   │   │   ├── admin/                # Administration
+│   │   │   │   └── profile-settings/     # Paramètres utilisateur
+│   │   │   ├── (legal)/                  # Pages légales
+│   │   │   ├── (marketing)/              # Pages marketing
+│   │   │   └── i18n/                     # Traductions
+│   │   ├── components/
+│   │   │   ├── core/                     # Composants de base
+│   │   │   │   ├── layout/               # Layouts communs
+│   │   │   │   ├── ui/                   # UI components (shadcn)
+│   │   │   │   └── shared/               # Composants partagés
+│   │   │   ├── features/                 # Composants par feature
+│   │   │   │   ├── events-global/        # Composants événements
+│   │   │   │   ├── rooms-global/         # Composants rooms
+│   │   │   │   │   ├── room-detail/     
+│   │   │   │   │   │   ├── stream/       # Streaming
+│   │   │   │   │   │   ├── chat/         # Chat temps réel
+│   │   │   │   │   │   ├── qa-section/   # Q&A
+│   │   │   │   │   │   ├── files-section/# Partage fichiers
+│   │   │   │   │   │   └── votes-section/# Système de vote
+│   │   │   │   └── users/                # Gestion utilisateurs
+│   │   │   └── pages/                    # Composants de page
+│   │   ├── lib/
+│   │   │   ├── store/                    # Stores Zustand
+│   │   │   ├── hooks/                    # Custom hooks
+│   │   │   └── utils/                    # Utilitaires
+│   │   └── types/                        # Types TypeScript
+│   └── api/                              # Backend NestJS
         ├── src/
-        │   ├── modules/
-        │   ├── common/
-        │   └── main.ts
+        │   ├── modules/                  # Modules NestJS
+        │   │   ├── events/              
+        │   │   ├── rooms/
+        │   │   ├── users/
+        │   │   └── shared/
+        │   ├── common/                   # Code partagé
+        │   └── config/                   # Configuration
+        └── test/                         # Tests
+
+# Structure d'une Feature
+components/features/[feature-name]/
+├── [component-name]/                     # Composant principal
+│   ├── index.tsx                        # Export principal
+│   ├── component-name.tsx               # Si plus de 300 lignes
+│   ├── sub-components/                  # Sous-composants
+│   │   ├── part-one.tsx
+│   │   └── part-two.tsx
+│   └── __tests__/                      # Tests unitaires
+└── ui/                                  # UI spécifique
 ```
 
 ## Stratégies Techniques
 
 ### 🔄 Architecture Temps Réel
 
-- Communication basée sur WebSocket
-- Connexions par salle
-- Reconnexion automatique
-- File d'attente de messages
-- Limitation de débit
-- Mécanismes de fallback
+- **WebSocket avec Socket.IO**
+  - Connexions par salle (room)
+  - Reconnexion automatique
+  - File d'attente de messages
+  - Limitation de débit
+  - Mécanismes de fallback HTTP
+
+- **Streaming HLS**
+  - Multi-qualité adaptative
+  - Faible latence
+  - Fallback automatique
+  - Métriques en temps réel
 
 ### 📦 Stratégie de Cache
 
 1. **Redis**
-
-   - Données de session
-   - État temps réel
+   - Sessions utilisateurs
+   - État temps réel des rooms
    - File d'attente de messages
+   - Cache de données fréquentes
 
 2. **MongoDB**
-
    - Cache d'agrégation
    - Résultats de requêtes fréquentes
+   - Indexation optimisée
 
 3. **Frontend**
    - Cache statique Next.js
    - Cache SWR/TanStack Query
    - Service Worker (offline)
+   - Prefetching intelligent
 
 ### 🔒 Sécurité
 
 1. **Authentication**
-
    - JWT avec rotation
    - Sessions Redis
    - Refresh tokens
+   - OAuth 2.0 / OpenID Connect
 
 2. **API**
-
-   - Rate limiting
+   - Rate limiting par IP/user
    - CORS configuré
    - Validation des entrées
    - Sanitization des données
+   - Protection CSRF
 
 3. **Frontend**
    - CSP headers
    - XSS protection
    - CSRF tokens
+   - Secure cookies
+   - Input validation
 
 ### 📊 Monitoring
 
 1. **Performance**
-
-   - Métriques serveur
-   - Web Vitals
+   - Métriques serveur (CPU, mémoire)
+   - Web Vitals (LCP, FID, CLS)
    - Temps de réponse API
+   - Métriques WebSocket
+   - Métriques streaming
 
 2. **Erreurs**
-
    - Logging structuré
-   - Stack traces
+   - Stack traces détaillées
    - Error boundaries React
+   - Alerting automatique
+   - Traçage distribué
 
 3. **Business**
    - KPIs utilisateurs
    - Métriques streaming
    - Engagement temps réel
+   - Analytics événements
+   - Rapports automatisés
 
 ## Standards de Développement
 
@@ -148,6 +196,7 @@
 - Husky pour les git hooks
 - Jest pour les tests
 - TypeScript strict mode
+- Commitlint pour les commits
 
 ### 📝 Documentation
 
@@ -155,10 +204,31 @@
 - Swagger pour l'API
 - Storybook pour les composants
 - README par module
+- Guides de contribution
+- Documentation technique
 
 ### 🧪 Tests
 
-- Tests unitaires Jest
-- Tests E2E Cypress
-- Tests d'intégration
-- Tests de performance k6
+- **Tests Unitaires**
+  - Jest pour le code
+  - React Testing Library
+  - Tests de stores
+  - Tests de hooks
+
+- **Tests E2E**
+  - Cypress
+  - Tests de flux complets
+  - Tests multi-browser
+  - Tests responsive
+
+- **Tests d'Intégration**
+  - API endpoints
+  - WebSocket
+  - Base de données
+  - Cache
+
+- **Tests de Performance**
+  - k6 pour le load testing
+  - Lighthouse CI
+  - Tests de streaming
+  - Tests de concurrence

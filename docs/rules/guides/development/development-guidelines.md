@@ -15,35 +15,62 @@
 
 ```
 # Structure Globale du Projet
-/
-├── app/                    # Routes et pages Next.js
-│   └── [feature]/         # Pages et layouts par feature
-│       ├── page.tsx       # Page principale
-│       ├── layout.tsx     # Layout de la feature
-│       └── [id]/          # Routes dynamiques
-│           ├── page.tsx
-│           └── layout.tsx
-├── components/            # Composants React
-│   └── [feature]/        # Composants par feature
-│       ├── [component]/   # Dossier par composant majeur
-│       │   ├── index.tsx  # Export principal
-│       │   └── sub-components/ # Sous-composants
-│       └── ui/           # Composants UI réutilisables
-├── lib/                  # Utilitaires et helpers
-├── hooks/                # Custom hooks React
-├── store/               # Stores Zustand
-├── types/               # Types TypeScript
-└── utils/               # Utilitaires généraux
+├── apps/
+│   ├── web/                  # Application Next.js frontend
+│   │   ├── app/             
+│   │   │   ├── (auth)/     
+│   │   │   │   ├── events/
+│   │   │   │   │   ├── page.tsx          # Liste des événements
+│   │   │   │   │   ├── create/           # Création d'événement
+│   │   │   │   │   └── [slug]/           # Page d'événement
+│   │   │   │   │       ├── page.tsx
+│   │   │   │   │       ├── layout.tsx
+│   │   │   │   │       ├── event-page-client.tsx
+│   │   │   │   │       ├── @modal/        # Modales contextuelles
+│   │   │   │   │       ├── [roomSlug]/    # Page de room
+│   │   │   │   │       │   ├── page.tsx
+│   │   │   │   │       │   ├── room-content.tsx
+│   │   │   │   │       │   ├── speaker/   # Vue speaker
+│   │   │   │   │       │   └── mod/       # Vue modérateur
+│   │   │   │   │       └── manage/        # Gestion événement
+│   │   │   │   ├── admin/
+│   │   │   │   └── profil-settings/
+│   │   │   ├── (legal)/
+│   │   │   ├── (marketing)/
+│   │   │   └── i18n/
+│   │   ├── components/
+│   │   │   ├── core/
+│   │   │   │   ├── layout/
+│   │   │   │   ├── ui/
+│   │   │   │   └── shared/
+│   │   │   ├── features/
+│   │   │   │   ├── events-global/        # Composants événements
+│   │   │   │   ├── rooms-global/         # Composants rooms
+│   │   │   │   │   ├── room-detail/     
+│   │   │   │   │   │   ├── stream/      
+│   │   │   │   │   │   ├── chat/        
+│   │   │   │   │   │   ├── qa-section/
+│   │   │   │   │   │   ├── files-section/
+│   │   │   │   │   │   └── votes-section/
+│   │   │   │   └── users/
+│   │   │   └── pages/
+│   │   ├── lib/
+│   │   │   ├── store/
+│   │   │   ├── hooks/
+│   │   │   └── utils/
+│   │   └── types/
+│   └── api/                  # Backend NestJS
 
 # Structure d'une Feature
-components/[feature]/
-├── [component]/          # Un dossier par composant majeur
-│   ├── index.tsx        # Export principal
-│   ├── types.ts         # Types du composant
-│   ├── hooks.ts         # Hooks spécifiques
-│   ├── utils.ts         # Utilitaires
-│   └── __tests__/       # Tests unitaires
-└── ui/                  # Composants UI réutilisables
+components/features/[feature-name]/
+├── [component-name]/       # Un dossier par composant majeur
+│   ├── index.tsx          # Export principal
+│   ├── component-name.tsx # Si plus de 300 lignes
+│   ├── sub-components/    # Sous-composants si nécessaire
+│   │   ├── part-one.tsx
+│   │   └── part-two.tsx
+│   └── __tests__/        # Tests unitaires
+└── ui/                    # Composants UI réutilisables
 ```
 
 #### Conventions de Nommage
@@ -51,10 +78,11 @@ components/[feature]/
 ```typescript
 // Composants
 ComponentName/
-├── index.tsx
-├── types.ts
-├── hooks.ts
-├── utils.ts
+├── index.tsx              # Export principal
+├── component-name.tsx     # Si plus de 300 lignes
+├── sub-components/
+│   ├── part-one.tsx
+│   └── part-two.tsx
 └── __tests__/
     └── index.test.tsx
 
@@ -74,46 +102,44 @@ feature-name/
 #### Process
 
 1. **Planification**
-
    - Définir les responsabilités
    - Identifier les composants nécessaires
    - Planifier la structure des modules
+   - Vérifier la cohérence avec l'architecture
 
 2. **Implémentation**
-
    - Créer la structure de base
    - Développer les composants atomiques
    - Intégrer les modules
    - Ajouter les tests
+   - Respecter la limite de 300 lignes
 
 3. **Review**
    - Vérifier la taille des fichiers
    - Valider la modularité
    - Tester les performances
    - Documenter les choix
+   - Vérifier l'accessibilité
 
 ### 4. Gestion des États
 
 #### Zustand Store
 
 ```typescript
-// stores/feature.store.ts
+// lib/store/feature.store.ts
 interface FeatureState {
-  data: FeatureData[];
-  isLoading: boolean;
-  error: Error | null;
+  // État
+  data: FeatureData;
+  status: 'idle' | 'loading' | 'error';
+  
+  // Actions
+  fetch: () => Promise<void>;
+  update: (data: Partial<FeatureData>) => void;
+  reset: () => void;
 }
 
-// Séparation en petits stores
-const useFeatureStore = create<FeatureState>(set => ({
-  data: [],
-  isLoading: false,
-  error: null,
-
-  // Actions atomiques
-  setData: data => set({ data }),
-  setLoading: isLoading => set({ isLoading }),
-  setError: error => set({ error }),
+const useFeatureStore = create<FeatureState>((set) => ({
+  // Implémentation
 }));
 ```
 

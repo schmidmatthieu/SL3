@@ -7,105 +7,138 @@
 ## Props
 
 ```typescript
-interface ComponentProps {
+interface ComponentNameProps {
   // Props avec leurs types et descriptions
 }
 ```
 
 ## Structure
 
-```tsx
-export function ComponentName({ prop1, prop2 }: ComponentProps) {
-  // Hooks et logique
-  const { t } = useTranslation('components/component-name');
+```typescript
+// apps/web/components/features/[feature-name]/[component-name]/index.tsx
+
+import { useTranslation } from 'next-i18next';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/core/ui/button';
+
+export function ComponentName({ prop1, prop2 }: ComponentNameProps) {
+  const { t } = useTranslation('components/feature-name/component-name');
 
   return (
-    // JSX avec traductions
-    <div>
-      <h2>{t('title')}</h2>
-      <p>{t('description')}</p>
-      <div className="actions">
-        <button>{t('actions.submit')}</button>
-        <button>{t('actions.cancel')}</button>
+    <div className={cn('component-base-class', 'variant-class')}>
+      <h2 className="text-2xl font-bold">{t('title')}</h2>
+      <p className="text-muted-foreground">{t('description')}</p>
+      <div className="flex gap-2">
+        <Button variant="default">{t('actions.submit')}</Button>
+        <Button variant="outline">{t('actions.cancel')}</Button>
       </div>
     </div>
   );
 }
 ```
 
-## Styles
+## Organisation des Fichiers
 
-```typescript
-// Styles Tailwind et variants
+```
+apps/web/components/features/[feature-name]/
+└── [component-name]/
+    ├── index.tsx           # Composant principal
+    ├── component-name.tsx  # Si plus de 300 lignes
+    ├── sub-components/    # Si nécessaire
+    │   ├── part-one.tsx
+    │   └── part-two.tsx
+    └── __tests__/
+        └── index.test.tsx
 ```
 
 ## Traductions
 
-1. Ajouter le fichier de traduction pour chaque langue :
-```bash
-touch app/i18n/locales/fr/components/component-name.json
-touch app/i18n/locales/en/components/component-name.json
-touch app/i18n/locales/de/components/component-name.json
-touch app/i18n/locales/it/components/component-name.json
+1. Structure des fichiers :
+```
+apps/web/app/i18n/locales/
+├── fr/
+│   └── components/
+│       └── feature-name/
+│           └── component-name.json
+├── en/
+├── de/
+└── it/
 ```
 
-2. Structure du fichier de traduction :
+2. Contenu du fichier de traduction :
 ```json
-// app/i18n/locales/[lang]/components/component-name.json
 {
   "title": "",
   "description": "",
   "actions": {
     "submit": "",
     "cancel": ""
+  },
+  "errors": {
+    "required": "",
+    "invalid": ""
   }
 }
 ```
 
-3. Ajouter le namespace dans i18n.ts :
+## Styles
+
 ```typescript
-const translations = languages.reduce(
-  (acc, lang) => {
-    acc[lang] = {
-      translation: require(`./i18n/locales/${lang}/translation.json`),
-      'components/component-name': require(`./i18n/locales/${lang}/components/component-name.json`),
-    };
-    return acc;
-  },
-  {} as Record<string, { translation: any; 'components/component-name': any }>
-);
+// Utilisation de Tailwind avec shadcn/ui
+const styles = {
+  base: 'space-y-4 p-4 rounded-lg border',
+  variants: {
+    primary: 'bg-background text-foreground',
+    secondary: 'bg-muted text-muted-foreground'
+  }
+};
 ```
 
 ## Tests
 
 ```typescript
+import { render, screen } from '@testing-library/react';
+import { ComponentName } from './index';
+
 describe('ComponentName', () => {
   it('should render correctly', () => {
-    // Test cases
+    render(<ComponentName />);
+    expect(screen.getByRole('heading')).toBeInTheDocument();
   });
 });
 ```
 
 ## Accessibilité
 
-- [ ] Rôles ARIA appropriés
-- [ ] Support clavier
-- [ ] Contraste suffisant
-- [ ] Labels explicites
+- [ ] Utiliser les composants shadcn/ui pour l'accessibilité de base
+- [ ] Ajouter des rôles ARIA appropriés
+- [ ] Assurer le support clavier
+- [ ] Vérifier le contraste avec les variables Tailwind
+- [ ] Utiliser des labels explicites
+- [ ] Tester avec les lecteurs d'écran
 
 ## Responsive Design
 
-- [ ] Mobile first
-- [ ] Breakpoints standards
-- [ ] Touch targets adaptés
-- [ ] Layout fluide
+- [ ] Mobile first avec les classes Tailwind
+- [ ] Utiliser les breakpoints standards :
+  ```typescript
+  sm: '640px'
+  md: '768px'
+  lg: '1024px'
+  xl: '1280px'
+  2xl: '1536px'
+  ```
+- [ ] Touch targets min 44px
+- [ ] Layout fluide avec grid/flex
+- [ ] Images responsives avec next/image
 
 ## Performance
 
 - [ ] Lazy loading si nécessaire
 - [ ] Optimisation des re-renders
-- [ ] Gestion des états optimisée
-- [ ] Bundle size considéré
+- [ ] Memoization des callbacks
+- [ ] Optimisation des images
+- [ ] Gestion des suspense boundaries
 
 ## Documentation
 
