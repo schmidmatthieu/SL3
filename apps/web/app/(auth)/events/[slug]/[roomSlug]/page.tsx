@@ -23,7 +23,6 @@ export default function RoomPage({ params }: RoomPageProps) {
   const eventId = (routeParams?.eventId as string) || resolvedParams.eventId;
   const roomId = (routeParams?.roomId as string) || resolvedParams.roomId;
 
-  console.log('RoomPage params:', { eventId, roomId, routeParams });
   
   return (
     <Suspense

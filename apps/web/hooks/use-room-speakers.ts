@@ -12,10 +12,8 @@ export function useRoomSpeakers(eventSlug: string, speakerIds?: string[]) {
 
   useEffect(() => {
     const loadSpeakers = async () => {
-      console.log('useRoomSpeakers: Loading speakers for room:', { eventSlug, speakerIds });
       
       if (!eventSlug || !speakerIds?.length) {
-        console.log('useRoomSpeakers: No eventSlug or speakerIds, returning empty array');
         setSpeakers([]);
         return;
       }
@@ -24,10 +22,8 @@ export function useRoomSpeakers(eventSlug: string, speakerIds?: string[]) {
       setError(null);
       try {
         const allSpeakers = await getSpeakers(eventSlug);
-        console.log('useRoomSpeakers: All speakers loaded:', allSpeakers);
         
         if (!allSpeakers) {
-          console.log('useRoomSpeakers: No speakers returned');
           setSpeakers([]);
           return;
         }
@@ -40,7 +36,6 @@ export function useRoomSpeakers(eventSlug: string, speakerIds?: string[]) {
             id === speaker._id?.toString()
           )
         );
-        console.log('useRoomSpeakers: Filtered room speakers:', roomSpeakers);
         
         setSpeakers(roomSpeakers);
       } catch (error) {

@@ -15,7 +15,6 @@ export default function RoomsPage() {
 
   useEffect(() => {
     const loadEvent = async () => {
-      console.log('ManageEventPage - Fetching event with slug:', slug);
       if (!slug) {
         setLoading(false);
         return;

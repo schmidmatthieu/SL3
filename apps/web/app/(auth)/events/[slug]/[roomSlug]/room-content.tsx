@@ -41,7 +41,6 @@ export function RoomContent({ eventId: propsEventId, roomId: propsRoomId }: Room
       }
 
       try {
-        console.log('Chargement de la salle:', { eventId, roomId, params });
         await fetchEvent(eventId);
         setLocalError(null);
       } catch (err) {

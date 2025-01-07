@@ -76,7 +76,6 @@ export class MediaController {
     if (!file) {
       throw new Error('No file uploaded');
     }
-    console.log('Received file:', file);
     return this.mediaService.create(file, req.user.id);
   }
 

@@ -10,19 +10,13 @@ import { API_CONFIG } from '@/lib/config/api.config';
 
 const fetchEvent = async (idOrSlug: string): Promise<Event> => {
   try {
-    console.log('useEvent: Fetching event:', idOrSlug);
-    const { data } = await apiRequest<Event>(`${API_CONFIG.endpoints.events}/${idOrSlug}`);
-    console.log('useEvent: Event data received:', data);
+    
+    const { data } = await apiRequest<Event>(`${API_CONFIG.endpoints.events}/${idOrSlug}`);    
     
     if (!data) {
       throw new Error('No event data received');
-    }
-    
-    // S'assurer que l'événement a un slug et un ID
-    if (!data.slug || !data.id) {
-      console.warn('useEvent: Event data is missing slug or id:', data);
-    }
-    
+    } 
+
     return {
       ...data,
       id: data.id || data._id,
@@ -38,23 +32,19 @@ const fetchEvent = async (idOrSlug: string): Promise<Event> => {
       rooms: data.rooms || [],
       status: data.status || 'draft'
     };
-  } catch (error) {
-    console.error('useEvent: Error fetching event:', error);
+  } catch (error) {    
     throw error;
   }
 };
 
-const fetchRooms = async (eventSlug: string): Promise<Room[]> => {
-  console.log('useEvent: Fetching rooms for event:', eventSlug);
+const fetchRooms = async (eventSlug: string): Promise<Room[]> => {  
   try {
     const response = await apiRequest<Room[]>(`${API_CONFIG.endpoints.rooms}/event/${eventSlug}`);
-    if (!response || !response.data) {
-      console.warn('useEvent: No rooms data received');
+    if (!response || !response.data) {      
       return [];
     }
     
-    const data = response.data;
-    console.log('useEvent: Raw rooms data:', JSON.stringify(data, null, 2));
+    const data = response.data;    
     
     const processedData = data.map(room => ({
       ...room,
@@ -73,25 +63,25 @@ const fetchRooms = async (eventSlug: string): Promise<Room[]> => {
       }
     }));
     
-    console.log('useEvent: Processed rooms data:', JSON.stringify(processedData, null, 2));
+    
     return processedData;
   } catch (error) {
-    console.error('useEvent: Error fetching rooms:', error);
+    
     return [];
   }
 };
 
 const fetchSpeakers = async (eventSlug: string): Promise<Speaker[]> => {
-  console.log('useEvent: Fetching speakers for event:', eventSlug);
+  
   try {
     const response = await apiRequest<Speaker[]>(`${API_CONFIG.endpoints.events}/${eventSlug}/speakers`);
     if (!response || !response.data) {
-      console.warn('useEvent: No speakers data received');
+      
       return [];
     }
     
     const data = response.data;
-    console.log('useEvent: Raw speakers data:', JSON.stringify(data, null, 2));
+    
     
     const processedData = data.map(speaker => ({
       ...speaker,
@@ -105,10 +95,10 @@ const fetchSpeakers = async (eventSlug: string): Promise<Speaker[]> => {
       rooms: speaker.rooms || []
     }));
     
-    console.log('useEvent: Processed speakers data:', JSON.stringify(processedData, null, 2));
+    
     return processedData;
   } catch (error) {
-    console.error('useEvent: Error fetching speakers:', error);
+    
     return [];
   }
 };
@@ -139,8 +129,7 @@ export function useEvent(idOrSlug?: string) {
 
       const speakersData = await fetchSpeakers(eventData.slug);
       setSpeakers(speakersData);
-    } catch (err: any) {
-      console.error('useEvent: Error loading event data:', err);
+    } catch (err: any) {      
       setError(err.message || 'Failed to load event data');
     } finally {
       setIsLoading(false);

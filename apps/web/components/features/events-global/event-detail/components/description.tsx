@@ -23,13 +23,11 @@ const formatEventDate = (dateString: string | undefined | null, formatStr: strin
 
   try {
     const date = parseISO(dateString);
-    if (!isValid(date)) {
-      console.error('Invalid date:', dateString);
+    if (!isValid(date)) {      
       return '-';
     }
     return format(date, formatStr, { locale });
-  } catch (error) {
-    console.error('Error formatting date:', error);
+  } catch (error) {    
     return '-';
   }
 };

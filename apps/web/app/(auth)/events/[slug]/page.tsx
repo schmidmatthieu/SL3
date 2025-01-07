@@ -48,7 +48,6 @@ export default function EventPage({ params }: EventPageProps) {
           url: window.location.href,
         });
       } catch (error) {
-        console.error('Error sharing:', error);
       }
     }
   };
@@ -59,7 +58,6 @@ export default function EventPage({ params }: EventPageProps) {
   }
 
   if (isError) {
-    console.error('Error loading event:', error);
     return notFound();
   }
 
@@ -75,15 +73,7 @@ export default function EventPage({ params }: EventPageProps) {
     );
   }
 
-  // Debug logs
-  console.log('Event page - Event data:', { 
-    eventId: event.id,
-    speakersCount: event.speakers?.length,
-    roomsCount: event.rooms?.length,
-    speakers: event.speakers,
-    rooms: event.rooms
-  });
-
+  
   return (
     <div className="min-h-screen bg-background">
       <HeroBanner

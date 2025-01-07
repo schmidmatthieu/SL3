@@ -17,10 +17,7 @@ export default function EventPageClient({ eventId }: EventPageClientProps) {
   const router = useRouter();
   const { event, isLoading, isError } = useEvent(eventId);
 
-  useEffect(() => {
-    console.log('EventPage client component mounted');
-    console.log('Event ID:', eventId);
-    console.log('Current event:', event);
+  useEffect(() => {    
   }, [eventId, event]);
 
   if (!getAuthToken()) {

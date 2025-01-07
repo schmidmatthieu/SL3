@@ -27,12 +27,6 @@ export function RoomSpeakersDisplay({
   const { t } = useTranslation('components/event-detail');
   const { speakers, isLoading } = useRoomSpeakers(eventSlug, speakerIds);
 
-  console.log('RoomSpeakersDisplay:', {
-    eventSlug,
-    speakerIds,
-    isLoading,
-    speakers
-  });
 
   if (isLoading || !speakers?.length) {
     return null;

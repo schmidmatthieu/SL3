@@ -4,8 +4,6 @@ export const getAuthHeaders = (isMultipart = false) => {
     const tokenCookie = cookies.find(cookie => cookie.trim().startsWith('token='));
     const token = tokenCookie ? decodeURIComponent(tokenCookie.split('=')[1].trim()) : null;
 
-    console.log('Auth token status:', token ? 'Present' : 'Missing');
-
     const headers: Record<string, string> = {
       'Accept': 'application/json',
     };

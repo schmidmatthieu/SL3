@@ -97,7 +97,7 @@ export function EventForm({ onComplete }: { onComplete?: () => void }) {
 
       // Format to ISO string with Z at the end
       const isoString = utcDate.toISOString();
-      console.log('formatDate: Date formatée:', { original: date, formatted: isoString });
+      
       return isoString;
     } catch (error) {
       console.error('formatDate: Erreur lors du formatage:', error);
@@ -166,8 +166,7 @@ export function EventForm({ onComplete }: { onComplete?: () => void }) {
         imageUrl: data.imageUrl || DEFAULT_EVENT_IMAGE,
         status,
       };
-
-      console.log('onSubmit: Données formatées:', formattedData);
+      
 
       const event = await createEvent(formattedData);
 

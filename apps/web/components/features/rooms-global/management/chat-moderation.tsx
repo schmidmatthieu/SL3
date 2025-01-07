@@ -52,7 +52,6 @@ export function ChatModeration({ roomId }: ChatModerationProps) {
   );
 
   const handleUserAction = (userId: string, action: 'timeout' | 'ban' | 'mod') => {
-    console.log(`${action} user ${userId}`);
   };
 
   return (

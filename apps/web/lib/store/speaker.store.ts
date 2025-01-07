@@ -21,18 +21,15 @@ export const useSpeakerStore = create<SpeakerState>((set, get) => ({
   error: null,
 
   getSpeakers: async (eventSlug: string) => {
-    console.log('SpeakerStore: Fetching speakers for event:', eventSlug);
     const currentState = get();
     
     // Toujours recharger les speakers pour assurer la synchronisation
     set({ isLoading: true, error: null });
     try {
       const response = await speakerService.getAll(eventSlug);
-      console.log('SpeakerStore: Raw response:', response);
 
       // Vérifier si la réponse est un tableau
       const speakers = Array.isArray(response) ? response : response?.data || [];
-      console.log('SpeakerStore: Speakers received:', speakers);
 
       // Normaliser les IDs
       const normalizedSpeakers = speakers.map(speaker => ({
@@ -51,11 +48,9 @@ export const useSpeakerStore = create<SpeakerState>((set, get) => ({
   },
 
   createSpeaker: async (eventSlug: string, data: CreateSpeakerDto) => {
-    console.log('SpeakerStore: Creating speaker for event:', eventSlug);
     set({ isLoading: true, error: null });
     try {
       const speaker = await speakerService.create(eventSlug, data);
-      console.log('SpeakerStore: Speaker created:', speaker);
 
       // Normaliser l'ID du nouveau speaker
       const normalizedSpeaker = {
@@ -93,11 +88,9 @@ export const useSpeakerStore = create<SpeakerState>((set, get) => ({
   },
 
   updateSpeaker: async (eventSlug: string, speakerId: string, data: UpdateSpeakerDto) => {
-    console.log('SpeakerStore: Updating speaker for event:', eventSlug);
     set({ isLoading: true, error: null });
     try {
       const speaker = await speakerService.update(eventSlug, speakerId, data);
-      console.log('SpeakerStore: Speaker updated:', speaker);
 
       // Mettre à jour le store des speakers
       set(state => ({
@@ -138,7 +131,6 @@ export const useSpeakerStore = create<SpeakerState>((set, get) => ({
   },
 
   deleteSpeaker: async (eventSlug: string, speakerId: string) => {
-    console.log('SpeakerStore: Deleting speaker:', speakerId, 'from event:', eventSlug);
     set({ isLoading: true, error: null });
     try {
       await speakerService.delete(eventSlug, speakerId);

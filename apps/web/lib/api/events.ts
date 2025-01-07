@@ -8,7 +8,6 @@ const DEFAULT_EVENT_IMAGE = 'http://localhost:3001/uploads/url_1736013052197.jpe
 
 const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   try {
-    console.log('Fetching:', url);
     const headers = {
       ...getAuthHeaders(),
       ...options.headers,
@@ -39,7 +38,6 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
     }
 
     const data = await response.json();
-    console.log('API Response:', { url, status: response.status, data });
     return data;
   } catch (error) {
     console.error('Fetch error:', { url, error });
@@ -57,7 +55,6 @@ const transformEventResponse = (event: any): Event => {
     throw new Error('Invalid event data');
   }
 
-  console.log('Transforming event response:', event);
 
   // Assurons-nous que rooms est toujours un tableau
   const rooms = Array.isArray(event.rooms)
@@ -99,7 +96,6 @@ const transformEventResponse = (event: any): Event => {
     featured: event.featured || false,
   };
 
-  console.log('Transformed event:', transformedEvent);
   return transformedEvent;
 };
 
@@ -141,7 +137,6 @@ export const eventService = {
   },
 
   async getOne(idOrSlug: string): Promise<Event> {
-    console.log('Getting event:', idOrSlug);
     const data = await fetchWithAuth(`${API_CONFIG.endpoints.events}/${idOrSlug}`);
     return transformEventResponse(data);
   },
@@ -152,7 +147,6 @@ export const eventService = {
   },
 
   async create(data: Partial<Event>): Promise<Event> {
-    console.log('Creating event with data:', data);
 
     const response = await fetchWithAuth(`${API_CONFIG.endpoints.events}`, {
       method: 'POST',
@@ -173,7 +167,6 @@ export const eventService = {
   },
 
   async update(idOrSlug: string, data: Partial<Event>): Promise<Event> {
-    console.log('Updating event:', { idOrSlug, data });
 
     // Si nous avons un fichier image, utiliser FormData
     if (data.imageFile) {
@@ -187,7 +180,6 @@ export const eventService = {
       // Ajouter le fichier image
       formData.append('image', data.imageFile);
 
-      console.log('Sending form data with image');
       const response = await fetchWithAuth(`${API_CONFIG.endpoints.events}/${idOrSlug}`, {
         method: 'PATCH',
         body: formData,
@@ -197,7 +189,6 @@ export const eventService = {
     }
 
     // Sinon, envoyer les données en JSON
-    console.log('Sending JSON data');
     const response = await fetchWithAuth(`${API_CONFIG.endpoints.events}/${idOrSlug}`, {
       method: 'PATCH',
       headers: {

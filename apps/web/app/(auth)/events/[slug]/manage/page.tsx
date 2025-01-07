@@ -26,7 +26,6 @@ export default function ManageEventPage() {
       }
 
       try {
-        console.log('ManageEventPage - Fetching event with slug:', slug);
         await fetchEvent(slug);
       } catch (error) {
         console.error('ManageEventPage - Error fetching event:', error);
@@ -42,13 +41,11 @@ export default function ManageEventPage() {
   useEffect(() => {
     if (!isInitialLoad && !isLoading) {
       if (!user) {
-        console.log('ManageEventPage - No user, redirecting to login');
         router.push('/login');
         return;
       }
 
       if (!currentEvent) {
-        console.log('ManageEventPage - No event found, redirecting to events');
         router.push('/events');
         return;
       }
@@ -57,7 +54,6 @@ export default function ManageEventPage() {
       const isEventCreator = user.id === currentEvent.createdBy;
 
       if (!isAdmin && !isEventCreator) {
-        console.log('ManageEventPage - User not authorized, redirecting to events');
         router.push('/events');
       }
     }

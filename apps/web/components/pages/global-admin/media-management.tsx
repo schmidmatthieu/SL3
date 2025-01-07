@@ -184,7 +184,6 @@ export function MediaManagement({
   };
 
   const handleSelect = useCallback((url: string) => {
-    console.log('MediaManagement handleSelect called with:', { url, onSelect });
     
     if (!url) {
       console.error('No URL provided to handleSelect');
@@ -205,7 +204,6 @@ export function MediaManagement({
       return;
     }
 
-    console.log('Card clicked with URL:', url);
     onSelect(url);
   }, [onSelect]);
 

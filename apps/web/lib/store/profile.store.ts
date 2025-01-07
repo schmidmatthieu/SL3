@@ -11,7 +11,6 @@ const getAuthHeaders = () => {
           .find(row => row.startsWith('token='))
           ?.split('=')[1]
       : null;
-  console.log('Token:', token); // Debug log
   return {
     'Content-Type': 'application/json',
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -48,9 +47,7 @@ export const useProfileStore = create<ProfileState>(set => ({
   fetchProfile: async () => {
     set({ isLoading: true, error: null });
     try {
-      console.log('Fetching user data...');
       const headers = getAuthHeaders();
-      console.log('Headers:', headers);
 
       const response = await fetch(`${API_URL}/api/auth/me`, {
         headers,
@@ -62,7 +59,6 @@ export const useProfileStore = create<ProfileState>(set => ({
       }
 
       const data = await response.json();
-      console.log('Profile data:', data);
 
       set({ user: data, isLoading: false });
     } catch (error) {
@@ -118,7 +114,6 @@ export const useProfileStore = create<ProfileState>(set => ({
     try {
       // Utiliser le service media pour l'upload
       const uploadResponse = await mediaService.uploadImage(file);
-      console.log('Image uploaded successfully:', uploadResponse);
 
       // Mettre à jour le profil avec la nouvelle URL d'image
       const updateResponse = await fetch(`${API_URL}/api/auth/me`, {

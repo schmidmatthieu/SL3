@@ -25,7 +25,6 @@ export default function TestPage() {
         setError(error);
         setMessage("Erreur lors de l'ajout des données");
       } else {
-        console.log('Données insérées:', data);
         setMessage('Données ajoutées avec succès!');
         await fetchData();
       }
@@ -47,7 +46,6 @@ export default function TestPage() {
         console.error('Erreur fetch:', error);
         setError(error);
       } else {
-        console.log('Données récupérées:', data);
         setTestData(data);
       }
     } catch (e) {

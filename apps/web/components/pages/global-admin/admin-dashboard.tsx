@@ -48,7 +48,6 @@ export function AdminDashboard() {
 
   const handleMediaSelect = (url: string) => {
     // Vous pouvez ajouter ici la logique pour gérer la sélection d'un média
-    console.log('Media selected:', url);
   };
 
   return (

@@ -43,7 +43,6 @@ describe('Events Integration Tests', () => {
             uri: configService.get<string>('database.uri'),
             connectionFactory: (connection) => {
               connection.on('connected', () => {
-                console.log('MongoDB Test connected successfully');
               });
               return connection;
             },

@@ -32,13 +32,13 @@ export function HeroBanner({ event, onShare }: HeroBannerProps) {
           priority
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-primary-800/20" />
       </div>
 
       {/* Contenu */}
       <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-12">
         <div className="container mx-auto">
-          <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">{event.title}</h1>
+          <h1 className="text-5xl md:text-8xl font-bold text-white mb-4">{event.title}</h1>
           
           <div className="flex flex-wrap gap-4 text-white/90 mb-6">
             {formattedDate && (
@@ -61,7 +61,7 @@ export function HeroBanner({ event, onShare }: HeroBannerProps) {
               onClick={() => window.location.href = '#register'}
               className="bg-primary hover:bg-primary/90"
             >
-              {t('register')}
+              {t('hero.register')}
             </Button>
             <Button
               size="lg"
@@ -70,7 +70,7 @@ export function HeroBanner({ event, onShare }: HeroBannerProps) {
               onClick={onShare}
             >
               <Share className="h-4 w-4 mr-2" />
-              {t('share')}
+              {t('hero.share')}
             </Button>
           </div>
         </div>

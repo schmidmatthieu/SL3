@@ -14,8 +14,7 @@ interface EventStatusBadgeProps {
   showLabel?: boolean;
 }
 
-const getStatusConfig = (status: EventStatus) => {
-  console.log('getStatusConfig - status:', status);
+const getStatusConfig = (status: EventStatus) => {  
   switch (status.toLowerCase()) {
     case 'active':
       return {
@@ -62,7 +61,7 @@ const getStatusConfig = (status: EventStatus) => {
         }
       };
     default:
-      console.log('Unknown status:', status);
+      
       return {
         icon: Clock,
         baseColor: 'bg-secondary text-black',
@@ -77,16 +76,16 @@ const getStatusConfig = (status: EventStatus) => {
 };
 
 export function EventStatusBadge({ event, className, showLabel = true }: EventStatusBadgeProps) {
-  console.log('EventStatusBadge - event:', event);
+  
   const { t } = useTranslation('components/event-detail');
   const currentStatus = useEventStatus(event);
-  console.log('EventStatusBadge - currentStatus:', currentStatus);
+  
   const config = getStatusConfig(currentStatus);
   const Icon = config.icon;
 
   const getDisplayStatus = (status: EventStatus) => {
     const statusKey = status.toLowerCase();
-    console.log('getDisplayStatus - statusKey:', statusKey);
+    
     if (statusKey === 'active') {
       return t('events.status.live');
     }
@@ -95,7 +94,7 @@ export function EventStatusBadge({ event, className, showLabel = true }: EventSt
     }
 
     const translation = t(`events.status.${statusKey}`);
-    console.log('getDisplayStatus - translation:', translation);
+    
     return translation;
   };
 

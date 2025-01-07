@@ -56,9 +56,7 @@ export const useEventStore = create<EventState>()(
       fetchEvent: async (idOrSlug: string) => {
         try {
           set({ isLoading: true, error: null });
-          console.log('Fetching event:', idOrSlug);
           const event = await eventService.getOne(idOrSlug);
-          console.log('Fetched event:', event);
           set({ currentEvent: event, isLoading: false });
           return event;
         } catch (error: any) {
@@ -92,9 +90,7 @@ export const useEventStore = create<EventState>()(
       updateEvent: async (idOrSlug: string, data: Partial<Event>) => {
         try {
           set({ isLoading: true, error: null });
-          console.log('Updating event with data:', data);
           const updatedEvent = await eventService.update(idOrSlug, data);
-          console.log('Received updated event:', updatedEvent);
           
           set((state) => {
             // Mise à jour de l'événement dans la liste
@@ -109,11 +105,6 @@ export const useEventStore = create<EventState>()(
               (state.currentEvent.id === updatedEvent.id || state.currentEvent._id === updatedEvent._id)
               ? { ...state.currentEvent, ...updatedEvent }
               : state.currentEvent;
-
-            console.log('Updated state:', {
-              events: updatedEvents,
-              currentEvent: newCurrentEvent
-            });
 
             return {
               events: updatedEvents,

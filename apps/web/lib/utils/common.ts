@@ -14,11 +14,7 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
   // Ensure URL is properly formatted with API base URL
   const fullUrl = url.startsWith('http') ? url : `${apiUrl}${url}`;
 
-  if (!token) {
-    console.warn('No auth token available for request:', {
-      url: fullUrl,
-      method: options.method || 'GET',
-    });
+  if (!token) {    
     throw new Error('Authentication required');
   }
 
@@ -34,22 +30,9 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
       headers,
     });
 
-    // Log request details for debugging (excluding sensitive data)
-    console.log('API Request:', {
-      url: fullUrl,
-      method: options.method || 'GET',
-      headers: {
-        ...headers,
-        Authorization: 'Bearer [HIDDEN]',
-      },
-    });
 
     return response;
-  } catch (error) {
-    console.error('Network error during API request:', {
-      url: fullUrl,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
+  } catch (error) {    
     throw new Error('Network error occurred');
   }
 }
@@ -60,14 +43,7 @@ export async function apiRequest<T>(
 ): Promise<{ status: number; data: T }> {
   try {
     const response = await fetchWithAuth(url, options);
-
-    // Log response details
-    console.log('API Response:', {
-      url,
-      status: response.status,
-      statusText: response.statusText,
-      contentType: response.headers.get('content-type'),
-    });
+    
 
     if (!response.ok) {
       if (response.status === 401) {
@@ -93,11 +69,7 @@ export async function apiRequest<T>(
       status: response.status,
       data,
     };
-  } catch (error) {
-    console.error('API Error:', {
-      url,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
+  } catch (error) {    
     throw error;
   }
 }

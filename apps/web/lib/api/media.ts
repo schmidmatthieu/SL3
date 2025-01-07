@@ -67,12 +67,7 @@ export const mediaService = {
     const formData = new FormData();
     formData.append('file', file);
 
-    try {
-      console.log('Sending file upload request:', {
-        filename: file.name,
-        type: file.type,
-        size: file.size,
-      });
+    try {      
 
       const response = await fetchWithAuth(
         `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.media}/upload`,

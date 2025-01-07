@@ -23,8 +23,6 @@ export function Speakers({ speakers = [], rooms = [] }: SpeakersProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Debug logs
-  console.log('Speakers component - Received props:', { speakers, rooms });
 
   // Filtrer les speakers en fonction de la recherche
   const filteredSpeakers = (speakers || []).filter(speaker => {

@@ -29,15 +29,12 @@ async function generateUniqueSlug(
 }
 
 async function migrateCollection(connection: Connection, collectionName: string, titleField: string) {
-  console.log(`\nMigrating ${collectionName}...`);
   const collection = connection.collection(collectionName);
 
   // Supprimer l'index s'il existe
   try {
     await collection.dropIndex('slug_1');
-    console.log('Dropped existing slug index');
   } catch (error) {
-    console.log('No existing slug index to drop');
   }
 
   // Get all documents that need a slug
@@ -48,7 +45,6 @@ async function migrateCollection(connection: Connection, collectionName: string,
     ]
   }).toArray();
   
-  console.log(`Found ${documents.length} documents that need slugs`);
 
   let updated = 0;
   for (const doc of documents) {
@@ -67,15 +63,12 @@ async function migrateCollection(connection: Connection, collectionName: string,
     updated++;
 
     if (updated % 100 === 0) {
-      console.log(`Updated ${updated} documents`);
     }
   }
 
   // Create the unique index after all documents have been updated
   await collection.createIndex({ slug: 1 }, { unique: true, sparse: true });
-  console.log(`Created unique slug index`);
 
-  console.log(`Completed migrating ${updated} documents in ${collectionName}`);
 }
 
 async function main() {
@@ -84,9 +77,7 @@ async function main() {
   try {
     // Connexion à MongoDB
     const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/sl3_beta';
-    console.log('Connecting to MongoDB...');
     connection = (await connect(MONGODB_URI)).connection;
-    console.log('Connected to MongoDB');
 
     // Migrer les événements
     await migrateCollection(connection, 'events', 'title');
@@ -94,7 +85,6 @@ async function main() {
     // Migrer les rooms
     await migrateCollection(connection, 'rooms', 'name');
 
-    console.log('\nMigration completed successfully!');
   } catch (error) {
     console.error('Migration failed:', error);
     process.exit(1);

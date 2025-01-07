@@ -49,7 +49,6 @@ export function useEventForm(event: Event) {
 
   const formatDate = (date: Date | null): string | undefined => {
     if (!date) {
-      console.log('formatDate: date est null');
       return undefined;
     }
 
@@ -72,7 +71,6 @@ export function useEventForm(event: Event) {
 
       // Format to ISO string with Z at the end
       const isoString = utcDate.toISOString();
-      console.log('formatDate: Date formatée:', { original: date, formatted: isoString });
       return isoString;
     } catch (error) {
       console.error('formatDate: Erreur lors du formatage:', error);
@@ -86,7 +84,6 @@ export function useEventForm(event: Event) {
         // S'assurer que la date est valide
         const validDate = new Date(date.getTime());
         if (!isNaN(validDate.getTime())) {
-          console.log('New start date:', validDate.toISOString());
           setFormData(prev => ({
             ...prev,
             startDateTime: validDate,
@@ -116,7 +113,6 @@ export function useEventForm(event: Event) {
         // S'assurer que la date est valide
         const validDate = new Date(date.getTime());
         if (!isNaN(validDate.getTime())) {
-          console.log('New end date:', validDate.toISOString());
           setFormData(prev => ({
             ...prev,
             endDateTime: validDate,
@@ -197,14 +193,12 @@ export function useEventForm(event: Event) {
         featured: formData.featured ?? event.featured,
       };
 
-      console.log('Sending update data:', updateData);
 
       if (formData.imageFile) {
         updateData.imageFile = formData.imageFile;
       }
 
       const updatedEvent = await updateEvent(event.id, updateData);
-      console.log('Received updated event:', updatedEvent);
       
       toast({
         title: t('eventSettings.form.success.title'),

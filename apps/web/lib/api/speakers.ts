@@ -18,7 +18,6 @@ interface UpdateSpeakerDto extends Partial<CreateSpeakerDto> {}
 
 class SpeakerService {
   private async fetchWithAuth(url: string, options: RequestInit = {}) {
-    console.log('SpeakerService: Fetching URL:', url);
     
     const token = document.cookie
       .split('; ')
@@ -30,7 +29,6 @@ class SpeakerService {
       throw new Error('Authentication required');
     }
 
-    console.log('SpeakerService: Token found, adding to headers');
     
     const headers = {
       'Content-Type': 'application/json',
@@ -57,7 +55,6 @@ class SpeakerService {
       }
 
       const data = await response.json();
-      console.log('SpeakerService: API Response:', { url, data });
       return data;
     } catch (error) {
       console.error('SpeakerService: Request failed:', error);
@@ -70,7 +67,6 @@ class SpeakerService {
       `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventSlug}/speakers`
     );
     const speakers = Array.isArray(response) ? response : response?.data || [];
-    console.log('SpeakerService: Processed speakers:', speakers);
     return speakers;
   }
 
@@ -104,7 +100,6 @@ class SpeakerService {
   }
 
   async delete(eventSlug: string, speakerSlug: string): Promise<void> {
-    console.log('SpeakerService: Deleting speaker:', speakerSlug, 'from event:', eventSlug);
     await this.fetchWithAuth(
       `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventSlug}/speakers/${speakerSlug}`,
       {

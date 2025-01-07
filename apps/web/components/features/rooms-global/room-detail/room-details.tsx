@@ -18,10 +18,8 @@ interface RoomDetailsProps {
 }
 
 export function RoomDetails({ event, roomId }: RoomDetailsProps) {
-  console.log('RoomDetails props:', { event, roomId });
 
   const { currentRoom, isLoading, streamInfo } = useRoom(event._id, roomId);
-  console.log('Room hook state:', { currentRoom, isLoading, streamInfo });
 
   if (!event.rooms) {
     return (

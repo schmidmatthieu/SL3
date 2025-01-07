@@ -20,14 +20,7 @@ export function RoomDetails({ event, roomId }: RoomDetailsProps) {
   const { t } = useTranslation('room');
   const { currentRoom, isLoading, error, streamInfo } = useRoom(event.id, roomId);
 
-  console.log('RoomDetails: Rendering', { 
-    eventId: event.id, 
-    roomId, 
-    hasCurrentRoom: !!currentRoom,
-    isLoading,
-    error
-  });
-
+  
   if (error) {
     return (
       <Alert variant="destructive" className="mb-4">

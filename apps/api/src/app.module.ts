@@ -23,7 +23,6 @@ import { LoggerMiddleware } from './middleware/logger.middleware';
         uri: configService.get<string>('database.uri'),
         connectionFactory: (connection) => {
           connection.on('connected', () => {
-            console.log('MongoDB connected successfully');
           });
           connection.on('error', (error) => {
             console.error('MongoDB connection error:', error);

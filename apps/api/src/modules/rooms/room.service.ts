@@ -68,7 +68,6 @@ export class RoomService {
   }
 
   async findAll(eventId: string): Promise<Room[]> {
-    console.log('Finding rooms for event:', eventId);
 
     // Si ce n'est pas un ObjectId valide, c'est peut-être un slug d'événement
     let targetEventId = eventId;
@@ -87,16 +86,7 @@ export class RoomService {
       .populate('moderators')
       .sort({ startTime: 1 })
       .exec();
-
-    console.log(
-      'Found rooms:',
-      rooms.map((r) => ({
-        id: r._id,
-        name: r.name,
-        status: r.status,
-        speakers: r.speakers,
-      })),
-    );
+    
     return rooms;
   }
 
@@ -130,7 +120,6 @@ export class RoomService {
   }
 
   async findByEventSlug(eventSlug: string): Promise<Room[]> {
-    console.log('Finding rooms for event slug:', eventSlug);
 
     // Trouver d'abord l'événement par son slug
     const event = await this.eventService.findBySlug(eventSlug);
@@ -147,7 +136,6 @@ export class RoomService {
       .sort({ startTime: 1 })
       .exec();
 
-    console.log(`Found ${rooms.length} rooms for event ${eventSlug}`);
     return rooms;
   }
 

@@ -82,22 +82,19 @@ export function RoomCard({
   const { t } = useTranslation(['components/event-detail', 'common']);
   const router = useRouter();
 
-  console.log('RoomCard received full room data:', room);
 
   // Si la room n'a pas d'ID ou d'eventId, utiliser _id et l'eventId des props
   const roomId = room.id || room._id;
   const roomEventId = room.eventId || eventSlug;
 
-  if (!roomId || !roomEventId) {
-    console.error('Room is missing required fields:', { roomId, roomEventId, room });
+  if (!roomId || !roomEventId) {    
     return null;
   }
 
   const handleClick = () => {
     if (room.status === 'cancelled') {
       return;
-    }
-    console.log('Navigating to room:', { eventSlug, roomId });
+    }    
     router.push(`/events/${eventSlug}/rooms/${roomId}`);
   };
 
@@ -191,11 +188,7 @@ export function RoomCard({
               </div>
 
               {room.speakers && room.speakers.length > 0 && (
-                <>
-                  {console.log('Rendering RoomSpeakersDisplay with:', {
-                    speakerIds: room.speakers,
-                    eventSlug: roomEventId
-                  })}
+                <>                  
                   <RoomSpeakersDisplay 
                     speakerIds={room.speakers} 
                     eventSlug={roomEventId}

@@ -55,11 +55,9 @@ async function bootstrap() {
 
   // Serve static files from public directory
   const publicPath = join(__dirname, '..', '..', 'public');
-  console.log('Serving static files from:', publicPath);
   
   // Middleware spécifique pour les fichiers dans /uploads
   app.use('/uploads', (req, res, next) => {
-    console.log('Accessing uploads:', req.url);
     express.static(join(publicPath, 'uploads'), {
       index: false,
       setHeaders: (res) => {
@@ -75,7 +73,6 @@ async function bootstrap() {
   // Start the server
   const port = configService.get<number>('PORT', 3001);
   await app.listen(port);
-  console.log(`Application is running on: ${await app.getUrl()}`);
 }
 
 bootstrap();

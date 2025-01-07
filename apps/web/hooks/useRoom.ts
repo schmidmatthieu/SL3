@@ -27,27 +27,21 @@ export function useRoom(eventId: string, roomId: string): UseRoomResult {
   useEffect(() => {
     const loadRoom = async () => {
       if (!eventId || !roomId) {
-        console.log('useRoom: Invalid IDs', { eventId, roomId });
         setError('Invalid event or room ID');
         setIsLoading(false);
         return;
       }
 
       try {
-        console.log('useRoom: Loading room data', { eventId, roomId, currentEvent });
         if (!currentEvent || currentEvent.id !== eventId) {
-          console.log('useRoom: Fetching event');
           await fetchEvent(eventId);
-          console.log('useRoom: Event fetched', { currentEvent });
         }
 
         if (currentEvent && currentEvent.rooms) {
-          console.log('useRoom: Looking for room in event rooms', { 
             availableRooms: currentEvent.rooms.map(r => ({ id: r.id, name: r.name }))
           });
           const room = currentEvent.rooms.find(r => r.id === roomId);
           if (room) {
-            console.log('useRoom: Room found', { room });
             setCurrentRoom(room);
             if (room.status === 'live') {
               setStreamInfo({
@@ -57,12 +51,10 @@ export function useRoom(eventId: string, roomId: string): UseRoomResult {
             }
             setError(null);
           } else {
-            console.log('useRoom: Room not found', { roomId });
             setError('Salle non trouvée');
             setCurrentRoom(null);
           }
         } else {
-          console.log('useRoom: No rooms available', { currentEvent });
           setError('Aucune salle disponible');
           setCurrentRoom(null);
         }
