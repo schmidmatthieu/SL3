@@ -1,5 +1,6 @@
 export interface Speaker {
-  id: string;
+  id?: string;
+  _id?: string;
   firstName?: string;
   lastName: string;
   role?: string;
@@ -8,19 +9,27 @@ export interface Speaker {
   imageUrl?: string;
   rooms?: string[];
   eventId: string;
-  createdAt: string;
-  updatedAt: string;
-  sessions?: Array<{
-    id: string;
-    title: string;
-    time: string;
-  }>;
+  createdAt?: string;
+  updatedAt?: string;
   socialLinks?: {
     linkedin?: string;
     twitter?: string;
   };
 }
 
-export type CreateSpeakerDto = Omit<Speaker, 'id' | 'createdAt' | 'updatedAt' | 'sessions'>;
+export interface CreateSpeakerDto {
+  firstName?: string;
+  lastName: string;
+  role?: string;
+  company?: string;
+  bio?: string;
+  imageUrl?: string;
+  eventId: string;
+  rooms?: string[];
+  socialLinks?: {
+    linkedin?: string;
+    twitter?: string;
+  };
+}
 
 export type UpdateSpeakerDto = Partial<CreateSpeakerDto>;

@@ -35,6 +35,117 @@
       "description": "This action is irreversible. The event and all associated data will be permanently deleted.",
       "confirm": "Delete",
       "cancel": "Cancel"
+    },
+    "messages": {
+      "success": "Success",
+      "successDescription": "Changes have been saved successfully",
+      "error": "Error",
+      "errorDescription": "An error occurred while updating the event",
+      "dateError": "Start date must be before end date",
+      "invalidDates": "Start and end dates must be valid",
+      "invalidDate": "Invalid date",
+      "startDateError": "Selected start date is not valid",
+      "endDateError": "Selected end date is not valid",
+      "deleteSuccess": "Event has been deleted successfully",
+      "deleteError": "Error deleting event",
+      "cancelSuccess": "Event has been cancelled successfully",
+      "cancelError": "Error cancelling event",
+      "reactivateSuccess": "Event has been reactivated successfully",
+      "reactivateError": "Error reactivating event",
+      "featuredSuccess": "Featured status has been updated successfully",
+      "featuredError": "Error updating featured status",
+      "missingEventId": "Missing event ID",
+      "invalidImageUrl": "Image URL is not valid"
+    },
+    "speakers": {
+      "title": "Speaker Management",
+      "description": "Add and manage speakers for your event",
+      "add": "Add Speaker",
+      "addTitle": "Add New Speaker",
+      "edit": "Edit Speaker",
+      "editTitle": "Edit Speaker",
+      "formDescription": "Fill in the speaker's information",
+      "create": "Create Speaker",
+      "save": "Save Changes",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "role": "Role",
+      "company": "Company",
+      "linkedin": "LinkedIn",
+      "twitter": "Twitter",
+      "bio": "Biography",
+      "filters": {
+        "search": "Search speakers",
+        "noSpeakers": "No speakers found"
+      },
+      "form": {
+        "description": "Fill in the speaker's information",
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "role": "Role",
+        "company": "Company",
+        "bio": "Biography",
+        "bioPlaceholder": "Enter a short biography of the speaker...",
+        "photo": "Photo",
+        "rooms": "Assigned Rooms",
+        "searchRooms": "Search for a room...",
+        "roomsDescription": "Select the rooms where this speaker will present",
+        "noRooms": "No rooms available",
+        "linkedin": "LinkedIn",
+        "twitter": "Twitter"
+      },
+      "list": {
+        "title": "Speakers List",
+        "empty": "No speakers",
+        "search": "Search for a speaker",
+        "noSpeakers": "No speakers found"
+      },
+      "table": {
+        "speaker": "Speaker",
+        "roleCompany": "Role & Company",
+        "rooms": "Rooms",
+        "bio": "Biography",
+        "social": "Social Media",
+        "actions": "Actions"
+      },
+      "image": {
+        "update": "Update Photo",
+        "updateDescription": "Select a new photo for this speaker",
+        "success": "Photo updated successfully",
+        "error": "Error updating photo"
+      },
+      "delete": {
+        "title": "Delete Speaker",
+        "description": "Are you sure you want to delete this speaker? This action cannot be undone.",
+        "confirm": "Delete",
+        "cancel": "Cancel"
+      },
+      "success": {
+        "create": "Speaker created successfully",
+        "update": "Speaker updated successfully",
+        "delete": "Speaker deleted successfully"
+      },
+      "error": {
+        "title": "Error",
+        "description": "An error occurred while processing your request",
+        "save": "Failed to save speaker",
+        "delete": "Failed to delete speaker",
+        "load": "Failed to load speakers"
+      }
     }
+  },
+  "speakers": {
+    "addTitle": "Add New Speaker",
+    "editTitle": "Edit Speaker",
+    "formDescription": "Fill in the speaker's information",
+    "create": "Create Speaker",
+    "save": "Save Changes",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "role": "Role",
+    "company": "Company",
+    "linkedin": "LinkedIn",
+    "twitter": "Twitter",
+    "bio": "Biography"
   }
 }

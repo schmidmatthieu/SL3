@@ -1,6 +1,7 @@
 {
   "hero": {
-    "register": "Register for Event",
+    "title": "Event",
+    "register": "Register for event",
     "share": "Share"
   },
   "description": {
@@ -10,6 +11,10 @@
     "startTime": "Starts at {{time}}",
     "endTime": "Ends at {{time}}",
     "endDate": "Ends on {{date}}",
+    "when": "When",
+    "where": "Where",
+    "capacity": "Capacity",
+    "virtual": "Virtual",
     "participants": "{{current}}/{{max}} participants",
     "participationProgress": "Registration Progress"
   },
@@ -23,7 +28,9 @@
       "endsOn": "ends on",
       "startsOn": "starts on",
       "at": "at"
-    }
+    },
+    "noRooms": "No rooms have been created for this event.",
+    "createRoom": "Create Room"
   },
   "speakers": {
     "title": "Speakers",
@@ -31,14 +38,15 @@
     "noResults": "No speakers found",
     "bio": "Biography",
     "sessions": "Sessions",
-    "noSpeakers": "No speakers"
+    "noSpeakers": "No speakers have been added to this event.",
+    "addSpeaker": "Add Speaker"
   },
   "rooms": {
     "title": "Rooms",
-    "noRooms": "No rooms available",
-    "create": "Create Room",
-    "edit": "Edit Room",
-    "delete": "Delete Room",
+    "noRooms": "No rooms have been created for this event.",
+    "create": "Create room",
+    "edit": "Edit room",
+    "delete": "Delete room",
     "confirmDelete": "Are you sure you want to delete this room?",
     "status": {
       "live": "Live",
@@ -49,7 +57,7 @@
     },
     "filters": {
       "language": "Language",
-      "all": "All Languages",
+      "all": "All",
       "fr": "French",
       "en": "English",
       "de": "German",

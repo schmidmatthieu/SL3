@@ -5,19 +5,24 @@ export type EventStatus = 'draft' | 'scheduled' | 'active' | 'ended' | 'cancelle
 
 export interface Event {
   _id?: string;
-  id?: string;
+  id: string;
+  slug: string;
   title: string;
   description: string;
+  shortDescription?: string;
   startDateTime: string;
   endDateTime: string;
-  status: EventStatus;
   imageUrl?: string;
-  location?: string; // Optional location field for virtual or physical events
-  rooms: Room[];
+  status: EventStatus;
+  location?: string;
+  maxParticipants: number;
+  currentParticipants: number;
+  rooms?: Room[];
   speakers: Speaker[];
-  createdBy: string;
+  createdBy?: string | null;
   createdAt: string;
   updatedAt: string;
+  featured?: boolean;
 }
 
 export interface CreateEventDTO {
@@ -26,6 +31,9 @@ export interface CreateEventDTO {
   startDateTime: string;
   endDateTime: string;
   imageUrl?: string;
+  bannerUrl?: string;
+  location?: string;
+  maxParticipants?: number;
 }
 
 export interface UpdateEventDTO {
@@ -35,4 +43,7 @@ export interface UpdateEventDTO {
   endDateTime?: string;
   status?: EventStatus;
   imageUrl?: string;
+  bannerUrl?: string;
+  location?: string;
+  maxParticipants?: number;
 }

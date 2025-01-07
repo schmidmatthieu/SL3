@@ -56,6 +56,96 @@
       "featuredError": "Erreur lors de la mise à jour du statut de mise en avant",
       "missingEventId": "ID de l'événement manquant",
       "invalidImageUrl": "L'URL de l'image n'est pas valide"
+    },
+    "speakers": {
+      "title": "Gestion des intervenants",
+      "description": "Ajoutez et gérez les intervenants de votre événement",
+      "add": "Ajouter un intervenant",
+      "addTitle": "Ajouter un intervenant",
+      "edit": "Modifier l'intervenant",
+      "editTitle": "Modifier l'intervenant",
+      "formDescription": "Remplissez les informations de l'intervenant",
+      "create": "Créer l'intervenant",
+      "save": "Enregistrer les modifications",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "role": "Rôle",
+      "company": "Entreprise",
+      "linkedin": "LinkedIn",
+      "twitter": "Twitter",
+      "bio": "Biographie",
+      "filters": {
+        "search": "Rechercher des intervenants",
+        "noSpeakers": "Aucun intervenant trouvé"
+      },
+      "form": {
+        "description": "Remplissez les informations de l'intervenant",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "role": "Rôle",
+        "company": "Entreprise",
+        "bio": "Biographie",
+        "bioPlaceholder": "Entrez une courte biographie de l'intervenant...",
+        "photo": "Photo",
+        "rooms": "Salles assignées",
+        "searchRooms": "Rechercher une salle...",
+        "roomsDescription": "Sélectionnez les salles où cet intervenant présentera",
+        "noRooms": "Aucune salle disponible",
+        "linkedin": "LinkedIn",
+        "twitter": "Twitter"
+      },
+      "list": {
+        "title": "Liste des intervenants",
+        "empty": "Aucun intervenant",
+        "search": "Rechercher un intervenant",
+        "noSpeakers": "Aucun intervenant trouvé"
+      },
+      "table": {
+        "speaker": "Intervenant",
+        "roleCompany": "Rôle & Entreprise",
+        "rooms": "Salles",
+        "bio": "Biographie",
+        "social": "Réseaux sociaux",
+        "actions": "Actions"
+      },
+      "image": {
+        "update": "Modifier la photo",
+        "updateDescription": "Sélectionnez une nouvelle photo pour cet intervenant",
+        "success": "Photo mise à jour avec succès",
+        "error": "Erreur lors de la mise à jour de la photo"
+      },
+      "delete": {
+        "title": "Supprimer l'intervenant",
+        "description": "Êtes-vous sûr de vouloir supprimer cet intervenant ? Cette action ne peut pas être annulée.",
+        "confirm": "Supprimer",
+        "cancel": "Annuler"
+      },
+      "success": {
+        "create": "Intervenant créé avec succès",
+        "update": "Intervenant mis à jour avec succès",
+        "delete": "Intervenant supprimé avec succès"
+      },
+      "error": {
+        "title": "Erreur",
+        "description": "Une erreur est survenue lors du traitement de votre demande",
+        "save": "Échec de l'enregistrement de l'intervenant",
+        "delete": "Échec de la suppression de l'intervenant",
+        "load": "Échec du chargement des intervenants"
+      }
     }
+  },
+  "speakers": {
+    "addTitle": "Ajouter un intervenant",
+    "editTitle": "Modifier l'intervenant",
+    "formDescription": "Remplissez les informations de l'intervenant",
+    "create": "Créer l'intervenant",
+    "save": "Enregistrer les modifications",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "role": "Rôle",
+    "company": "Entreprise",
+    "linkedin": "LinkedIn",
+    "twitter": "Twitter",
+    "bio": "Biographie"
   }
 }

@@ -8,11 +8,11 @@ interface SpeakerState {
   speakers: Speaker[];
   isLoading: boolean;
   error: string | null;
-  getSpeakers: (eventId: string) => Promise<Speaker[] | void>;
-  createSpeaker: (eventId: string, data: CreateSpeakerDto) => Promise<Speaker>;
-  updateSpeaker: (eventId: string, speakerId: string, data: UpdateSpeakerDto) => Promise<Speaker>;
-  deleteSpeaker: (eventId: string, speakerId: string) => Promise<void>;
-  uploadImage: (eventId: string, speakerId: string, file: File) => Promise<string>;
+  getSpeakers: (eventSlug: string) => Promise<Speaker[] | void>;
+  createSpeaker: (eventSlug: string, data: CreateSpeakerDto) => Promise<Speaker>;
+  updateSpeaker: (eventSlug: string, speakerId: string, data: UpdateSpeakerDto) => Promise<Speaker>;
+  deleteSpeaker: (eventSlug: string, speakerId: string) => Promise<void>;
+  uploadImage: (eventSlug: string, speakerId: string, file: File) => Promise<string>;
 }
 
 export const useSpeakerStore = create<SpeakerState>((set, get) => ({
@@ -20,14 +20,18 @@ export const useSpeakerStore = create<SpeakerState>((set, get) => ({
   isLoading: false,
   error: null,
 
-  getSpeakers: async (eventId: string) => {
-    console.log('SpeakerStore: Fetching speakers for event:', eventId);
+  getSpeakers: async (eventSlug: string) => {
+    console.log('SpeakerStore: Fetching speakers for event:', eventSlug);
     const currentState = get();
     
     // Toujours recharger les speakers pour assurer la synchronisation
     set({ isLoading: true, error: null });
     try {
-      const speakers = await speakerService.getAll(eventId);
+      const response = await speakerService.getAll(eventSlug);
+      console.log('SpeakerStore: Raw response:', response);
+
+      // Vérifier si la réponse est un tableau
+      const speakers = Array.isArray(response) ? response : response?.data || [];
       console.log('SpeakerStore: Speakers received:', speakers);
 
       // Normaliser les IDs
@@ -46,14 +50,11 @@ export const useSpeakerStore = create<SpeakerState>((set, get) => ({
     }
   },
 
-  createSpeaker: async (eventId: string, data: CreateSpeakerDto) => {
-    console.log('SpeakerStore: Creating speaker for event:', eventId);
+  createSpeaker: async (eventSlug: string, data: CreateSpeakerDto) => {
+    console.log('SpeakerStore: Creating speaker for event:', eventSlug);
     set({ isLoading: true, error: null });
     try {
-      const speaker = await speakerService.create(eventId, {
-        ...data,
-        eventId,
-      });
+      const speaker = await speakerService.create(eventSlug, data);
       console.log('SpeakerStore: Speaker created:', speaker);
 
       // Normaliser l'ID du nouveau speaker
@@ -91,11 +92,11 @@ export const useSpeakerStore = create<SpeakerState>((set, get) => ({
     }
   },
 
-  updateSpeaker: async (eventId: string, speakerId: string, data: UpdateSpeakerDto) => {
-    console.log('SpeakerStore: Updating speaker for event:', eventId);
+  updateSpeaker: async (eventSlug: string, speakerId: string, data: UpdateSpeakerDto) => {
+    console.log('SpeakerStore: Updating speaker for event:', eventSlug);
     set({ isLoading: true, error: null });
     try {
-      const speaker = await speakerService.update(eventId, speakerId, data);
+      const speaker = await speakerService.update(eventSlug, speakerId, data);
       console.log('SpeakerStore: Speaker updated:', speaker);
 
       // Mettre à jour le store des speakers
@@ -136,23 +137,24 @@ export const useSpeakerStore = create<SpeakerState>((set, get) => ({
     }
   },
 
-  deleteSpeaker: async (eventId: string, speakerId: string) => {
+  deleteSpeaker: async (eventSlug: string, speakerId: string) => {
+    console.log('SpeakerStore: Deleting speaker:', speakerId, 'from event:', eventSlug);
     set({ isLoading: true, error: null });
     try {
-      await speakerService.delete(eventId, speakerId);
+      await speakerService.delete(eventSlug, speakerId);
+      
       set(state => ({
-        speakers: state.speakers.filter(s => s._id !== speakerId),
+        speakers: state.speakers.filter(s => s.id !== speakerId && s._id !== speakerId),
         isLoading: false,
       }));
 
-      // Retirer le speaker de toutes les rooms
+      // Mettre à jour le store des rooms
       const roomStore = useRoomStore.getState();
       const updatedRooms = roomStore.rooms.map(room => ({
         ...room,
-        speakers: room.speakers?.filter(id => id !== speakerId) || [],
+        speakers: (room.speakers || []).filter(id => id !== speakerId),
       }));
       useRoomStore.setState({ rooms: updatedRooms });
-
     } catch (error) {
       console.error('SpeakerStore: Error deleting speaker:', error);
       set({ error: error instanceof Error ? error.message : 'Failed to delete speaker', isLoading: false });
@@ -160,10 +162,10 @@ export const useSpeakerStore = create<SpeakerState>((set, get) => ({
     }
   },
 
-  uploadImage: async (eventId: string, speakerId: string, file: File) => {
+  uploadImage: async (eventSlug: string, speakerId: string, file: File) => {
     set({ isLoading: true, error: null });
     try {
-      const { imageUrl } = await speakerService.uploadImage(eventId, speakerId, file);
+      const { imageUrl } = await speakerService.uploadImage(eventSlug, speakerId, file);
       
       // Mettre à jour le speaker avec la nouvelle URL d'image
       set(state => ({
@@ -174,7 +176,7 @@ export const useSpeakerStore = create<SpeakerState>((set, get) => ({
       }));
 
       // Recharger tous les speakers pour s'assurer de la synchronisation
-      await get().getSpeakers(eventId);
+      await get().getSpeakers(eventSlug);
       
       return imageUrl;
     } catch (error) {

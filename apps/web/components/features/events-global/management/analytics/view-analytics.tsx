@@ -1,48 +1,73 @@
 'use client';
 
+import { useMemo } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/core/ui/card';
+import { Event } from '@/types/event';
 
-const mockData = [
-  { name: 'Tickets Sold', value: 150 },
-  { name: 'Revenue (CHF)', value: 7500 },
-  { name: 'Registrations', value: 200 },
-  { name: 'Waitlist', value: 25 },
-];
+interface ViewAnalyticsProps {
+  event: Event;
+}
 
-const chartData = [
-  { date: 'Mon', tickets: 20 },
-  { date: 'Tue', tickets: 35 },
-  { date: 'Wed', tickets: 45 },
-  { date: 'Thu', tickets: 30 },
-  { date: 'Fri', tickets: 50 },
-  { date: 'Sat', tickets: 65 },
-  { date: 'Sun', tickets: 40 },
-];
+export function ViewAnalytics({ event }: ViewAnalyticsProps) {
+  const analyticsData = useMemo(() => {
+    return [
+      { 
+        name: 'Tickets Sold', 
+        value: event.registrations?.filter(r => r.status === 'CONFIRMED').length || 0 
+      },
+      { 
+        name: 'Revenue (CHF)', 
+        value: event.registrations
+          ?.filter(r => r.status === 'CONFIRMED')
+          .reduce((acc, reg) => acc + (reg.ticket?.price || 0), 0) || 0
+      },
+      { 
+        name: 'Registrations', 
+        value: event.registrations?.length || 0 
+      },
+      { 
+        name: 'Waitlist', 
+        value: event.registrations?.filter(r => r.status === 'WAITLIST').length || 0 
+      },
+    ];
+  }, [event]);
 
-export function ViewAnalytics() {
+  const chartData = useMemo(() => {
+    const registrationsByDay = event.registrations?.reduce((acc, reg) => {
+      const date = new Date(reg.createdAt).toLocaleDateString('en-US', { weekday: 'short' });
+      acc[date] = (acc[date] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>) || {};
+
+    return Object.entries(registrationsByDay).map(([date, tickets]) => ({
+      date,
+      tickets,
+    }));
+  }, [event]);
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {mockData.map((item, index) => (
+        {analyticsData.map((item, index) => (
           <Card key={index}>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 {item.name}
               </CardTitle>
+              <CardDescription className="text-2xl font-bold">
+                {item.value}
+              </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{item.value}</div>
-            </CardContent>
           </Card>
         ))}
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Ticket Sales Overview</CardTitle>
-          <CardDescription>Daily ticket sales for the past week</CardDescription>
+          <CardTitle>Registrations Over Time</CardTitle>
+          <CardDescription>Daily registration count</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="h-[300px]">
@@ -52,7 +77,7 @@ export function ViewAnalytics() {
                 <XAxis dataKey="date" />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="tickets" fill="hsl(267, 100%, 65%)" />
+                <Bar dataKey="tickets" fill="#6366f1" />
               </BarChart>
             </ResponsiveContainer>
           </div>

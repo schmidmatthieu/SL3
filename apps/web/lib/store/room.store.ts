@@ -6,415 +6,373 @@ import { create } from 'zustand';
 
 import { Room } from '@/types/room';
 
-interface RoomState {
+interface RoomStore {
   rooms: Room[];
+  selectedRoom: Room | null;
   isLoading: boolean;
-  error: Error | null;
+  error: string | null;
   setRooms: (rooms: Room[]) => void;
-  setLoading: (loading: boolean) => void;
-  setError: (error: Error | null) => void;
-  fetchEventRooms: (eventId: string) => Promise<void>;
-  createRoom: (data: CreateRoomData) => Promise<Room>;
-  updateRoom: (roomId: string, data: Partial<Room>) => Promise<void>;
-  deleteRoom: (eventId: string, roomId: string) => Promise<void>;
-  startStream: (roomId: string) => Promise<void>;
-  stopStream: (roomId: string) => Promise<void>;
-  pauseStream: (roomId: string) => Promise<void>;
-  endStream: (roomId: string) => Promise<void>;
-  cancelRoom: (roomId: string) => Promise<void>;
-  reactivateRoom: (roomId: string) => Promise<void>;
+  setSelectedRoom: (room: Room | null) => void;
+  fetchEventRooms: (eventSlug: string) => Promise<void>;
+  createRoom: (data: CreateRoomDTO) => Promise<void>;
+  updateRoom: (roomId: string, data: UpdateRoomDTO) => Promise<void>;
+  deleteRoom: (eventSlug: string, roomId: string) => Promise<void>;
+  startStream: (roomId: string) => Promise<Room>;
+  stopStream: (roomId: string) => Promise<Room>;
+  pauseStream: (roomId: string) => Promise<Room>;
+  endStream: (roomId: string) => Promise<Room>;
+  setError: (error: string | null) => void;
 }
 
-interface CreateRoomData {
+interface Room {
+  _id: string;
   name: string;
-  eventId: string;
+  description?: string;
+  eventSlug: string;
+  status: string;
+  startTime?: string;
+  endTime?: string;
+  settings?: RoomSettings;
+  speakers?: string[];
+  participants?: string[];
+  thumbnail?: string;
+}
+
+interface CreateRoomDTO {
+  name: string;
+  eventSlug: string;
   description?: string;
   thumbnail?: string;
-  startTime: string;
-  endTime: string;
+  startTime?: string;
+  endTime?: string;
   status: string;
-  settings: {
-    isPublic: boolean;
-    chatEnabled: boolean;
-    recordingEnabled: boolean;
-    maxParticipants: number;
-    allowQuestions: boolean;
-    originalLanguage: string;
-    availableLanguages: string[];
-  };
+  settings?: RoomSettings;
 }
 
-export const useRoomStore = create<RoomState>((set, get) => ({
+interface UpdateRoomDTO {
+  name?: string;
+  description?: string;
+  thumbnail?: string;
+  startTime?: string;
+  endTime?: string;
+  status?: string;
+  settings?: RoomSettings;
+}
+
+interface RoomSettings {
+  isPublic: boolean;
+  chatEnabled: boolean;
+  recordingEnabled: boolean;
+  maxParticipants: number;
+  allowQuestions: boolean;
+  originalLanguage: string;
+  availableLanguages: string[];
+}
+
+// Fonction pour générer un slug à partir d'un nom
+const generateSlug = (name: string): string => {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+};
+
+export const useRoomStore = create<RoomStore>((set, get) => ({
   rooms: [],
+  selectedRoom: null,
   isLoading: false,
   error: null,
 
-  setRooms: rooms => set({ rooms }),
-  setLoading: loading => set({ isLoading: loading }),
-  setError: error => set({ error }),
+  setRooms: (rooms) => set({ rooms }),
+  setSelectedRoom: (room) => set({ selectedRoom: room }),
+  setError: (error) => set({ error }),
 
-  fetchEventRooms: async (eventId: string) => {
-    const { setLoading, setError, setRooms } = get();
+  fetchEventRooms: async (eventSlug) => {
+    set({ isLoading: true, error: null });
     try {
-      setLoading(true);
-      const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/event/${eventId}`, {
-        headers: await getAuthHeaders(),
-      });
-      
+      const response = await fetch(
+        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/event/${eventSlug}`,
+        {
+          headers: await getAuthHeaders(),
+        }
+      );
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch rooms');
       }
+
+      const roomsData = await response.json();
       
-      const data = await response.json();
-      console.log('Raw room data from API:', data);
-      
-      // Ensure we have an array of rooms with proper IDs
-      const formattedRooms = Array.isArray(data) ? data.map(room => {
-        const formattedRoom = {
-          ...room,
-          id: room._id || room.id, // Always use id for consistency
-          _id: room._id || room.id // Keep _id for MongoDB compatibility
-        };
-        console.log('Formatted room:', formattedRoom);
-        return formattedRoom;
-      }) : [];
-      
-      setRooms(formattedRooms);
-      setError(null);
-      
-      console.log('Final formatted rooms:', formattedRooms);
+      // Normaliser les IDs pour toutes les salles
+      const normalizedRooms = roomsData.map((room: any) => ({
+        ...room,
+        _id: room._id || room.id
+      }));
+
+      set({ rooms: normalizedRooms, isLoading: false });
     } catch (error) {
       console.error('Error fetching rooms:', error);
-      setError(error instanceof Error ? error : new Error('Failed to fetch rooms'));
-      setRooms([]);
-    } finally {
-      setLoading(false);
+      set({
+        error: error instanceof Error ? error.message : 'Failed to fetch rooms',
+        isLoading: false,
+      });
     }
   },
 
-  createRoom: async data => {
-    const { setLoading, setError, setRooms, rooms } = get();
+  createRoom: async (data: CreateRoomDTO) => {
+    set({ isLoading: true, error: null });
     try {
-      setLoading(true);
-      setError(null);
-
-      // Validate required fields
-      if (!data.name) {
-        throw new Error('Room name is required');
-      }
-
-      if (!data.eventId) {
-        throw new Error('Event ID is required');
-      }
-
       const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(await getAuthHeaders()),
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          slug: generateSlug(data.name),
+        }),
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create room');
       }
 
-      const newRoom = await response.json();
-      setRooms([...rooms, newRoom]);
+      const newRoom: Room = await response.json();
+      
+      // Mettre à jour la liste des salles avec la nouvelle salle
+      const { rooms } = get();
+      set({ 
+        rooms: [...rooms, { ...newRoom, _id: newRoom._id }],
+        isLoading: false 
+      });
 
-      return newRoom;
     } catch (error) {
       console.error('Error creating room:', error);
-      setError(error instanceof Error ? error : new Error('Failed to create room'));
+      set({ error: error.message, isLoading: false });
       throw error;
-    } finally {
-      setLoading(false);
     }
   },
 
-  updateRoom: async (roomId: string, updateData: Partial<Room>) => {
-    const { setLoading, setError, setRooms, rooms } = get();
+  updateRoom: async (roomId: string, data: UpdateRoomDTO) => {
+    set({ isLoading: true, error: null });
     try {
-      setLoading(true);
-      setError(null);
-
-      // Récupérer la room actuelle
-      const currentRoom = rooms.find(room => room._id === roomId);
-      if (!currentRoom) {
-        throw new Error('Room not found');
+      if (!roomId) {
+        throw new Error('Room ID is required');
       }
 
-      // Construire les données de mise à jour
-      const data = {
-        ...updateData,
-        settings: {
-          ...currentRoom.settings,
-          ...(updateData.settings || {}),
-        },
-      };
+      // Supprimer eventSlug des données envoyées
+      const { eventSlug, ...updateData } = data;
 
-      // Appeler l'API
-      const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(await getAuthHeaders()),
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(await getAuthHeaders()),
+          },
+          body: JSON.stringify(updateData),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update room');
       }
 
       const updatedRoom = await response.json();
+      // Assurer que nous avons un _id cohérent
+      const normalizedRoom = {
+        ...updatedRoom,
+        _id: updatedRoom._id || updatedRoom.id
+      };
 
-      // Mettre à jour le store
-      setRooms(
-        rooms.map(room =>
-          room._id === roomId
-            ? {
-                ...room,
-                ...updatedRoom,
-                settings: {
-                  ...room.settings,
-                  ...updatedRoom.settings,
-                },
-              }
-            : room
-        )
-      );
-
-      // Mettre à jour les speakers dans leur store si nécessaire
-      if (updateData.speakers) {
-        const speakerStore = useSpeakerStore.getState();
-        const updatedSpeakers = speakerStore.speakers.map(speaker => {
-          const isSpeakerInRoom = updateData.speakers?.includes(speaker._id);
-          const hasRoom = speaker.rooms?.includes(roomId);
-
-          if (isSpeakerInRoom && !hasRoom) {
-            // Ajouter la room au speaker
-            return {
-              ...speaker,
-              rooms: [...(speaker.rooms || []), roomId],
-            };
-          } else if (!isSpeakerInRoom && hasRoom) {
-            // Retirer la room du speaker
-            return {
-              ...speaker,
-              rooms: speaker.rooms?.filter(id => id !== roomId) || [],
-            };
-          }
-          return speaker;
-        });
-
-        useSpeakerStore.setState({ speakers: updatedSpeakers });
-      }
-
+      const { rooms } = get();
+      set({
+        rooms: rooms.map((room) => (room._id === roomId ? normalizedRoom : room)),
+        selectedRoom: normalizedRoom,
+        isLoading: false,
+      });
     } catch (error) {
       console.error('Error updating room:', error);
-      setError(error instanceof Error ? error : new Error('Failed to update room'));
+      set({ error: error.message, isLoading: false });
       throw error;
-    } finally {
-      setLoading(false);
     }
   },
 
-  deleteRoom: async (eventId: string, roomId: string) => {
-    const { setLoading, setError, setRooms, rooms } = get();
+  deleteRoom: async (eventSlug: string, roomId: string) => {
+    set({ isLoading: true, error: null });
     try {
-      setLoading(true);
-      setError(null);
-
-      const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}`, {
-        method: 'DELETE',
-        headers: await getAuthHeaders(),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (!roomId) {
+        throw new Error('Room ID is required');
       }
 
-      // Mettre à jour le store
-      setRooms(rooms.filter(room => room._id !== roomId));
-
-      // Retirer la room de tous les speakers
-      const speakerStore = useSpeakerStore.getState();
-      const updatedSpeakers = speakerStore.speakers.map(speaker => ({
-        ...speaker,
-        rooms: speaker.rooms?.filter(id => id !== roomId) || [],
-      }));
-      useSpeakerStore.setState({ speakers: updatedSpeakers });
-
-    } catch (error) {
-      console.error('Error deleting room:', error);
-      setError(error instanceof Error ? error : new Error('Failed to delete room'));
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  },
-
-  startStream: async roomId => {
-    const { setLoading, setError, fetchEventRooms, rooms } = get();
-    try {
-      setLoading(true);
-      setError(null);
       const response = await fetch(
-        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}/stream`,
+        `${API_CONFIG.baseUrl}/api/rooms/${roomId}`,
         {
-          method: 'POST',
-          headers: getAuthHeaders(),
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(await getAuthHeaders()),
+          },
+          body: JSON.stringify({ eventSlug }),
         }
       );
-      if (!response.ok) throw new Error('Failed to start stream');
 
-      // Mettre à jour localement le statut de la room
-      const room = rooms.find(r => r._id === roomId);
-      if (room) {
-        await fetchEventRooms(room.eventId);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to delete room');
       }
+
+      set((state) => ({
+        rooms: state.rooms.filter((room) => room._id !== roomId),
+        selectedRoom:
+          state.selectedRoom?._id === roomId ? null : state.selectedRoom,
+        isLoading: false,
+      }));
     } catch (error) {
-      setError(error instanceof Error ? error : new Error('Unknown error'));
+      console.error('Error deleting room:', error);
+      set({
+        error: error instanceof Error ? error.message : 'Failed to delete room',
+        isLoading: false,
+      });
       throw error;
-    } finally {
-      setLoading(false);
     }
   },
 
-  stopStream: async roomId => {
-    const { setLoading, setError, fetchEventRooms, rooms } = get();
+  startStream: async (roomId: string) => {
+    set({ isLoading: true, error: null });
     try {
-      setLoading(true);
-      setError(null);
+      const response = await fetch(
+        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}/stream/start`,
+        {
+          method: 'POST',
+          headers: await getAuthHeaders(),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('[startStream] Error response:', errorData);
+        throw new Error(errorData.message || 'Failed to start stream');
+      }
+
+      const updatedRoom = await response.json();
+      const { rooms } = get();
+      set({
+        rooms: rooms.map((room) => (room._id === roomId ? updatedRoom : room)),
+        isLoading: false,
+      });
+
+      return updatedRoom;
+    } catch (error) {
+      console.error('[startStream] Error:', error);
+      set({ error: error.message, isLoading: false });
+      throw error;
+    }
+  },
+
+  stopStream: async (roomId: string) => {
+    set({ isLoading: true, error: null });
+    try {
       const response = await fetch(
         `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}/stream/stop`,
         {
           method: 'POST',
-          headers: getAuthHeaders(),
+          headers: await getAuthHeaders(),
         }
       );
-      if (!response.ok) throw new Error('Failed to stop stream');
 
-      // Mettre à jour localement le statut de la room
-      const room = rooms.find(r => r._id === roomId);
-      if (room) {
-        await fetchEventRooms(room.eventId);
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('[stopStream] Error response:', errorData);
+        throw new Error(errorData.message || 'Failed to stop stream');
       }
+
+      const updatedRoom = await response.json();
+      const { rooms } = get();
+      set({
+        rooms: rooms.map((room) => (room._id === roomId ? updatedRoom : room)),
+        isLoading: false,
+      });
+
+      return updatedRoom;
     } catch (error) {
-      setError(error instanceof Error ? error : new Error('Unknown error'));
+      console.error('[stopStream] Error:', error);
+      set({ error: error.message, isLoading: false });
       throw error;
-    } finally {
-      setLoading(false);
     }
   },
 
-  pauseStream: async roomId => {
-    const { setLoading, setError, fetchEventRooms, rooms } = get();
+  pauseStream: async (roomId: string) => {
+    set({ isLoading: true, error: null });
     try {
-      setLoading(true);
-      setError(null);
       const response = await fetch(
         `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}/stream/pause`,
         {
           method: 'POST',
-          headers: getAuthHeaders(),
+          headers: await getAuthHeaders(),
         }
       );
-      if (!response.ok) throw new Error('Failed to pause stream');
 
-      // Mettre à jour localement le statut de la room
-      const room = rooms.find(r => r._id === roomId);
-      if (room) {
-        await fetchEventRooms(room.eventId);
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('[pauseStream] Error response:', errorData);
+        throw new Error(errorData.message || 'Failed to pause stream');
       }
+
+      const updatedRoom = await response.json();
+      const { rooms } = get();
+      set({
+        rooms: rooms.map((room) => (room._id === roomId ? updatedRoom : room)),
+        isLoading: false,
+      });
+
+      return updatedRoom;
     } catch (error) {
-      setError(error instanceof Error ? error : new Error('Unknown error'));
+      console.error('[pauseStream] Error:', error);
+      set({ error: error.message, isLoading: false });
       throw error;
-    } finally {
-      setLoading(false);
     }
   },
 
-  endStream: async roomId => {
-    const { setLoading, setError, fetchEventRooms, rooms } = get();
+  endStream: async (roomId: string) => {
+    set({ isLoading: true, error: null });
     try {
-      setLoading(true);
-      setError(null);
       const response = await fetch(
-        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}/stream/stop`,
+        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}/end`,
         {
           method: 'POST',
-          headers: getAuthHeaders(),
+          headers: {
+            'Content-Type': 'application/json',
+            ...(await getAuthHeaders()),
+          },
         }
       );
-      if (!response.ok) throw new Error('Failed to end stream');
 
-      // Mettre à jour localement le statut de la room
-      const room = rooms.find(r => r._id === roomId);
-      if (room) {
-        await fetchEventRooms(room.eventId);
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('[endStream] Error response:', errorData);
+        throw new Error(errorData.message || 'Failed to end stream');
       }
+
+      const updatedRoom = await response.json();
+      const { rooms } = get();
+      set({
+        rooms: rooms.map((room) => (room._id === roomId ? updatedRoom : room)),
+        isLoading: false,
+      });
+
+      return updatedRoom;
     } catch (error) {
-      setError(error instanceof Error ? error : new Error('Unknown error'));
+      console.error('[endStream] Error:', error);
+      set({ error: error.message, isLoading: false });
       throw error;
-    } finally {
-      setLoading(false);
-    }
-  },
-
-  cancelRoom: async roomId => {
-    const { setLoading, setError, fetchEventRooms, rooms } = get();
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await fetch(
-        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}/cancel`,
-        {
-          method: 'POST',
-          headers: getAuthHeaders(),
-        }
-      );
-      if (!response.ok) throw new Error('Failed to cancel room');
-
-      // Mettre à jour localement le statut de la room
-      const room = rooms.find(r => r._id === roomId);
-      if (room) {
-        await fetchEventRooms(room.eventId);
-      }
-    } catch (error) {
-      setError(error instanceof Error ? error : new Error('Unknown error'));
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  },
-
-  reactivateRoom: async roomId => {
-    const { setLoading, setError, fetchEventRooms, rooms } = get();
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await fetch(
-        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.rooms}/${roomId}/reactivate`,
-        {
-          method: 'POST',
-          headers: getAuthHeaders(),
-        }
-      );
-      if (!response.ok) throw new Error('Failed to reactivate room');
-
-      // Mettre à jour localement le statut de la room
-      const room = rooms.find(r => r._id === roomId);
-      if (room) {
-        await fetchEventRooms(room.eventId);
-      }
-    } catch (error) {
-      setError(error instanceof Error ? error : new Error('Unknown error'));
-      throw error;
-    } finally {
-      setLoading(false);
     }
   },
 }));

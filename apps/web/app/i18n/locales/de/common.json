@@ -6,5 +6,6 @@
   "close": "Schließen",
   "previous": "Vorherige",
   "next": "Nächste",
-  "page": "Seite {{number}}"
+  "page": "Seite {{number}}",
+  "invalid_date": "Ungültiges Datum"
 }

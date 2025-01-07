@@ -38,7 +38,16 @@ export function EventList({ userId }: EventListProps) {
   }, [userId, fetchEvents, fetchMyEvents]);
 
   const filteredEvents = useMemo(() => {
-    let result = [...events];
+    // Créer une copie unique des événements avec un identifiant stable
+    const uniqueEvents = events.reduce((acc, event) => {
+      const key = event._id || event.id;
+      if (!acc[key]) {
+        acc[key] = event;
+      }
+      return acc;
+    }, {} as Record<string, Event>);
+
+    let result = Object.values(uniqueEvents);
 
     // Filtre par recherche
     if (filters.search) {

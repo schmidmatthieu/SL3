@@ -1,26 +1,33 @@
 {
   "hero": {
+    "title": "Evento",
     "register": "Registrati all'evento",
     "share": "Condividi"
   },
   "description": {
     "about": "Informazioni",
-    "details": "Dettagli evento",
+    "details": "Dettagli dell'evento",
     "startDate": "Inizia il {{date}}",
     "startTime": "Inizio alle {{time}}",
     "endTime": "Fine alle {{time}}",
     "endDate": "Termina il {{date}}",
+    "when": "Quando",
+    "where": "Dove",
+    "capacity": "Capacità",
+    "virtual": "Virtuale",
     "participants": "{{current}}/{{max}} partecipanti",
     "participationProgress": "Progresso registrazioni"
   },
   "timeline": {
     "title": "Programma dell'evento",
-    "today": "Adesso",
+    "today": "Ora",
     "day": "Giorno",
     "overview": "Panoramica",
     "noSessions": "Nessuna sessione programmata",
+    "noRooms": "Non sono state create sale per questo evento.",
+    "createRoom": "Crea sala",
     "multiDay": {
-      "endsOn": "finisce il",
+      "endsOn": "termina il",
       "startsOn": "inizia il",
       "at": "alle"
     }
@@ -31,11 +38,12 @@
     "noResults": "Nessun relatore trovato",
     "bio": "Biografia",
     "sessions": "Sessioni",
-    "noSpeakers": "Nessun relatore"
+    "noSpeakers": "Nessun relatore è stato aggiunto a questo evento.",
+    "addSpeaker": "Aggiungi relatore"
   },
   "rooms": {
     "title": "Sale",
-    "noRooms": "Nessuna sala disponibile",
+    "noRooms": "Non sono state create sale per questo evento.",
     "create": "Crea sala",
     "edit": "Modifica sala",
     "delete": "Elimina sala",
@@ -49,10 +57,12 @@
     },
     "filters": {
       "language": "Lingua",
-      "all": "Tutte"
-    },
-    "oneSpeaker": "1 relatore",
-    "multipleSpeakers": "{{count}} relatori"
+      "all": "Tutte",
+      "fr": "Francese",
+      "en": "Inglese",
+      "de": "Tedesco",
+      "it": "Italiano"
+    }
   },
   "status": {
     "draft": "Bozza",

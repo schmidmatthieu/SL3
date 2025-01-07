@@ -4,25 +4,33 @@ import { useEffect, useState } from 'react';
 import { Speaker } from '@/types/speaker';
 import { useSpeakerStore } from '@/lib/store/speaker.store';
 
-export function useRoomSpeakers(eventId: string, speakerIds?: string[]) {
+export function useRoomSpeakers(eventSlug: string, speakerIds?: string[]) {
   const [speakers, setSpeakers] = useState<Speaker[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { getSpeakers } = useSpeakerStore();
 
   useEffect(() => {
     const loadSpeakers = async () => {
-      console.log('Loading speakers for room:', { eventId, speakerIds });
+      console.log('useRoomSpeakers: Loading speakers for room:', { eventSlug, speakerIds });
       
-      if (!eventId || !speakerIds?.length) {
-        console.log('No eventId or speakerIds, returning empty array');
+      if (!eventSlug || !speakerIds?.length) {
+        console.log('useRoomSpeakers: No eventSlug or speakerIds, returning empty array');
         setSpeakers([]);
         return;
       }
       
       setIsLoading(true);
+      setError(null);
       try {
-        const allSpeakers = await getSpeakers(eventId);
-        console.log('All speakers loaded:', allSpeakers);
+        const allSpeakers = await getSpeakers(eventSlug);
+        console.log('useRoomSpeakers: All speakers loaded:', allSpeakers);
+        
+        if (!allSpeakers) {
+          console.log('useRoomSpeakers: No speakers returned');
+          setSpeakers([]);
+          return;
+        }
         
         // Vérifier à la fois id et _id pour la compatibilité
         const roomSpeakers = allSpeakers.filter(speaker => 
@@ -32,11 +40,12 @@ export function useRoomSpeakers(eventId: string, speakerIds?: string[]) {
             id === speaker._id?.toString()
           )
         );
-        console.log('Filtered room speakers:', roomSpeakers);
+        console.log('useRoomSpeakers: Filtered room speakers:', roomSpeakers);
         
         setSpeakers(roomSpeakers);
       } catch (error) {
-        console.error('Error loading room speakers:', error);
+        console.error('useRoomSpeakers: Error loading room speakers:', error);
+        setError(error instanceof Error ? error.message : 'Failed to load speakers');
         setSpeakers([]);
       } finally {
         setIsLoading(false);
@@ -44,7 +53,7 @@ export function useRoomSpeakers(eventId: string, speakerIds?: string[]) {
     };
 
     loadSpeakers();
-  }, [eventId, speakerIds, getSpeakers]);
+  }, [eventSlug, speakerIds, getSpeakers]);
 
-  return { speakers, isLoading };
+  return { speakers, isLoading, error };
 }

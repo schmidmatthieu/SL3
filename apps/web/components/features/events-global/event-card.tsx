@@ -36,14 +36,14 @@ export function EventCard({ event }: EventCardProps) {
           'shadow-md hover:shadow-xl',
           'dark:shadow-primary-950/20',
           'scale-[1.02]',
-          'bg-gradient-to-br from-primary-50/50 to-background/50',
-          'dark:from-primary-950/50 dark:to-background/50',          
+          'bg-gradient-to-br from-primary-50/50 to-background dark:from-primary-950/50 dark:to-background',
+          'z-[1]'
         ]
       )}
     >
       {event.featured && (
         <div className="absolute top-4 left-4 z-[15]">
-          <Badge variant="default" className="bg-primary text-white font-medium shadow-sm">
+          <Badge variant="default" className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium shadow-sm">
             {t('events.card.featured')}
           </Badge>
         </div>
@@ -51,7 +51,7 @@ export function EventCard({ event }: EventCardProps) {
       
       {event.status !== 'cancelled' && (
         <Link
-          href={`/events/${event.id || event._id}`}
+          href={`/events/${event.slug}`}
           className="absolute inset-0 z-10"
           aria-label={`View details for ${event.title}`}
         />
@@ -72,7 +72,7 @@ export function EventCard({ event }: EventCardProps) {
 
           {canManageEvent && (
             <div className="absolute bottom-6 right-6 opacity-0 transform translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0 z-20">
-              <Link href={`/events/${event.id || event._id}/manage`}>
+              <Link href={`/events/${event.slug}/manage`}>
                 <Button
                   size="icon"
                   variant="outline"

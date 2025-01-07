@@ -6,5 +6,6 @@
   "close": "Chiudi",
   "previous": "Precedente",
   "next": "Successivo",
-  "page": "Pagina {{number}}"
+  "page": "Pagina {{number}}",
+  "invalid_date": "Data non valida"
 }

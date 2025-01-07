@@ -2,75 +2,75 @@
 
 import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
-import { Share } from 'lucide-react';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
+
+import { Event } from '@/types/event';
 import { Button } from '@/components/core/ui/button';
-import { cn } from '@/lib/utils';
+import { Share, Calendar, MapPin } from 'lucide-react';
 
 interface HeroBannerProps {
-  title: string;
-  imageUrl: string;
-  date: string;
-  location: string;
-  onRegister: () => void;
+  event: Event;
   onShare: () => void;
 }
 
-export function HeroBanner({
-  title,
-  imageUrl,
-  date,
-  location,
-  onRegister,
-  onShare,
-}: HeroBannerProps) {
+export function HeroBanner({ event, onShare }: HeroBannerProps) {
   const { t } = useTranslation('components/event-detail');
+  const defaultImageUrl = '/images/event-default-banner.jpg';
+
+  const formattedDate = event.startDate ? format(new Date(event.startDate), 'PPP', { locale: fr }) : '';
 
   return (
     <div className="relative w-full h-[60vh] min-h-[400px] overflow-hidden">
       {/* Image de fond avec overlay gradient */}
       <div className="absolute inset-0">
         <Image
-          src={imageUrl}
-          alt={title}
+          src={event.imageUrl || defaultImageUrl}
+          alt={event.title}
           fill
           className="object-cover"
           priority
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background to-background/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20" />
       </div>
 
       {/* Contenu */}
-      <div className="relative h-full container">
-        <div className="absolute bottom-0 left-0 right-0 p-8 space-y-4">
-          <div className="flex items-center gap-4">
-            <time className="text-sm font-medium text-primary-400">{date}</time>
-            <span className="text-sm text-muted-foreground">{location}</span>
+      <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-12">
+        <div className="container mx-auto">
+          <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">{event.title}</h1>
+          
+          <div className="flex flex-wrap gap-4 text-white/90 mb-6">
+            {formattedDate && (
+              <div className="flex items-center gap-2">
+                <Calendar className="h-5 w-5" />
+                <span>{formattedDate}</span>
+              </div>
+            )}
+            {event.location && (
+              <div className="flex items-center gap-2">
+                <MapPin className="h-5 w-5" />
+                <span>{event.location}</span>
+              </div>
+            )}
           </div>
 
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
-            {title}
-          </h1>
-
-          <div className="flex items-center gap-4 pt-4">
+          <div className="flex flex-wrap gap-4">
             <Button
               size="lg"
-              className={cn(
-                "bg-primary text-primary-100 hover:bg-primary/90",
-                "shadow-lg hover:shadow-xl transition-all"
-              )}
-              onClick={onRegister}
+              onClick={() => window.location.href = '#register'}
+              className="bg-primary hover:bg-primary/90"
             >
-              {t('hero.register')}
+              {t('register')}
             </Button>
             <Button
-              variant="ghost"
-              size="icon"
-              className="text-primary-foreground"
+              size="lg"
+              variant="outline"
+              className="bg-white/10 hover:bg-white/20 text-white border-white/20"
               onClick={onShare}
             >
-              <Share className="h-5 w-5" />
-              <span className="sr-only">{t('hero.share')}</span>
+              <Share className="h-4 w-4 mr-2" />
+              {t('share')}
             </Button>
           </div>
         </div>

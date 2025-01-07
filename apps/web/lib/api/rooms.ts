@@ -1,24 +1,36 @@
-import { Room } from '@/types/room';
+import { API_CONFIG } from '../config/api.config';
+import { Room } from '../../types/room';
 
-import { API_CONFIG } from './config';
-import { getAuthHeaders, handleApiResponse } from './utils';
+import { getAuthHeaders, handleApiResponse } from '../../utils';
 
 interface CreateRoomDTO {
-  title: string;
-  eventId: string;
-  languages: string[];
-  startTime: string;
-  endTime: string;
-  thumbnail?: string;
+  name: string;
+  description?: string;
+  eventSlug: string;
+  status: string;
+  settings?: RoomSettings;
 }
 
-interface UpdateRoomDTO {
-  title?: string;
-  languages?: string[];
-  startTime?: string;
-  endTime?: string;
-  thumbnail?: string;
-  status?: string;
+interface UpdateRoomDTO extends Partial<CreateRoomDTO> {}
+
+interface RoomSettings {
+  isPublic: boolean;
+  chatEnabled: boolean;
+  recordingEnabled: boolean;
+  maxParticipants: number;
+  allowQuestions: boolean;
+  originalLanguage: string;
+  availableLanguages: string[];
+}
+
+interface StreamSettings {
+  isPublic: boolean;
+  chatEnabled: boolean;
+  recordingEnabled: boolean;
+  maxParticipants: number;
+  allowQuestions: boolean;
+  originalLanguage: string;
+  availableLanguages: string[];
 }
 
 const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
@@ -27,31 +39,43 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
     headers: {
       ...getAuthHeaders(),
       ...options.headers,
+      'Content-Type': 'application/json',
     },
     credentials: 'include',
   });
   return handleApiResponse(response);
 };
 
+const transformRoomResponse = (response: any): Room => {
+  return {
+    ...response,
+    id: response.id || response._id,
+    slug: response.slug,
+    eventSlug: response.eventSlug,
+  };
+};
+
 export const roomService = {
   // Récupérer toutes les rooms d'un événement
-  getEventRooms: async (eventId: string): Promise<Room[]> => {
-    return fetchWithAuth(
-      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/rooms`
+  getEventRooms: async (eventSlug: string): Promise<Room[]> => {
+    const response = await fetchWithAuth(
+      `${API_CONFIG.baseUrl}/events/${eventSlug}/rooms`
     );
+    return response.map(transformRoomResponse);
   },
 
   // Récupérer une room spécifique
-  getById: async (eventId: string, roomId: string): Promise<Room> => {
-    return fetchWithAuth(
-      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/rooms/${roomId}`
+  getById: async (eventSlug: string, roomSlug: string): Promise<Room> => {
+    const response = await fetchWithAuth(
+      `${API_CONFIG.baseUrl}/events/${eventSlug}/rooms/${roomSlug}`
     );
+    return transformRoomResponse(response);
   },
 
   // Créer une nouvelle room
-  create: async (eventId: string, data: CreateRoomDTO): Promise<Room> => {
-    return fetchWithAuth(
-      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/rooms`,
+  create: async (eventSlug: string, data: CreateRoomDTO): Promise<Room> => {
+    const response = await fetchWithAuth(
+      `${API_CONFIG.baseUrl}/events/${eventSlug}/rooms`,
       {
         method: 'POST',
         headers: {
@@ -60,12 +84,13 @@ export const roomService = {
         body: JSON.stringify(data),
       }
     );
+    return transformRoomResponse(response);
   },
 
   // Mettre à jour une room
-  update: async (eventId: string, roomId: string, data: UpdateRoomDTO): Promise<Room> => {
-    return fetchWithAuth(
-      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/rooms/${roomId}`,
+  update: async (roomSlug: string, data: UpdateRoomDTO): Promise<Room> => {
+    const response = await fetchWithAuth(
+      `${API_CONFIG.baseUrl}/rooms/${roomSlug}`,
       {
         method: 'PATCH',
         headers: {
@@ -74,42 +99,81 @@ export const roomService = {
         body: JSON.stringify(data),
       }
     );
+    return transformRoomResponse(response);
   },
 
   // Supprimer une room
-  delete: async (eventId: string, roomId: string): Promise<void> => {
-    return fetchWithAuth(
-      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/rooms/${roomId}`,
-      {
-        method: 'DELETE',
-      }
-    );
+  delete: async (roomSlug: string): Promise<void> => {
+    await fetchWithAuth(`${API_CONFIG.baseUrl}/rooms/${roomSlug}`, {
+      method: 'DELETE',
+    });
   },
 
   // Démarrer le streaming d'une room
-  startStream: async (eventId: string, roomId: string): Promise<Room> => {
-    return fetchWithAuth(
-      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.stream}/rooms/${roomId}/start`,
+  startStream: async (roomSlug: string): Promise<Room> => {
+    const response = await fetchWithAuth(
+      `${API_CONFIG.baseUrl}/rooms/${roomSlug}/stream/start`,
       {
         method: 'POST',
       }
     );
+    return transformRoomResponse(response);
   },
 
   // Arrêter le streaming d'une room
-  stopStream: async (eventId: string, roomId: string): Promise<Room> => {
-    return fetchWithAuth(
-      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.stream}/rooms/${roomId}/stop`,
+  stopStream: async (roomSlug: string): Promise<Room> => {
+    const response = await fetchWithAuth(
+      `${API_CONFIG.baseUrl}/rooms/${roomSlug}/stream/stop`,
       {
         method: 'POST',
       }
     );
+    return transformRoomResponse(response);
+  },
+
+  // Mettre en pause le streaming d'une room
+  pauseStream: async (roomSlug: string): Promise<Room> => {
+    const response = await fetchWithAuth(
+      `${API_CONFIG.baseUrl}/rooms/${roomSlug}/stream/pause`,
+      {
+        method: 'POST',
+      }
+    );
+    return transformRoomResponse(response);
+  },
+
+  // Terminer le streaming d'une room
+  endStream: async (roomSlug: string): Promise<Room> => {
+    const response = await fetchWithAuth(
+      `${API_CONFIG.baseUrl}/rooms/${roomSlug}/stream/end`,
+      {
+        method: 'POST',
+      }
+    );
+    return transformRoomResponse(response);
+  },
+
+  // Mettre à jour les paramètres de streaming d'une room
+  updateStreamSettings: async (
+    roomSlug: string,
+    settings: StreamSettings
+  ): Promise<Room> => {
+    const response = await fetchWithAuth(
+      `${API_CONFIG.baseUrl}/rooms/${roomSlug}/stream/settings`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(settings),
+      }
+    );
+    return transformRoomResponse(response);
   },
 
   // Récupérer les informations de streaming d'une room
   getStreamInfo: async (
-    eventId: string,
-    roomId: string
+    roomSlug: string
   ): Promise<{
     streamUrl?: string;
     status: string;
@@ -118,7 +182,7 @@ export const roomService = {
     languages: string[];
   }> => {
     return fetchWithAuth(
-      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.stream}/rooms/${roomId}`
+      `${API_CONFIG.baseUrl}/rooms/${roomSlug}/stream`
     );
   },
 };

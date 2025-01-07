@@ -19,7 +19,7 @@ import { RoomSelector } from './room-selector';
 import { toast } from '@/components/core/ui/toast';
 
 export function SpeakerForm({ form, onSubmit, isSubmitting, currentSpeaker, rooms }: SpeakerFormProps) {
-  const { t } = useTranslation('components/event-manage');
+  const { t } = useTranslation('event-settings');
 
   return (
     <Form {...form}>
@@ -29,7 +29,7 @@ export function SpeakerForm({ form, onSubmit, isSubmitting, currentSpeaker, room
           name="firstName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('speakers.firstName')}</FormLabel>
+              <FormLabel>{t('eventSettings.speakers.form.firstName')}</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -42,7 +42,7 @@ export function SpeakerForm({ form, onSubmit, isSubmitting, currentSpeaker, room
           name="lastName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('speakers.lastName')} *</FormLabel>
+              <FormLabel>{t('eventSettings.speakers.form.lastName')} *</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -55,7 +55,7 @@ export function SpeakerForm({ form, onSubmit, isSubmitting, currentSpeaker, room
           name="role"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('speakers.role')}</FormLabel>
+              <FormLabel>{t('eventSettings.speakers.form.role')}</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -68,7 +68,7 @@ export function SpeakerForm({ form, onSubmit, isSubmitting, currentSpeaker, room
           name="company"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('speakers.company')}</FormLabel>
+              <FormLabel>{t('eventSettings.speakers.form.company')}</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -81,12 +81,12 @@ export function SpeakerForm({ form, onSubmit, isSubmitting, currentSpeaker, room
           name="bio"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('speakers.bio')}</FormLabel>
+              <FormLabel>{t('eventSettings.speakers.form.bio')}</FormLabel>
               <FormControl>
                 <Textarea
                   {...field}
                   className="min-h-[100px] resize-y"
-                  placeholder={t('speakers.bioPlaceholder')}
+                  placeholder={t('eventSettings.speakers.form.bioPlaceholder')}
                 />
               </FormControl>
               <FormMessage />
@@ -99,7 +99,7 @@ export function SpeakerForm({ form, onSubmit, isSubmitting, currentSpeaker, room
           name="socialLinks.linkedin"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('speakers.linkedin')}</FormLabel>
+              <FormLabel>{t('eventSettings.speakers.form.linkedin')}</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -112,7 +112,7 @@ export function SpeakerForm({ form, onSubmit, isSubmitting, currentSpeaker, room
           name="socialLinks.twitter"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('speakers.twitter')}</FormLabel>
+              <FormLabel>{t('eventSettings.speakers.form.twitter')}</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>

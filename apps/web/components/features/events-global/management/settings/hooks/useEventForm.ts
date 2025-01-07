@@ -60,8 +60,18 @@ export function useEventForm(event: Event) {
         return undefined;
       }
 
-      // Format to ISO string and remove milliseconds
-      const isoString = date.toISOString();
+      // Convert to UTC and format to ISO string
+      const utcDate = new Date(Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+        date.getUTCHours(),
+        date.getUTCMinutes(),
+        date.getUTCSeconds()
+      ));
+
+      // Format to ISO string with Z at the end
+      const isoString = utcDate.toISOString();
       console.log('formatDate: Date formatée:', { original: date, formatted: isoString });
       return isoString;
     } catch (error) {
@@ -147,93 +157,76 @@ export function useEventForm(event: Event) {
     }
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-    setIsLoading(true);
-
+    
     try {
-      console.log('handleSubmit: Début de la soumission');
-      console.log('handleSubmit: État du formulaire:', {
-        ...formData,
-        startDateTime: formData.startDateTime?.toISOString(),
-        endDateTime: formData.endDateTime?.toISOString(),
-      });
+      setIsLoading(true);
 
-      const eventId = event._id || event.id;
-      if (!eventId) {
-        throw new Error(t('eventSettings.messages.missingEventId'));
+      // Validation des données
+      if (!formData.title || formData.title.length < 3) {
+        throw new Error(t('eventSettings.form.error.titleTooShort'));
       }
 
-      const startDateTime = formatDate(formData.startDateTime);
-      const endDateTime = formatDate(formData.endDateTime);
-
-      console.log('handleSubmit: Dates après formatage:', { startDateTime, endDateTime });
-
-      // Vérifier que les deux dates sont valides
-      if (!startDateTime || !endDateTime) {
-        throw new Error(t('eventSettings.messages.invalidDates'));
+      if (!formData.description) {
+        throw new Error(t('eventSettings.form.error.descriptionRequired'));
       }
 
-      // Vérifier que la date de début est avant la date de fin
-      const startDate = new Date(startDateTime);
-      const endDate = new Date(endDateTime);
-
-      console.log('handleSubmit: Dates après parsing:', {
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
-      });
-
-      if (startDate >= endDate) {
-        throw new Error(t('eventSettings.messages.dateError'));
+      if (!formData.startDateTime) {
+        throw new Error(t('eventSettings.form.error.startDateRequired'));
       }
 
-      // Validation de l'URL de l'image
-      if (formData.imageUrl && !isValidUrl(formData.imageUrl)) {
-        throw new Error(t('eventSettings.messages.invalidImageUrl'));
+      if (!formData.endDateTime) {
+        throw new Error(t('eventSettings.form.error.endDateRequired'));
       }
 
-      const updatedData = {
-        title: formData.title,
-        description: formData.description,
-        imageUrl: formData.imageUrl || undefined,
-        startDateTime,
-        endDateTime,
-        featured: formData.featured,
+      const startDateISO = formatDate(formData.startDateTime);
+      const endDateISO = formatDate(formData.endDateTime);
+
+      if (!startDateISO || !endDateISO) {
+        throw new Error(t('eventSettings.form.error.invalidDates'));
+      }
+
+      // S'assurer que toutes les propriétés sont définies
+      const updateData: EventUpdateData = {
+        title: formData.title.trim() || event.title,
+        description: formData.description?.trim() || event.description,
+        imageUrl: formData.imageUrl?.trim() || event.imageUrl,
+        startDateTime: startDateISO,
+        endDateTime: endDateISO,
+        featured: formData.featured ?? event.featured,
       };
 
-      // Filtrer les champs undefined
-      const filteredData = Object.fromEntries(
-        Object.entries(updatedData).filter(([_, value]) => value !== undefined)
-      );
+      console.log('Sending update data:', updateData);
 
-      console.log('handleSubmit: Données à envoyer:', filteredData);
-
-      try {
-        const result = await updateEvent(eventId, filteredData);
-        console.log('handleSubmit: Résultat de la mise à jour:', result);
-
-        // Mettre à jour le statut en fonction des nouvelles dates
-        const newStatus = calculateEventStatus(startDate, endDate, event.status);
-        if (newStatus !== event.status) {
-          await updateEventStatus(eventId, newStatus);
-        }
-
-        toast({
-          title: t('eventSettings.messages.success'),
-          description: t('eventSettings.messages.successDescription'),
-        });
-
-        router.refresh();
-      } catch (updateError) {
-        console.error("handleSubmit: Erreur lors de l'appel à updateEvent:", updateError);
-        throw updateError;
+      if (formData.imageFile) {
+        updateData.imageFile = formData.imageFile;
       }
-    } catch (error: any) {
-      console.error('handleSubmit: Erreur globale:', error);
+
+      const updatedEvent = await updateEvent(event.id, updateData);
+      console.log('Received updated event:', updatedEvent);
+      
       toast({
-        title: t('eventSettings.messages.error'),
-        description: error.message || t('eventSettings.messages.errorDescription'),
+        title: t('eventSettings.form.success.title'),
+        description: t('eventSettings.form.success.description'),
+      });
+
+      // Mettre à jour le formulaire avec les nouvelles données
+      setFormData({
+        title: updatedEvent.title,
+        description: updatedEvent.description || '',
+        imageUrl: updatedEvent.imageUrl || '',
+        startDateTime: updatedEvent.startDateTime ? new Date(updatedEvent.startDateTime) : null,
+        endDateTime: updatedEvent.endDateTime ? new Date(updatedEvent.endDateTime) : null,
+        featured: updatedEvent.featured || false,
+      });
+
+    } catch (error: any) {
+      console.error('handleSubmit: Erreur lors de l\'appel à updateEvent:', error);
+      toast({
         variant: 'destructive',
+        title: t('eventSettings.form.error.title'),
+        description: error.message || t('eventSettings.form.error.description'),
       });
     } finally {
       setIsLoading(false);
@@ -343,7 +336,17 @@ export function useEventForm(event: Event) {
         throw new Error(t('eventSettings.messages.missingEventId'));
       }
 
-      await updateEvent(eventId, { featured });
+      // Préparer les données de mise à jour
+      const updateData: EventUpdateData = {
+        title: formData.title,
+        description: formData.description,
+        imageUrl: formData.imageUrl,
+        startDateTime: formatDate(formData.startDateTime) || event.startDateTime,
+        endDateTime: formatDate(formData.endDateTime) || event.endDateTime,
+        featured,
+      };
+
+      await updateEvent(eventId, updateData);
       setFormData(prev => ({
         ...prev,
         featured,

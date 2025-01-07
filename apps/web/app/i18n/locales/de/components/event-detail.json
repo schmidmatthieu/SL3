@@ -1,15 +1,20 @@
 {
   "hero": {
-    "register": "Für Event registrieren",
+    "title": "Veranstaltung",
+    "register": "Für Veranstaltung anmelden",
     "share": "Teilen"
   },
   "description": {
     "about": "Über",
-    "details": "Event-Details",
+    "details": "Veranstaltungsdetails",
     "startDate": "Beginnt am {{date}}",
-    "startTime": "Beginnt um {{time}}",
-    "endTime": "Endet um {{time}}",
+    "startTime": "Beginn um {{time}}",
+    "endTime": "Ende um {{time}}",
     "endDate": "Endet am {{date}}",
+    "when": "Wann",
+    "where": "Wo",
+    "capacity": "Kapazität",
+    "virtual": "Virtuell",
     "participants": "{{current}}/{{max}} Teilnehmer",
     "participationProgress": "Anmeldefortschritt"
   },
@@ -19,6 +24,8 @@
     "day": "Tag",
     "overview": "Übersicht",
     "noSessions": "Keine Sitzungen geplant",
+    "noRooms": "Für diese Veranstaltung wurden keine Räume erstellt.",
+    "createRoom": "Raum erstellen",
     "multiDay": {
       "endsOn": "endet am",
       "startsOn": "beginnt am",
@@ -27,16 +34,18 @@
   },
   "speakers": {
     "title": "Referenten",
-    "search": "Referenten suchen...",
+    "search": "Nach Referenten suchen...",
     "noResults": "Keine Referenten gefunden",
     "bio": "Biografie",
     "sessions": "Sitzungen",
-    "noSpeakers": "Keine Referenten"
+    "noSpeakers": "Dieser Veranstaltung wurden keine Referenten hinzugefügt.",
+    "addSpeaker": "Referent hinzufügen"
   },
   "rooms": {
     "title": "Räume",
-    "noRooms": "Keine Räume verfügbar",
+    "noRooms": "Für diese Veranstaltung wurden keine Räume erstellt.",
     "create": "Raum erstellen",
+    "createRoom": "Raum erstellen",
     "edit": "Raum bearbeiten",
     "delete": "Raum löschen",
     "confirmDelete": "Sind Sie sicher, dass Sie diesen Raum löschen möchten?",

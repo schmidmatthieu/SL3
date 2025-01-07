@@ -39,27 +39,38 @@ export interface RoomSettings {
   recordingEnabled: boolean;
   maxParticipants?: number;
   allowQuestions: boolean;
-  originalLanguage: string; // Langue originale (VO)
-  availableLanguages: string[]; // Langues disponibles pour le multicanal
+  originalLanguage: string;
+  availableLanguages: string[];
 }
 
 export interface Room {
-  id?: string;
-  _id?: string;
+  _id: string;
   name: string;
-  eventId: string;
+  slug: string;
+  eventSlug: string;
   description?: string;
-  thumbnail?: string;
   status: RoomStatus;
-  startTime: string; // Format ISO: "2024-12-31T09:00:00Z"
-  endTime: string; // Format ISO: "2024-12-31T10:00:00Z"
-  streamKey?: string;
-  streamUrl?: string;
-  settings: RoomSettings;
-  participants?: string[];
+  settings?: RoomSettings;
+  startTime?: string;
+  endTime?: string;
+  thumbnail?: string;
   speakers?: string[];
-  moderators?: string[];
-  createdBy: string;
-  createdAt: string;
-  updatedAt: string;
+  participants?: string[];
+  streamUrl?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
+
+export interface CreateRoomDTO {
+  name: string;
+  eventSlug: string;
+  description?: string;
+  status: RoomStatus;
+  settings?: RoomSettings;
+  startTime?: string;
+  endTime?: string;
+  thumbnail?: string;
+  speakers?: string[];
+}
+
+export interface UpdateRoomDTO extends Partial<CreateRoomDTO> {}

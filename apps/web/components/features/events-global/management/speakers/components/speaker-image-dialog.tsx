@@ -29,7 +29,7 @@ export function SpeakerImageDialog({
   speakerId,
   onImageUpdate
 }: SpeakerImageDialogProps) {
-  const { t } = useTranslation('components/event-manage');
+  const { t } = useTranslation('event-settings');
   const fullImageUrl = mediaService.getImageUrl(imageUrl || '');
 
   const handleImageSelect = (url: string) => {
@@ -54,9 +54,9 @@ export function SpeakerImageDialog({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] p-0 gap-0">
         <DialogHeader className="px-6 pt-6 pb-4 border-b">
-          <DialogTitle>{t('speakers.updatePhoto')}</DialogTitle>
+          <DialogTitle>{t('eventSettings.speakers.image.update')}</DialogTitle>
           <DialogDescription>
-            {t('speakers.updatePhotoDescription')}
+            {t('eventSettings.speakers.image.updateDescription')}
           </DialogDescription>
         </DialogHeader>
         <div className="p-6">

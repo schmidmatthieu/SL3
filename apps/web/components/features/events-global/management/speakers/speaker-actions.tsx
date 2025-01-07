@@ -24,7 +24,7 @@ interface SpeakerActionsProps {
 }
 
 export function SpeakerActions({ speaker, onEdit, onDelete }: SpeakerActionsProps) {
-  const { t } = useTranslation('components/event-manage');
+  const { t } = useTranslation('event-settings');
 
   return (
     <div className="flex space-x-2">
@@ -39,9 +39,9 @@ export function SpeakerActions({ speaker, onEdit, onDelete }: SpeakerActionsProp
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('speakers.deleteTitle')}</AlertDialogTitle>
+            <AlertDialogTitle>{t('eventSettings.speakers.delete.title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('speakers.deleteDescription')}
+              {t('eventSettings.speakers.delete.description')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

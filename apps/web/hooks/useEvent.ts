@@ -4,33 +4,73 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { Event } from '@/types/event';
 import { Room } from '@/types/room';
-import { Speaker } from '@/types/speaker'; // Ajout de l'importation du type Speaker
+import { Speaker } from '@/types/speaker';
 import { apiRequest } from '@/lib/utils';
+import { API_CONFIG } from '@/lib/config/api.config';
 
-const fetchEvent = async (eventId: string): Promise<Event> => {
+const fetchEvent = async (idOrSlug: string): Promise<Event> => {
   try {
-    console.log('useEvent: Fetching event with ID:', eventId);
-    const { data } = await apiRequest<Event>(`/api/events/${eventId}`);
+    console.log('useEvent: Fetching event:', idOrSlug);
+    const { data } = await apiRequest<Event>(`${API_CONFIG.endpoints.events}/${idOrSlug}`);
     console.log('useEvent: Event data received:', data);
-    return data;
+    
+    if (!data) {
+      throw new Error('No event data received');
+    }
+    
+    // S'assurer que l'événement a un slug et un ID
+    if (!data.slug || !data.id) {
+      console.warn('useEvent: Event data is missing slug or id:', data);
+    }
+    
+    return {
+      ...data,
+      id: data.id || data._id,
+      slug: data.slug,
+      startDateTime: data.startDateTime || data.startDate,
+      endDateTime: data.endDateTime || data.endDate,
+      description: data.description || '',
+      imageUrl: data.imageUrl || '',
+      location: data.location || '',
+      maxParticipants: data.maxParticipants || 0,
+      participants: data.participants || [],
+      speakers: data.speakers || [],
+      rooms: data.rooms || [],
+      status: data.status || 'draft'
+    };
   } catch (error) {
     console.error('useEvent: Error fetching event:', error);
     throw error;
   }
 };
 
-const fetchRooms = async (eventId: string): Promise<Room[]> => {
-  console.log('useEvent: Fetching rooms for event:', eventId);
+const fetchRooms = async (eventSlug: string): Promise<Room[]> => {
+  console.log('useEvent: Fetching rooms for event:', eventSlug);
   try {
-    const response = await apiRequest<Room[]>(`/api/rooms/event/${eventId}`);
+    const response = await apiRequest<Room[]>(`${API_CONFIG.endpoints.rooms}/event/${eventSlug}`);
+    if (!response || !response.data) {
+      console.warn('useEvent: No rooms data received');
+      return [];
+    }
+    
     const data = response.data;
     console.log('useEvent: Raw rooms data:', JSON.stringify(data, null, 2));
     
-    // S'assurer que chaque room a un ID et un eventId
     const processedData = data.map(room => ({
       ...room,
       id: room.id || room._id,
-      eventId: room.eventId || eventId
+      eventId: room.eventId,
+      slug: room.slug || room.id || room._id,
+      speakers: room.speakers || [],
+      participants: room.participants || [],
+      status: room.status || 'draft',
+      startTime: room.startTime || room.startDateTime || '',
+      endTime: room.endTime || room.endDateTime || '',
+      settings: {
+        ...room.settings,
+        originalLanguage: room.settings?.originalLanguage || 'fr',
+        availableLanguages: room.settings?.availableLanguages || []
+      }
     }));
     
     console.log('useEvent: Processed rooms data:', JSON.stringify(processedData, null, 2));
@@ -41,18 +81,28 @@ const fetchRooms = async (eventId: string): Promise<Room[]> => {
   }
 };
 
-const fetchSpeakers = async (eventId: string): Promise<Speaker[]> => {
-  console.log('useEvent: Fetching speakers for event:', eventId);
+const fetchSpeakers = async (eventSlug: string): Promise<Speaker[]> => {
+  console.log('useEvent: Fetching speakers for event:', eventSlug);
   try {
-    const response = await apiRequest<Speaker[]>(`/api/events/${eventId}/speakers`);
+    const response = await apiRequest<Speaker[]>(`${API_CONFIG.endpoints.events}/${eventSlug}/speakers`);
+    if (!response || !response.data) {
+      console.warn('useEvent: No speakers data received');
+      return [];
+    }
+    
     const data = response.data;
     console.log('useEvent: Raw speakers data:', JSON.stringify(data, null, 2));
     
-    // S'assurer que chaque speaker a un ID et un eventId
     const processedData = data.map(speaker => ({
       ...speaker,
       id: speaker.id || speaker._id,
-      eventId: speaker.eventId || eventId
+      eventId: speaker.eventId,
+      fullName: speaker.fullName || speaker.name || '',
+      role: speaker.role || '',
+      company: speaker.company || '',
+      bio: speaker.bio || '',
+      imageUrl: speaker.imageUrl || '',
+      rooms: speaker.rooms || []
     }));
     
     console.log('useEvent: Processed speakers data:', JSON.stringify(processedData, null, 2));
@@ -63,73 +113,43 @@ const fetchSpeakers = async (eventId: string): Promise<Speaker[]> => {
   }
 };
 
-export function useEvent(eventId?: string) {
+export function useEvent(idOrSlug?: string) {
   const [event, setEvent] = useState<Event | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [speakers, setSpeakers] = useState<Speaker[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [refreshKey, setRefreshKey] = useState(0);
 
   const loadEvent = useCallback(async () => {
-    if (!eventId) {
-      setIsLoading(false);
-      setIsError(true);
-      setError('No event ID provided');
+    if (!idOrSlug) {
+      setError('No event ID or slug provided');
       return;
     }
 
     setIsLoading(true);
-    setIsError(false);
     setError(null);
 
     try {
-      const [eventData, roomsData, speakersData] = await Promise.all([
-        fetchEvent(eventId),
-        fetchRooms(eventId),
-        fetchSpeakers(eventId)
-      ]);
+      const eventData = await fetchEvent(idOrSlug);
+      setEvent(eventData);
 
-      // S'assurer que les dates sont correctement formatées
-      const formattedEvent = {
-        ...eventData,
-        startDateTime: eventData.startDateTime ? new Date(eventData.startDateTime).toISOString() : null,
-        endDateTime: eventData.endDateTime ? new Date(eventData.endDateTime).toISOString() : null,
-        rooms: roomsData,
-        speakers: speakersData
-      };
+      // Utiliser le slug de l'événement pour charger les rooms
+      const roomsData = await fetchRooms(eventData.slug);
+      setRooms(roomsData);
 
-      console.log('useEvent: Formatted event data:', formattedEvent);
-      setEvent(formattedEvent);
-      setIsLoading(false);
-    } catch (err) {
-      console.error('useEvent: Error in loadEvent:', err);
-      setIsError(true);
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      const speakersData = await fetchSpeakers(eventData.slug);
+      setSpeakers(speakersData);
+    } catch (err: any) {
+      console.error('useEvent: Error loading event data:', err);
+      setError(err.message || 'Failed to load event data');
+    } finally {
       setIsLoading(false);
     }
-  }, [eventId]);
-
-  // Fonction de rafraîchissement exposée
-  const refresh = useCallback(() => {
-    console.log('useEvent: Refreshing data');
-    setRefreshKey(prev => prev + 1);
-  }, []);
+  }, [idOrSlug]);
 
   useEffect(() => {
-    let mounted = true;
+    loadEvent();
+  }, [loadEvent]);
 
-    const load = async () => {
-      if (mounted) {
-        await loadEvent();
-      }
-    };
-
-    load();
-
-    return () => {
-      mounted = false;
-    };
-  }, [loadEvent, refreshKey]); // Ajout de refreshKey comme dépendance
-
-  return { event, isLoading, isError, error, refresh };
+  return { event, rooms, speakers, isLoading, error, refetch: loadEvent };
 }

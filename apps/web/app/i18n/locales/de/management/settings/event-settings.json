@@ -1,40 +1,151 @@
 {
   "eventSettings": {
-    "title": "Event-Einstellungen",
+    "title": "Veranstaltungseinstellungen",
     "page": {
-      "notFound": "Event nicht gefunden.",
-      "description": "Verwalten Sie Ihre Event-Einstellungen und Details"
+      "notFound": "Veranstaltung nicht gefunden.",
+      "description": "Verwalten Sie Ihre Veranstaltungseinstellungen und -details"
     },
     "basicInfo": {
       "featured": {
-        "title": "Event hervorheben",
-        "description": "Das Event wird in der Liste zuerst angezeigt"
+        "title": "Veranstaltung hervorheben",
+        "description": "Die Veranstaltung erscheint zuerst in der Liste"
       },
-      "title": "Event-Titel",
-      "titlePlaceholder": "Event-Titel eingeben",
+      "title": "Veranstaltungstitel",
+      "titlePlaceholder": "Veranstaltungstitel eingeben",
       "description": "Beschreibung",
-      "descriptionPlaceholder": "Beschreiben Sie Ihr Event",
-      "image": "Event-Bild"
+      "descriptionPlaceholder": "Beschreiben Sie Ihre Veranstaltung",
+      "image": "Veranstaltungsbild"
     },
     "dateTime": {
-      "startDate": "Startdatum und -uhrzeit",
-      "endDate": "Enddatum und -uhrzeit"
+      "startDate": "Startdatum und -zeit",
+      "endDate": "Enddatum und -zeit"
     },
     "actions": {
       "save": "Änderungen speichern",
       "saving": "Speichern...",
-      "delete": "Event löschen",
+      "delete": "Veranstaltung löschen",
       "deleting": "Löschen...",
-      "cancel": "Event absagen",
-      "cancelling": "Absagen...",
-      "reactivate": "Event reaktivieren",
+      "cancel": "Veranstaltung abbrechen",
+      "cancelling": "Abbrechen...",
+      "reactivate": "Veranstaltung reaktivieren",
       "reactivating": "Reaktivieren..."
     },
     "deleteDialog": {
       "title": "Löschen bestätigen?",
-      "description": "Diese Aktion ist unwiderruflich. Das Event und alle zugehörigen Daten werden permanent gelöscht.",
+      "description": "Diese Aktion ist unwiderruflich. Die Veranstaltung und alle zugehörigen Daten werden dauerhaft gelöscht.",
       "confirm": "Löschen",
       "cancel": "Abbrechen"
+    },
+    "messages": {
+      "success": "Erfolg",
+      "successDescription": "Änderungen wurden erfolgreich gespeichert",
+      "error": "Fehler",
+      "errorDescription": "Beim Aktualisieren der Veranstaltung ist ein Fehler aufgetreten",
+      "dateError": "Startdatum muss vor dem Enddatum liegen",
+      "invalidDates": "Start- und Enddatum müssen gültig sein",
+      "invalidDate": "Ungültiges Datum",
+      "startDateError": "Ausgewähltes Startdatum ist ungültig",
+      "endDateError": "Ausgewähltes Enddatum ist ungültig",
+      "deleteSuccess": "Veranstaltung wurde erfolgreich gelöscht",
+      "deleteError": "Fehler beim Löschen der Veranstaltung",
+      "cancelSuccess": "Veranstaltung wurde erfolgreich abgebrochen",
+      "cancelError": "Fehler beim Abbrechen der Veranstaltung",
+      "reactivateSuccess": "Veranstaltung wurde erfolgreich reaktiviert",
+      "reactivateError": "Fehler beim Reaktivieren der Veranstaltung",
+      "featuredSuccess": "Hervorgehobener Status wurde erfolgreich aktualisiert",
+      "featuredError": "Fehler beim Aktualisieren des hervorgehobenen Status",
+      "missingEventId": "Fehlende Veranstaltungs-ID",
+      "invalidImageUrl": "Bild-URL ist ungültig"
+    },
+    "speakers": {
+      "title": "Referenten-Verwaltung",
+      "description": "Fügen Sie Referenten für Ihre Veranstaltung hinzu und verwalten Sie diese",
+      "add": "Referent hinzufügen",
+      "addTitle": "Neuen Referenten hinzufügen",
+      "edit": "Referent bearbeiten",
+      "editTitle": "Referent bearbeiten",
+      "formDescription": "Füllen Sie die Informationen des Referenten aus",
+      "create": "Referent erstellen",
+      "save": "Änderungen speichern",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "role": "Rolle",
+      "company": "Unternehmen",
+      "linkedin": "LinkedIn",
+      "twitter": "Twitter",
+      "bio": "Biografie",
+      "filters": {
+        "search": "Referenten suchen",
+        "noSpeakers": "Keine Referenten gefunden"
+      },
+      "form": {
+        "description": "Füllen Sie die Informationen des Referenten aus",
+        "firstName": "Vorname",
+        "lastName": "Nachname",
+        "role": "Rolle",
+        "company": "Unternehmen",
+        "bio": "Biografie",
+        "bioPlaceholder": "Geben Sie eine kurze Biografie des Referenten ein...",
+        "photo": "Foto",
+        "rooms": "Zugewiesene Räume",
+        "searchRooms": "Nach einem Raum suchen...",
+        "roomsDescription": "Wählen Sie die Räume aus, in denen dieser Referent präsentieren wird",
+        "noRooms": "Keine Räume verfügbar",
+        "linkedin": "LinkedIn",
+        "twitter": "Twitter"
+      },
+      "list": {
+        "title": "Referentenliste",
+        "empty": "Keine Referenten",
+        "search": "Nach einem Referenten suchen",
+        "noSpeakers": "Keine Referenten gefunden"
+      },
+      "table": {
+        "speaker": "Referent",
+        "roleCompany": "Rolle & Unternehmen",
+        "rooms": "Räume",
+        "bio": "Biografie",
+        "social": "Soziale Medien",
+        "actions": "Aktionen"
+      },
+      "image": {
+        "update": "Foto aktualisieren",
+        "updateDescription": "Wählen Sie ein neues Foto für diesen Referenten aus",
+        "success": "Foto erfolgreich aktualisiert",
+        "error": "Fehler beim Aktualisieren des Fotos"
+      },
+      "delete": {
+        "title": "Referent löschen",
+        "description": "Sind Sie sicher, dass Sie diesen Referenten löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+        "confirm": "Löschen",
+        "cancel": "Abbrechen"
+      },
+      "success": {
+        "create": "Referent erfolgreich erstellt",
+        "update": "Referent erfolgreich aktualisiert",
+        "delete": "Referent erfolgreich gelöscht"
+      },
+      "error": {
+        "title": "Fehler",
+        "description": "Bei der Verarbeitung Ihrer Anfrage ist ein Fehler aufgetreten",
+        "save": "Fehler beim Speichern des Referenten",
+        "delete": "Fehler beim Löschen des Referenten",
+        "load": "Fehler beim Laden der Referenten"
+      }
     }
+  },
+  "speakers": {
+    "addTitle": "Neuen Referenten hinzufügen",
+    "editTitle": "Referent bearbeiten",
+    "formDescription": "Füllen Sie die Informationen des Referenten aus",
+    "create": "Referent erstellen",
+    "save": "Änderungen speichern",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "role": "Rolle",
+    "company": "Unternehmen",
+    "linkedin": "LinkedIn",
+    "twitter": "Twitter",
+    "bio": "Biografie"
   }
 }

@@ -21,7 +21,8 @@
     "test:events": "pnpm jest src/modules/events/__tests__/events.service.spec.ts --config jest.config.ts",
     "test:events:integration": "pnpm jest src/modules/events/__tests__/events.integration.spec.ts --config jest.config.ts",
     "migrate:up": "ts-node -r tsconfig-paths/register src/scripts/migrate.ts up",
-    "migrate:down": "ts-node -r tsconfig-paths/register src/scripts/migrate.ts down"
+    "migrate:down": "ts-node -r tsconfig-paths/register src/scripts/migrate.ts down",
+    "migrate:slugs": "ts-node src/migrations/add-slugs.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.15",

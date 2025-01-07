@@ -2,7 +2,7 @@
   "name": "nextjs",
   "version": "0.1.0",
   "private": true,
- "scripts": {
+  "scripts": {
     "dev": "cd apps/web && next dev -p 3000",
     "build": "cd apps/web && next build",
     "start": "cd apps/web && next start",
@@ -70,6 +70,7 @@
     "react-resizable": "^3.0.5",
     "react-youtube": "^10.1.0",
     "recharts": "2.15.0",
+    "slugify": "^1.6.6",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "video.js": "^8.21.0",

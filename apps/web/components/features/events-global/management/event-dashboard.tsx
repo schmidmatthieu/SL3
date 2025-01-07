@@ -40,10 +40,10 @@ import { EventStatusBadge } from '@/components/features/events-global/status/eve
 
 interface EventDashboardProps {
   event: Event;
-  eventId: string;
+  slug: string;
 }
 
-export function EventDashboard({ event, eventId }: EventDashboardProps) {
+export function EventDashboard({ event, slug }: EventDashboardProps) {
   const router = useRouter();
   const { updateEventStatus } = useEventStore();
   const { t } = useTranslation('components/event-manage');
@@ -62,7 +62,7 @@ export function EventDashboard({ event, eventId }: EventDashboardProps) {
 
   const handleStatusChange = async (newStatus: string) => {
     try {
-      await updateEventStatus(eventId, newStatus as Event['status']);
+      await updateEventStatus(slug, newStatus as Event['status']);
       router.refresh();
     } catch (error) {
       console.error('Error updating event status:', error);
@@ -70,8 +70,8 @@ export function EventDashboard({ event, eventId }: EventDashboardProps) {
   };
 
   const navigateToEventPage = (path: string) => {
-    if (!eventId) return;
-    router.push(`/events/${eventId}/manage${path}`);
+    if (!slug) return;
+    router.push(`/events/${slug}/manage${path}`);
   };
 
   return (

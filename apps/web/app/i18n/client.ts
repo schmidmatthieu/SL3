@@ -32,7 +32,12 @@ const i18nInstance = i18next
   .use(LanguageDetector)
   .use(
     resourcesToBackend(
-      (language: string, namespace: string) => import(`./locales/${language}/${namespace}.json`)
+      (language: string, namespace: string) => {
+        if (namespace === 'event-settings') {
+          return import(`./locales/${language}/management/settings/${namespace}.json`);
+        }
+        return import(`./locales/${language}/${namespace}.json`);
+      }
     )
   );
 

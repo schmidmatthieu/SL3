@@ -1,5 +1,6 @@
 {
   "hero": {
+    "title": "Événement",
     "register": "S'inscrire à l'événement",
     "share": "Partager"
   },
@@ -10,6 +11,10 @@
     "startTime": "Début à {{time}}",
     "endTime": "Fin à {{time}}",
     "endDate": "Se termine le {{date}}",
+    "when": "Quand",
+    "where": "Où",
+    "capacity": "Capacité",
+    "virtual": "Virtuel",
     "participants": "{{current}}/{{max}} participants",
     "participationProgress": "Progression des inscriptions"
   },
@@ -19,6 +24,8 @@
     "day": "Jour",
     "overview": "Vue d'ensemble",
     "noSessions": "Aucune session programmée",
+    "noRooms": "Aucune salle n'a été créée pour cet événement.",
+    "createRoom": "Créer une salle",
     "multiDay": {
       "endsOn": "fini le",
       "startsOn": "début le",
@@ -31,15 +38,17 @@
     "noResults": "Aucun intervenant trouvé",
     "bio": "Biographie",
     "sessions": "Sessions",
-    "noSpeakers": "Aucun intervenant"
+    "noSpeakers": "Aucun intervenant n'a été ajouté à cet événement.",
+    "addSpeaker": "Ajouter un intervenant"
   },
   "rooms": {
     "title": "Salles",
-    "noRooms": "Aucune salle disponible",
+    "noRooms": "Aucune salle n'a été créée pour cet événement.",
     "create": "Créer une salle",
     "edit": "Modifier la salle",
     "delete": "Supprimer la salle",
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette salle ?",
+    "createRoom": "Créer une salle",
     "status": {
       "live": "En direct",
       "upcoming": "À venir",
@@ -49,12 +58,11 @@
     },
     "filters": {
       "language": "Langue",
-      "all": "Toutes les langues",
+      "all": "Toutes",
       "fr": "Français",
       "en": "Anglais",
       "de": "Allemand",
-      "it": "Italien",
-      "es": "Espagnol"
+      "it": "Italien"
     },
     "speakersCount": "{{count}} intervenant",
     "speakersCount_plural": "{{count}} intervenants",

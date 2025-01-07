@@ -3,28 +3,33 @@ import { useEffect } from 'react';
 import { useEventStore } from '@/lib/store/event.store';
 import { useRoomStore } from '@/lib/store/room.store';
 
-export const useRoomSync = (eventId: string) => {
+export const useRoomSync = (eventSlug?: string) => {
   const roomStore = useRoomStore();
-  const { rooms, fetchEventRooms, createRoom } = roomStore;
+  const { rooms = [], fetchEventRooms, createRoom } = roomStore;
   const { event } = useEventStore();
 
-  // Synchroniser les rooms quand l'eventId change
+  // Synchroniser les rooms quand l'eventSlug change
   useEffect(() => {
-    if (eventId) {
-      fetchEventRooms(eventId);
+    if (!eventSlug) {
+      return;
     }
-  }, [eventId, fetchEventRooms]);
+    fetchEventRooms(eventSlug);
+  }, [eventSlug, fetchEventRooms]);
 
   // Synchroniser les rooms quand l'event est mis à jour
   useEffect(() => {
-    if (event?.id === eventId && event.rooms?.length !== rooms.length) {
-      fetchEventRooms(eventId);
+    if (!event || !eventSlug || event.slug !== eventSlug) {
+      return;
     }
-  }, [event, eventId, rooms.length, fetchEventRooms]);
+
+    if (event.rooms && Array.isArray(event.rooms) && event.rooms.length !== rooms.length) {
+      fetchEventRooms(eventSlug);
+    }
+  }, [event, eventSlug, rooms, fetchEventRooms]);
 
   return {
     rooms,
     createRoom,
-    ...roomStore, // Retourner toutes les autres fonctions du store
+    ...roomStore,
   };
 };

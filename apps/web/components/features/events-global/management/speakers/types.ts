@@ -1,11 +1,13 @@
 import * as z from 'zod';
 import { UseFormReturn } from 'react-hook-form';
 import { Room as GlobalRoom } from '@/types/room';
+import { Event } from '@/types/event';
 
 export type Room = GlobalRoom;
 
 export interface SpeakerManagementProps {
-  eventId: string;
+  event: Event;
+  rooms: Room[];
 }
 
 export const speakerFormSchema = z.object({

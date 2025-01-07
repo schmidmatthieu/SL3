@@ -1,88 +1,145 @@
-import { CreateSpeakerDto, Speaker, UpdateSpeakerDto } from '@/types/speaker';
-import { API_CONFIG } from './config';
-import { getAuthHeaders, handleApiResponse } from './utils';
+import { API_CONFIG } from '../config/api.config';
+import { Speaker } from '../../types/speaker';
+
+interface CreateSpeakerDto {
+  name: string;
+  bio?: string;
+  imageUrl?: string;
+  eventSlug: string;
+  languages?: string[];
+  socialLinks?: {
+    twitter?: string;
+    linkedin?: string;
+    website?: string;
+  };
+}
+
+interface UpdateSpeakerDto extends Partial<CreateSpeakerDto> {}
 
 class SpeakerService {
-  private async fetchWithAuth(url: string, options: RequestInit = {}, isMultipart = false) {
-    const headers = await getAuthHeaders(isMultipart);
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        ...headers,
-        ...options.headers,
-      },
-      credentials: 'include',
-    });
-    return handleApiResponse(response);
-  }
+  private async fetchWithAuth(url: string, options: RequestInit = {}) {
+    console.log('SpeakerService: Fetching URL:', url);
+    
+    const token = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('token='))
+      ?.split('=')[1];
+    
+    if (!token) {
+      console.error('SpeakerService: No access token found in cookies');
+      throw new Error('Authentication required');
+    }
 
-  async getAll(eventId: string): Promise<Speaker[]> {
-    return this.fetchWithAuth(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/speakers`);
-  }
-
-  async getById(eventId: string, speakerId: string): Promise<Speaker> {
-    return this.fetchWithAuth(
-      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/speakers/${speakerId}`
-    );
-  }
-
-  async create(eventId: string, data: CreateSpeakerDto): Promise<Speaker> {
-    const payload = {
-      ...data,
-      eventId, // S'assurer que l'eventId est inclus
+    console.log('SpeakerService: Token found, adding to headers');
+    
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      ...options.headers,
     };
 
-    return this.fetchWithAuth(
-      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/speakers`,
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers,
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        console.error('SpeakerService: API Error:', { 
+          status: response.status, 
+          url,
+          headers: headers,
+          errorData 
+        });
+        throw new Error(errorData?.message || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('SpeakerService: API Response:', { url, data });
+      return data;
+    } catch (error) {
+      console.error('SpeakerService: Request failed:', error);
+      throw error;
+    }
+  }
+
+  async getAll(eventSlug: string): Promise<Speaker[]> {
+    const response = await this.fetchWithAuth(
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventSlug}/speakers`
+    );
+    const speakers = Array.isArray(response) ? response : response?.data || [];
+    console.log('SpeakerService: Processed speakers:', speakers);
+    return speakers;
+  }
+
+  async getById(eventSlug: string, speakerSlug: string): Promise<Speaker> {
+    const response = await this.fetchWithAuth(
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventSlug}/speakers/${speakerSlug}`
+    );
+    return response?.data || response;
+  }
+
+  async create(eventSlug: string, data: CreateSpeakerDto): Promise<Speaker> {
+    const response = await this.fetchWithAuth(
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventSlug}/speakers`,
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(data),
       }
     );
+    return response?.data || response;
   }
 
-  async update(eventId: string, speakerId: string, data: UpdateSpeakerDto): Promise<Speaker> {
-    const payload = {
-      ...data,
-      eventId, // S'assurer que l'eventId est inclus
-    };
-
-    return this.fetchWithAuth(
-      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/speakers/${speakerId}`,
+  async update(eventSlug: string, speakerSlug: string, data: UpdateSpeakerDto): Promise<Speaker> {
+    const response = await this.fetchWithAuth(
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventSlug}/speakers/${speakerSlug}`,
       {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
+        method: 'PATCH',
+        body: JSON.stringify(data),
       }
     );
+    return response?.data || response;
   }
 
-  async delete(eventId: string, speakerId: string): Promise<void> {
-    return this.fetchWithAuth(
-      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/speakers/${speakerId}`,
+  async delete(eventSlug: string, speakerSlug: string): Promise<void> {
+    console.log('SpeakerService: Deleting speaker:', speakerSlug, 'from event:', eventSlug);
+    await this.fetchWithAuth(
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventSlug}/speakers/${speakerSlug}`,
       {
         method: 'DELETE',
       }
     );
   }
 
-  async uploadImage(eventId: string, speakerId: string, file: File): Promise<{ imageUrl: string }> {
+  async uploadImage(eventSlug: string, speakerSlug: string, file: File): Promise<{ imageUrl: string }> {
     const formData = new FormData();
     formData.append('image', file);
 
-    return this.fetchWithAuth(
-      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventId}/speakers/${speakerId}/image`,
+    const token = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('token='))
+      ?.split('=')[1];
+    const headers = {
+      ...(token && { Authorization: `Bearer ${token}` }),
+    };
+
+    const response = await fetch(
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.events}/${eventSlug}/speakers/${speakerSlug}/image`,
       {
         method: 'POST',
+        headers,
         body: formData,
-      },
-      true // isMultipart = true
+      }
     );
+
+    if (!response.ok) {
+      throw new Error('Failed to upload image');
+    }
+
+    const data = await response.json();
+    return data?.data || data;
   }
 }
 

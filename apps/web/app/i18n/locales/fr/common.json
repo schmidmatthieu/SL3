@@ -6,5 +6,8 @@
   "close": "Fermer",
   "previous": "Précédent",
   "next": "Suivant",
-  "page": "Page {{number}}"
+  "page": "Page {{number}}",
+  "invalid_date": "Date non valide",
+  "cancel": "Annuler",
+  "delete": "Supprimer"
 }

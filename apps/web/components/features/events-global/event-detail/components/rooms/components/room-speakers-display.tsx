@@ -15,20 +15,20 @@ import { cn } from '@/lib/utils';
 
 interface RoomSpeakersDisplayProps {
   speakerIds?: string[];
-  eventId: string;
+  eventSlug: string;
   className?: string;
 }
 
 export function RoomSpeakersDisplay({ 
   speakerIds, 
-  eventId,
+  eventSlug,
   className 
 }: RoomSpeakersDisplayProps) {
   const { t } = useTranslation('components/event-detail');
-  const { speakers, isLoading } = useRoomSpeakers(eventId, speakerIds);
+  const { speakers, isLoading } = useRoomSpeakers(eventSlug, speakerIds);
 
   console.log('RoomSpeakersDisplay:', {
-    eventId,
+    eventSlug,
     speakerIds,
     isLoading,
     speakers

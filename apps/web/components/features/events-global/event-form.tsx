@@ -27,7 +27,7 @@ import { Input } from '@/components/core/ui/input';
 
 const formSchema = z
   .object({
-    title: z.string().min(1, 'Title is required'),
+    title: z.string().min(3, 'Title must be at least 3 characters long'),
     description: z.string().min(1, 'Description is required'),
     startDateTime: z.date({
       required_error: 'Start date and time is required',
@@ -38,7 +38,7 @@ const formSchema = z
     imageUrl: z.string().optional(),
   })
   .refine(data => data.endDateTime > data.startDateTime, {
-    message: 'La date de fin doit être postérieure à la date de début',
+    message: 'End date must be after start date',
     path: ['endDateTime'],
   });
 
@@ -84,9 +84,25 @@ export function EventForm({ onComplete }: { onComplete?: () => void }) {
   // Fonction pour formater les dates correctement
   const formatDate = (date: Date) => {
     if (!date) return undefined;
-    const isoString = date.toISOString();
-    console.log('formatDate: Date formatée:', { original: date, formatted: isoString });
-    return isoString;
+    try {
+      // Convert to UTC and format to ISO string
+      const utcDate = new Date(Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth(),
+        date.getUTCDate(),
+        date.getUTCHours(),
+        date.getUTCMinutes(),
+        date.getUTCSeconds()
+      ));
+
+      // Format to ISO string with Z at the end
+      const isoString = utcDate.toISOString();
+      console.log('formatDate: Date formatée:', { original: date, formatted: isoString });
+      return isoString;
+    } catch (error) {
+      console.error('formatDate: Erreur lors du formatage:', error);
+      return undefined;
+    }
   };
 
   const onSubmit = async (data: FormValues) => {
@@ -95,23 +111,59 @@ export function EventForm({ onComplete }: { onComplete?: () => void }) {
         throw new Error('You must be logged in to create an event');
       }
 
-      // Determine event status based on dates
-      const now = new Date();
-      let status: EventStatus;
+      // Validate required fields
+      if (!data.title || data.title.trim().length < 3) {
+        form.setError('title', {
+          type: 'manual',
+          message: 'Title must be at least 3 characters long',
+        });
+        return;
+      }
 
-      if (data.startDateTime > now) {
-        status = 'scheduled';
-      } else if (data.endDateTime < now) {
-        status = 'ended';
-      } else {
-        status = 'active';
+      if (!data.description || data.description.trim().length === 0) {
+        form.setError('description', {
+          type: 'manual',
+          message: 'Description is required',
+        });
+        return;
+      }
+
+      if (!data.startDateTime) {
+        form.setError('startDateTime', {
+          type: 'manual',
+          message: 'Start date is required',
+        });
+        return;
+      }
+
+      if (!data.endDateTime) {
+        form.setError('endDateTime', {
+          type: 'manual',
+          message: 'End date is required',
+        });
+        return;
       }
 
       // Format dates before sending
+      const startDateISO = formatDate(data.startDateTime);
+      const endDateISO = formatDate(data.endDateTime);
+
+      if (!startDateISO || !endDateISO) {
+        throw new Error('Invalid date format');
+      }
+
+      // Determine event status based on dates
+      const now = new Date();
+      const status = data.startDateTime > now ? 'scheduled' : 
+                    data.endDateTime < now ? 'ended' : 
+                    'active';
+
       const formattedData = {
-        ...data,
-        startDateTime: formatDate(data.startDateTime),
-        endDateTime: formatDate(data.endDateTime),
+        title: data.title.trim(),
+        description: data.description.trim(),
+        startDateTime: startDateISO,
+        endDateTime: endDateISO,
+        imageUrl: data.imageUrl || DEFAULT_EVENT_IMAGE,
         status,
       };
 
@@ -120,7 +172,7 @@ export function EventForm({ onComplete }: { onComplete?: () => void }) {
       const event = await createEvent(formattedData);
 
       // Ajouter l'utilisation de l'image après la création de l'événement
-      if (data.imageUrl) {
+      if (data.imageUrl && data.imageUrl !== DEFAULT_EVENT_IMAGE) {
         const mediaId = items.find(item => item.url === data.imageUrl)?._id;
         if (mediaId) {
           await addUsage(mediaId, {

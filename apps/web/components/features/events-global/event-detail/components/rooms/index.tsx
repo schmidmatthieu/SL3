@@ -147,17 +147,14 @@ export function Rooms({ event }: RoomsProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filteredRooms.map(room => {
-            console.log('Rendering room card:', { roomId: room.id || room._id, eventId });
-            return (
-              <RoomCard
-                key={room._id}
-                room={room}
-                eventId={eventId}
-                userLanguage={i18n.language as any}
-              />
-            );
-          })}
+          {filteredRooms.map((room) => (
+            <RoomCard
+              key={room.id || room._id}
+              room={room}
+              eventSlug={event.slug}
+              userLanguage={i18n.language as any}
+            />
+          ))}
         </div>
       </div>
     </section>

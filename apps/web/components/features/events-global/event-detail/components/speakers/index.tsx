@@ -12,22 +12,25 @@ import { SpeakerCard } from './speaker-card';
 import { cn } from '@/lib/utils';
 
 interface SpeakersProps {
-  speakers: Speaker[];
-  rooms: Room[];
+  speakers?: Speaker[];
+  rooms?: Room[];
 }
 
 const SPEAKERS_PER_PAGE = 10;
 
-export function Speakers({ speakers, rooms }: SpeakersProps) {
+export function Speakers({ speakers = [], rooms = [] }: SpeakersProps) {
   const { t } = useTranslation('components/event-detail');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Debug logs
+  console.log('Speakers component - Received props:', { speakers, rooms });
+
   // Filtrer les speakers en fonction de la recherche
-  const filteredSpeakers = speakers.filter(speaker => {
+  const filteredSpeakers = (speakers || []).filter(speaker => {
     const searchString = searchQuery.toLowerCase();
     return (
-      speaker.fullName.toLowerCase().includes(searchString) ||
+      speaker.fullName?.toLowerCase().includes(searchString) ||
       speaker.role?.toLowerCase().includes(searchString) ||
       speaker.company?.toLowerCase().includes(searchString) ||
       speaker.bio?.toLowerCase().includes(searchString)
@@ -50,98 +53,87 @@ export function Speakers({ speakers, rooms }: SpeakersProps) {
   const getGridCols = (count: number) => {
     if (count <= 2) return 'grid-cols-1 sm:grid-cols-2';
     if (count <= 3) return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
-    if (count <= 4) return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4';
-    return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5';
+    return 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4';
   };
 
   return (
-    <section id="speakers-section" className="py-12 container">
-      <div className="">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-          <h2 className="text-2xl font-semibold tracking-tight">
-            {t('speakers.title')}
-          </h2>
+    <section id="speakers-section" className="py-12 bg-secondary/5">
+      <div className="container px-4 md:px-6">
+        <h2 className="text-3xl font-bold tracking-tight mb-8">
+          {t('speakers.title')}
+        </h2>
 
-          {/* Barre de recherche */}
-          <div className="relative w-full sm:w-auto">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder={t('speakers.search')}
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setCurrentPage(1); // Réinitialiser la page lors d'une recherche
-              }}
-              className="pl-9 w-full sm:w-[300px]"
-              aria-label={t('speakers.search')}
-            />
-          </div>
+        {/* Barre de recherche */}
+        <div className="relative mb-8">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            type="search"
+            placeholder={t('speakers.search')}
+            className="pl-10"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1); // Réinitialiser la page lors d'une nouvelle recherche
+            }}
+          />
         </div>
 
-        {/* Grille de speakers avec colonnes adaptatives */}
-        <div className={cn(
-          'grid gap-6',
-          getGridCols(displayedSpeakers.length)
-        )}>
-          {displayedSpeakers.map(speaker => (
-            <SpeakerCard
-              key={speaker.id}
-              speaker={speaker}
-              rooms={rooms}
-            />
-          ))}
-        </div>
-
-        {/* Message si aucun résultat */}
+        {/* Message si aucun speaker */}
         {filteredSpeakers.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground">
-            {t('speakers.noResults')}
+          <div className="text-center py-12">
+            <p className="text-lg text-muted-foreground">
+              {searchQuery ? t('speakers.noResults') : t('speakers.noSpeakers')}
+            </p>
           </div>
         )}
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="mt-8 flex justify-center items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              aria-label={t('common:previous')}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            
-            <div className="flex items-center gap-2">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <Button
-                  key={page}
-                  variant={currentPage === page ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handlePageChange(page)}
-                  aria-label={t('common:page', { number: page })}
-                  aria-current={currentPage === page ? 'page' : undefined}
-                  className={cn(
-                    "w-8 h-8",
-                    currentPage === page && "bg-primary text-primary-foreground"
+        {/* Grille des speakers */}
+        {filteredSpeakers.length > 0 && (
+          <>
+            <div className={cn(
+              'grid gap-6',
+              getGridCols(displayedSpeakers.length)
+            )}>
+              {displayedSpeakers.map((speaker) => (
+                <SpeakerCard
+                  key={speaker.id}
+                  speaker={speaker}
+                  rooms={rooms.filter(room => 
+                    speaker.rooms?.includes(room.id)
                   )}
-                >
-                  {page}
-                </Button>
+                />
               ))}
             </div>
 
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              aria-label={t('common:next')}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-8">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  <span className="sr-only">Page précédente</span>
+                </Button>
+                
+                <span className="text-sm text-muted-foreground mx-4">
+                  {currentPage} / {totalPages}
+                </span>
+
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                  <span className="sr-only">Page suivante</span>
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </section>

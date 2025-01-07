@@ -47,7 +47,7 @@ const getStatusColor = (status: Room['status']) => {
 };
 
 export function SpeakerList({ speakers, eventId, rooms, onEdit, onDelete }: SpeakerListProps) {
-  const { t } = useTranslation('components/event-manage');
+  const { t } = useTranslation('event-settings');
   const { toast } = useToast();
   const { uploadImage } = useSpeakerStore();
 
@@ -56,8 +56,8 @@ export function SpeakerList({ speakers, eventId, rooms, onEdit, onDelete }: Spea
       if (!speaker?.id) {
         console.error('Speaker ID is undefined');
         toast({
-          title: t('error'),
-          description: t('speakers.photoError'),
+          title: t('eventSettings.speakers.error.title'),
+          description: t('eventSettings.speakers.image.error'),
           variant: 'destructive'
         });
         return;
@@ -70,14 +70,14 @@ export function SpeakerList({ speakers, eventId, rooms, onEdit, onDelete }: Spea
 
       await uploadImage(eventId, speaker.id, file);
       toast({
-        title: t('success'),
-        description: t('speakers.photoUpdated')
+        title: t('eventSettings.speakers.success.title'),
+        description: t('eventSettings.speakers.image.success')
       });
     } catch (error) {
       console.error('Error updating speaker image:', error);
       toast({
-        title: t('error'),
-        description: t('speakers.photoError'),
+        title: t('eventSettings.speakers.error.title'),
+        description: t('eventSettings.speakers.image.error'),
         variant: 'destructive'
       });
     }
@@ -86,7 +86,7 @@ export function SpeakerList({ speakers, eventId, rooms, onEdit, onDelete }: Spea
   if (speakers.length === 0) {
     return (
       <div className="flex justify-center items-center h-32">
-        <p className="text-muted-foreground">{t('speakers.noSpeakers')}</p>
+        <p className="text-muted-foreground">{t('eventSettings.speakers.list.noSpeakers')}</p>
       </div>
     );
   }
@@ -96,12 +96,12 @@ export function SpeakerList({ speakers, eventId, rooms, onEdit, onDelete }: Spea
       <Table>
         <TableHeader>
           <TableRow className="bg-primary/5">
-            <TableHead className="w-[250px]">{t('speakers.table.speaker')}</TableHead>
-            <TableHead className="w-[200px]">{t('speakers.table.roleCompany')}</TableHead>
-            <TableHead className="w-[200px]">{t('speakers.table.rooms')}</TableHead>
-            <TableHead>{t('speakers.table.bio')}</TableHead>
-            <TableHead className="w-[120px]">{t('speakers.table.social')}</TableHead>
-            <TableHead className="w-[100px]">{t('speakers.table.actions')}</TableHead>
+            <TableHead className="w-[250px]">{t('eventSettings.speakers.table.speaker')}</TableHead>
+            <TableHead className="w-[200px]">{t('eventSettings.speakers.table.roleCompany')}</TableHead>
+            <TableHead className="w-[200px]">{t('eventSettings.speakers.table.rooms')}</TableHead>
+            <TableHead>{t('eventSettings.speakers.table.bio')}</TableHead>
+            <TableHead className="w-[120px]">{t('eventSettings.speakers.table.social')}</TableHead>
+            <TableHead className="w-[100px]">{t('eventSettings.speakers.table.actions')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

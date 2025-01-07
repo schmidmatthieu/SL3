@@ -27,10 +27,7 @@ const renderEventForm = (
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void,
 ): React.ReactElement => (
   <form 
-    onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      void handleSubmit(e);
-    }}
+    onSubmit={handleSubmit}
     className="space-y-6"
     aria-busy={isLoading}
   >

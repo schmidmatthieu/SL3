@@ -10,11 +10,11 @@
         "title": "Evento in Evidenza",
         "description": "L'evento apparirà per primo nella lista"
       },
-      "title": "Titolo dell'Evento",
+      "title": "Titolo Evento",
       "titlePlaceholder": "Inserisci il titolo dell'evento",
       "description": "Descrizione",
       "descriptionPlaceholder": "Descrivi il tuo evento",
-      "image": "Immagine dell'Evento"
+      "image": "Immagine Evento"
     },
     "dateTime": {
       "startDate": "Data e Ora di Inizio",
@@ -31,10 +31,121 @@
       "reactivating": "Riattivazione..."
     },
     "deleteDialog": {
-      "title": "Confermare l'Eliminazione?",
-      "description": "Questa azione è irreversibile. L'evento e tutti i dati associati verranno eliminati permanentemente.",
+      "title": "Confermare Eliminazione?",
+      "description": "Questa azione è irreversibile. L'evento e tutti i dati associati saranno eliminati permanentemente.",
       "confirm": "Elimina",
       "cancel": "Annulla"
+    },
+    "messages": {
+      "success": "Successo",
+      "successDescription": "Le modifiche sono state salvate con successo",
+      "error": "Errore",
+      "errorDescription": "Si è verificato un errore durante l'aggiornamento dell'evento",
+      "dateError": "La data di inizio deve essere precedente alla data di fine",
+      "invalidDates": "Le date di inizio e fine devono essere valide",
+      "invalidDate": "Data non valida",
+      "startDateError": "La data di inizio selezionata non è valida",
+      "endDateError": "La data di fine selezionata non è valida",
+      "deleteSuccess": "L'evento è stato eliminato con successo",
+      "deleteError": "Errore durante l'eliminazione dell'evento",
+      "cancelSuccess": "L'evento è stato annullato con successo",
+      "cancelError": "Errore durante l'annullamento dell'evento",
+      "reactivateSuccess": "L'evento è stato riattivato con successo",
+      "reactivateError": "Errore durante la riattivazione dell'evento",
+      "featuredSuccess": "Lo stato in evidenza è stato aggiornato con successo",
+      "featuredError": "Errore durante l'aggiornamento dello stato in evidenza",
+      "missingEventId": "ID evento mancante",
+      "invalidImageUrl": "L'URL dell'immagine non è valido"
+    },
+    "speakers": {
+      "title": "Gestione Relatori",
+      "description": "Aggiungi e gestisci i relatori per il tuo evento",
+      "add": "Aggiungi Relatore",
+      "addTitle": "Aggiungi Nuovo Relatore",
+      "edit": "Modifica Relatore",
+      "editTitle": "Modifica Relatore",
+      "formDescription": "Compila le informazioni del relatore",
+      "create": "Crea Relatore",
+      "save": "Salva Modifiche",
+      "firstName": "Nome",
+      "lastName": "Cognome",
+      "role": "Ruolo",
+      "company": "Azienda",
+      "linkedin": "LinkedIn",
+      "twitter": "Twitter",
+      "bio": "Biografia",
+      "filters": {
+        "search": "Cerca relatori",
+        "noSpeakers": "Nessun relatore trovato"
+      },
+      "form": {
+        "description": "Compila le informazioni del relatore",
+        "firstName": "Nome",
+        "lastName": "Cognome",
+        "role": "Ruolo",
+        "company": "Azienda",
+        "bio": "Biografia",
+        "bioPlaceholder": "Inserisci una breve biografia del relatore...",
+        "photo": "Foto",
+        "rooms": "Sale Assegnate",
+        "searchRooms": "Cerca una sala...",
+        "roomsDescription": "Seleziona le sale dove questo relatore presenterà",
+        "noRooms": "Nessuna sala disponibile",
+        "linkedin": "LinkedIn",
+        "twitter": "Twitter"
+      },
+      "list": {
+        "title": "Lista Relatori",
+        "empty": "Nessun relatore",
+        "search": "Cerca un relatore",
+        "noSpeakers": "Nessun relatore trovato"
+      },
+      "table": {
+        "speaker": "Relatore",
+        "roleCompany": "Ruolo & Azienda",
+        "rooms": "Sale",
+        "bio": "Biografia",
+        "social": "Social Media",
+        "actions": "Azioni"
+      },
+      "image": {
+        "update": "Aggiorna Foto",
+        "updateDescription": "Seleziona una nuova foto per questo relatore",
+        "success": "Foto aggiornata con successo",
+        "error": "Errore durante l'aggiornamento della foto"
+      },
+      "delete": {
+        "title": "Elimina Relatore",
+        "description": "Sei sicuro di voler eliminare questo relatore? Questa azione non può essere annullata.",
+        "confirm": "Elimina",
+        "cancel": "Annulla"
+      },
+      "success": {
+        "create": "Relatore creato con successo",
+        "update": "Relatore aggiornato con successo",
+        "delete": "Relatore eliminato con successo"
+      },
+      "error": {
+        "title": "Errore",
+        "description": "Si è verificato un errore durante l'elaborazione della richiesta",
+        "save": "Impossibile salvare il relatore",
+        "delete": "Impossibile eliminare il relatore",
+        "load": "Impossibile caricare i relatori"
+      }
     }
+  },
+  "speakers": {
+    "addTitle": "Aggiungi Nuovo Relatore",
+    "editTitle": "Modifica Relatore",
+    "formDescription": "Compila le informazioni del relatore",
+    "create": "Crea Relatore",
+    "save": "Salva Modifiche",
+    "firstName": "Nome",
+    "lastName": "Cognome",
+    "role": "Ruolo",
+    "company": "Azienda",
+    "linkedin": "LinkedIn",
+    "twitter": "Twitter",
+    "bio": "Biografia"
   }
 }

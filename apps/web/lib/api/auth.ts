@@ -1,5 +1,7 @@
 'use client';
 
+import { API_CONFIG } from '../config/api.config';
+
 export function getAuthHeaders(): HeadersInit {
   if (typeof window === 'undefined') {
     return { 'Content-Type': 'application/json' };
@@ -45,7 +47,7 @@ export function getAuthToken(): string | null {
 }
 
 export function getApiUrl(): string {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const apiUrl = API_CONFIG.baseUrl;
   if (!apiUrl) {
     console.error('API URL not configured');
     throw new Error('API URL not configured');
