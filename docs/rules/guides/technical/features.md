@@ -44,37 +44,97 @@
 
 ## 🎥 Fonctionnalités Streaming
 
-### Streaming HLS
-
-- Support multi-qualité
-- Adaptation automatique
-- Tracks audio multiples
-- Faible latence
-- Fallback automatique
+### Streaming Actuel
+- **Player Multi-source**
+  ```typescript
+  // Composants implémentés
+  ├── stream/
+  │   ├── video-player.tsx    # Lecteur principal
+  │   ├── youtube-player.tsx  # Intégration YouTube
+  │   └── vimeo-player.tsx    # Intégration Vimeo
+  ```
+- Support HLS, YouTube, Vimeo
+- Contrôles de base (play/pause, volume)
+- Adaptation qualité automatique
+- État de connexion temps réel
 
 ### Chat Temps Réel
-
-- Messages instantanés
-- Modération en direct
-- Filtres automatiques
-- Emojis et réactions
-- Historique messages
+- **Implémentation Actuelle**
+  ```typescript
+  ├── chat/
+  │   ├── chat.tsx         # Composant principal
+  │   ├── chat-input.tsx   # Zone de saisie
+  │   ├── chat-list.tsx    # Liste des messages
+  │   └── message.tsx      # Composant message
+  ```
+- Messages temps réel via WebSocket
+- Support texte et emojis
+- Liste des participants actifs
+- Historique messages récents
 
 ### Système Q&A
 
 - Questions modérées
-- Votes et likes
-- Triage automatique
-- Réponses en direct
-- Export des questions
+- Liste d'attente
+- Votes sur questions
+- Interface modérateur
+- Export Q&A
 
-### Partage de Fichiers
+### Gestion Fichiers
 
-- Upload sécurisé
-- Prévisualisation
-- Gestion versions
-- Contrôle accès
-- Analytics téléchargements
+- Upload fichiers (PDF, images)
+- Liste fichiers partagés
+- Prévisualisation basique
+- Téléchargement sécurisé
+- Limite : 50MB
+
+### Système de Vote
+
+- Votes simples (oui/non)
+- Résultats temps réel
+- Export CSV
+- WebSocket temps réel
+- Stockage MongoDB
+
+## 🔄 État Global Room
+
+```typescript
+// Structure actuelle du store
+interface RoomStore {
+  // Configuration
+  id: string;
+  name: string;
+  status: RoomStatus;
+  
+  // Paramètres
+  settings: {
+    chat: boolean;
+    qa: boolean;
+    files: boolean;
+    votes: boolean;
+  };
+  
+  // Participants
+  participants: {
+    viewers: number;
+    speakers: Speaker[];
+    moderators: Moderator[];
+  };
+  
+  // Composants
+  stream: {
+    status: 'idle' | 'loading' | 'playing' | 'error';
+    source: StreamSource;
+    quality: string;
+  };
+  
+  chat: {
+    messages: Message[];
+    participants: string[];
+    unreadCount: number;
+  };
+}
+```
 
 ## 🗳️ Système de Vote
 
