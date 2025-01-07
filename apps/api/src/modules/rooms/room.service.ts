@@ -12,6 +12,7 @@ import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { EventsService } from '../events/events.service';
 import { SpeakersService } from '../speakers/speakers.service';
+import slugify from 'slugify';
 
 @Injectable()
 export class RoomService {
@@ -39,37 +40,48 @@ export class RoomService {
   }
 
   async create(createRoomDto: CreateRoomDto, userId: string): Promise<Room> {
-    const event = await this.eventService.findOne(createRoomDto.eventId);
-    if (!event) {
-      throw new NotFoundException('Event not found');
+    let eventId = createRoomDto.eventId;
+    
+    if (createRoomDto.eventSlug) {
+      const event = await this.eventService.findBySlug(createRoomDto.eventSlug);
+      if (!event) {
+        throw new NotFoundException(`Event with slug "${createRoomDto.eventSlug}" not found`);
+      }
+      eventId = event.id;
     }
 
+    // Créer la room avec les données de base
     const createdRoom = new this.roomModel({
       ...createRoomDto,
+      eventId,
       createdBy: userId,
       status: RoomStatus.UPCOMING,
     });
 
+    // Le slug sera généré automatiquement par le hook pre-save
     const savedRoom = await createdRoom.save();
+    
+    // Ajouter la room à l'événement
+    await this.eventService.addRoomToEvent(eventId, savedRoom.id);
 
-    // Convertir l'ObjectId en string pour l'ajout à l'événement
-    await this.eventService.addRoomToEvent(
-      createRoomDto.eventId,
-      savedRoom._id.toString(),
-    );
-
-    // Retourner la salle sauvegardée
     return savedRoom;
   }
 
   async findAll(eventId: string): Promise<Room[]> {
     console.log('Finding rooms for event:', eventId);
 
-    // Vérifier si l'eventId est déjà un ObjectId
-    const eventIdQuery = Types.ObjectId.isValid(eventId) ? eventId : eventId;
+    // Si ce n'est pas un ObjectId valide, c'est peut-être un slug d'événement
+    let targetEventId = eventId;
+    if (!Types.ObjectId.isValid(eventId)) {
+      const event = await this.eventService.findBySlug(eventId);
+      if (!event) {
+        throw new NotFoundException(`Event with slug "${eventId}" not found`);
+      }
+      targetEventId = event._id.toString();
+    }
 
     const rooms = await this.roomModel
-      .find({ eventId: eventIdQuery })
+      .find({ eventId: targetEventId })
       .populate('eventId')
       .populate('speakers')
       .populate('moderators')
@@ -88,36 +100,92 @@ export class RoomService {
     return rooms;
   }
 
-  async findOne(id: string): Promise<Room> {
-    const room = await this.roomModel
-      .findById(id)
-      .populate('speakers')
-      .populate('moderators')
-      .exec();
+  async findOne(idOrSlug: string): Promise<Room> {
+    let room;
+    if (Types.ObjectId.isValid(idOrSlug)) {
+      room = await this.roomModel.findById(idOrSlug);
+    } else {
+      room = await this.roomModel.findOne({ slug: idOrSlug });
+    }
     if (!room) {
-      throw new NotFoundException(`Room #${id} not found`);
+      throw new NotFoundException(`Room with id or slug "${idOrSlug}" not found`);
     }
     return room;
   }
 
-  async update(id: string, updateRoomDto: UpdateRoomDto): Promise<Room> {
-    const room = await this.roomModel.findById(id);
+  async findBySlug(slug: string): Promise<Room> {
+    const room = await this.roomModel.findOne({ slug }).exec();
     if (!room) {
-      throw new NotFoundException(`Room #${id} not found`);
+      throw new NotFoundException(`Room with slug "${slug}" not found`);
+    }
+    return room;
+  }
+
+  async findByIdOrSlug(idOrSlug: string): Promise<Room> {
+    return this.findOne(idOrSlug);
+  }
+
+  async findByEventId(eventId: string): Promise<Room[]> {
+    return this.roomModel.find({ eventId }).exec();
+  }
+
+  async findByEventSlug(eventSlug: string): Promise<Room[]> {
+    console.log('Finding rooms for event slug:', eventSlug);
+
+    // Trouver d'abord l'événement par son slug
+    const event = await this.eventService.findBySlug(eventSlug);
+    if (!event) {
+      throw new NotFoundException(`Event with slug "${eventSlug}" not found`);
+    }
+
+    // Utiliser l'ID de l'événement pour trouver les rooms
+    const rooms = await this.roomModel
+      .find({ eventId: event.id })
+      .populate('eventId')
+      .populate('speakers')
+      .populate('moderators')
+      .sort({ startTime: 1 })
+      .exec();
+
+    console.log(`Found ${rooms.length} rooms for event ${eventSlug}`);
+    return rooms;
+  }
+
+  async update(id: string, updateRoomDto: UpdateRoomDto): Promise<Room> {
+    const existingRoom = await this.roomModel.findById(id);
+    if (!existingRoom) {
+      throw new NotFoundException(`Room ${id} not found`);
     }
 
     // Vérifier la transition de statut si elle est fournie
-    if (updateRoomDto.status && updateRoomDto.status !== room.status) {
-      if (!this.isValidStatusTransition(room.status, updateRoomDto.status)) {
+    if (updateRoomDto.status && updateRoomDto.status !== existingRoom.status) {
+      if (!this.isValidStatusTransition(existingRoom.status, updateRoomDto.status)) {
         throw new BadRequestException(
-          `Invalid status transition from ${room.status} to ${updateRoomDto.status}`,
+          `Invalid status transition from ${existingRoom.status} to ${updateRoomDto.status}`,
         );
+      }
+    }
+
+    // Si le nom est modifié, générer un nouveau slug
+    if (updateRoomDto.name) {
+      const newSlug = slugify(updateRoomDto.name);
+      const slugExists = await this.roomModel.findOne({
+        slug: newSlug,
+        _id: { $ne: id },
+      });
+      if (slugExists) {
+        const count = await this.roomModel.countDocuments({
+          slug: new RegExp(`^${newSlug}(-[0-9]*)?$`),
+        });
+        updateRoomDto.slug = `${newSlug}-${count + 1}`;
+      } else {
+        updateRoomDto.slug = newSlug;
       }
     }
 
     // Gérer la synchronisation des speakers si ils sont modifiés
     if (updateRoomDto.speakers) {
-      const currentSpeakers = room.speakers?.map(id => id.toString()) || [];
+      const currentSpeakers = existingRoom.speakers?.map(id => id.toString()) || [];
       const newSpeakers = updateRoomDto.speakers.map(id => id.toString());
 
       // Speakers à supprimer
@@ -296,6 +364,18 @@ export class RoomService {
     return room;
   }
 
+  async getStreamInfo(roomId: string) {
+    const room = await this.roomModel.findById(roomId).exec();
+    if (!room) {
+      throw new NotFoundException(`Room ${roomId} not found`);
+    }
+    return {
+      streamKey: room.streamKey,
+      streamUrl: room.streamUrl,
+      status: room.status,
+    };
+  }
+
   async addSpeaker(roomId: string, speakerId: string): Promise<Room> {
     const room = await this.roomModel.findById(roomId);
     if (!room) {
@@ -310,9 +390,16 @@ export class RoomService {
     if (!room.speakers.some(id => id.equals(speakerObjectId))) {
       room.speakers.push(speakerObjectId);
       await room.save();
+      
+      // Synchroniser avec le service SpeakersService
+      await this.speakersService.addToRoom(speakerId, roomId);
     }
 
-    return room;
+    return this.roomModel
+      .findById(roomId)
+      .populate('speakers')
+      .populate('moderators')
+      .exec();
   }
 
   async removeSpeaker(roomId: string, speakerId: string): Promise<Room> {
@@ -321,13 +408,22 @@ export class RoomService {
       throw new NotFoundException('Room not found');
     }
 
-    if (room.speakers) {
-      const speakerObjectId = new Types.ObjectId(speakerId);
-      room.speakers = room.speakers.filter(id => !id.equals(speakerObjectId));
+    const speakerObjectId = new Types.ObjectId(speakerId);
+    const speakerIndex = room.speakers?.findIndex(id => id.equals(speakerObjectId));
+    
+    if (speakerIndex > -1) {
+      room.speakers.splice(speakerIndex, 1);
       await room.save();
+      
+      // Synchroniser avec le service SpeakersService
+      await this.speakersService.removeFromRoom(speakerId, roomId);
     }
 
-    return room;
+    return this.roomModel
+      .findById(roomId)
+      .populate('speakers')
+      .populate('moderators')
+      .exec();
   }
 
   async updateSpeakers(id: string, speakers: string[]): Promise<Room> {

@@ -54,4 +54,8 @@ export class UpdateEventDto {
   @IsBoolean()
   @IsOptional()
   featured?: boolean;
+
+  @IsString()
+  @IsOptional()
+  data?: string;
 }

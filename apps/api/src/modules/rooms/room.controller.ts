@@ -8,15 +8,17 @@ import {
   Delete,
   Request,
   UseGuards,
+  Put,
+  HttpException,
+  HttpStatus,
+  NotFoundException,
 } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RoomStatus } from './room.schema';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
-import { BadRequestException } from '@nestjs/common';
+import { RoomStatus, RoomDocument } from './room.schema';
+import { Types } from 'mongoose';
 
 @Controller('rooms')
 @UseGuards(JwtAuthGuard)
@@ -24,153 +26,178 @@ export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
-  create(@Request() req, @Body() createRoomDto: CreateRoomDto) {
-    return this.roomService.create(createRoomDto, req.user.id);
+  async create(@Body() createRoomDto: CreateRoomDto, @Request() req) {
+    return this.roomService.create(createRoomDto, req.user);
   }
 
-  @Get('event/:eventId')
-  @UseGuards(JwtAuthGuard)
-  findAll(@Param('eventId') eventId: string) {
-    return this.roomService.findAll(eventId);
+  @Get('event/:eventSlug')
+  async findAllByEvent(@Param('eventSlug') eventSlug: string) {
+    return this.roomService.findByEventSlug(eventSlug);
   }
 
-  @Get(':id')
-  @UseGuards(JwtAuthGuard)
-  findOne(@Param('id') id: string) {
-    return this.roomService.findOne(id);
+  @Get(':idOrSlug')
+  async findOne(@Param('idOrSlug') idOrSlug: string) {
+    return this.roomService.findOne(idOrSlug);
   }
 
-  @Patch(':id')
+  @Patch(':idOrSlug')
   async update(
-    @Param('id') id: string,
+    @Param('idOrSlug') idOrSlug: string,
     @Body() updateRoomDto: UpdateRoomDto,
-    @CurrentUser() user: JwtPayload,
+    @Request() req,
+  ) {
+    const room = await this.roomService.findOne(idOrSlug) as RoomDocument;
+    if (!room) {
+      throw new NotFoundException(`Room ${idOrSlug} not found`);
+    }
+    return this.roomService.update(room._id.toString(), updateRoomDto);
+  }
+
+  @Delete(':idOrSlug')
+  async remove(@Param('idOrSlug') idOrSlug: string, @Request() req) {
+    const room = await this.roomService.findOne(idOrSlug) as RoomDocument;
+    if (!room) {
+      throw new NotFoundException(`Room ${idOrSlug} not found`);
+    }
+    return this.roomService.remove(room._id.toString());
+  }
+
+  @Post(':idOrSlug/stream/start')
+  async startStream(@Param('idOrSlug') idOrSlug: string, @Request() req) {
+    try {
+      const room = await this.roomService.findOne(idOrSlug) as RoomDocument;
+      if (!room) {
+        throw new NotFoundException(`Room ${idOrSlug} not found`);
+      }
+      return this.roomService.startStream(room._id.toString());
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Post(':idOrSlug/stream/pause')
+  async pauseStream(@Param('idOrSlug') idOrSlug: string, @Request() req) {
+    try {
+      const room = await this.roomService.findOne(idOrSlug) as RoomDocument;
+      if (!room) {
+        throw new NotFoundException(`Room ${idOrSlug} not found`);
+      }
+      return this.roomService.pauseStream(room._id.toString());
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Post(':idOrSlug/stream/stop')
+  async stopStream(@Param('idOrSlug') idOrSlug: string, @Request() req) {
+    try {
+      const room = await this.roomService.findOne(idOrSlug) as RoomDocument;
+      if (!room) {
+        throw new NotFoundException(`Room ${idOrSlug} not found`);
+      }
+      return this.roomService.stopStream(room._id.toString());
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Post(':idOrSlug/cancel')
+  async cancelRoom(@Param('idOrSlug') idOrSlug: string, @Request() req) {
+    try {
+      const room = await this.roomService.findOne(idOrSlug) as RoomDocument;
+      if (!room) {
+        throw new NotFoundException(`Room ${idOrSlug} not found`);
+      }
+      return this.roomService.updateStatus(room._id.toString(), RoomStatus.CANCELLED);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Post(':idOrSlug/reactivate')
+  async reactivateRoom(@Param('idOrSlug') idOrSlug: string, @Request() req) {
+    try {
+      const room = await this.roomService.findOne(idOrSlug) as RoomDocument;
+      if (!room) {
+        throw new NotFoundException(`Room ${idOrSlug} not found`);
+      }
+      return this.roomService.updateStatus(room._id.toString(), RoomStatus.UPCOMING);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Get(':idOrSlug/stream')
+  async getStreamInfo(@Param('idOrSlug') idOrSlug: string, @Request() req) {
+    const room = await this.roomService.findOne(idOrSlug) as RoomDocument;
+    if (!room) {
+      throw new NotFoundException(`Room ${idOrSlug} not found`);
+    }
+    return this.roomService.getStreamInfo(room._id.toString());
+  }
+
+  @Post(':idOrSlug/end')
+  async endRoom(@Param('idOrSlug') idOrSlug: string, @Request() req) {
+    const room = await this.roomService.findOne(idOrSlug) as RoomDocument;
+    if (!room) {
+      throw new NotFoundException(`Room ${idOrSlug} not found`);
+    }
+    return this.roomService.endRoom(room._id.toString());
+  }
+
+  @Put(':idOrSlug/speakers')
+  async updateSpeakers(
+    @Param('idOrSlug') idOrSlug: string,
+    @Body('speakers') speakers: string[],
+    @Request() req,
   ) {
     try {
-      const room = await this.roomService.update(id, updateRoomDto);
-      return room;
+      const room = await this.roomService.findOne(idOrSlug) as RoomDocument;
+      if (!room) {
+        throw new NotFoundException(`Room ${idOrSlug} not found`);
+      }
+      return await this.roomService.updateSpeakers(room._id.toString(), speakers);
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
-  @Delete(':id')
-  @UseGuards(JwtAuthGuard)
-  remove(@Param('id') id: string) {
-    return this.roomService.remove(id);
-  }
-
-  @Post(':id/stream')
-  async startStream(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
-    try {
-      const room = await this.roomService.startStream(id);
-      return room;
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
-  }
-
-  @Post(':id/stream/pause')
-  async pauseStream(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
-    try {
-      const room = await this.roomService.pauseStream(id);
-      return room;
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
-  }
-
-  @Post(':id/stream/stop')
-  async stopStream(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
-    try {
-      const room = await this.roomService.stopStream(id);
-      return room;
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
-  }
-
-  @Post(':id/cancel')
-  async cancelRoom(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
-    try {
-      const room = await this.roomService.updateStatus(
-        id,
-        RoomStatus.CANCELLED,
-      );
-      return room;
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
-  }
-
-  @Post(':id/reactivate')
-  async reactivateRoom(
-    @Param('id') id: string,
-    @CurrentUser() user: JwtPayload,
+  @Put(':idOrSlug/moderators')
+  async updateModerators(
+    @Param('idOrSlug') idOrSlug: string,
+    @Body('moderators') moderators: string[],
+    @Request() req,
   ) {
     try {
-      const room = await this.roomService.updateStatus(id, RoomStatus.UPCOMING);
-      return room;
+      const room = await this.roomService.findOne(idOrSlug) as RoomDocument;
+      if (!room) {
+        throw new NotFoundException(`Room ${idOrSlug} not found`);
+      }
+      return await this.roomService.updateModerators(room._id.toString(), moderators);
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
-  @Post(':id/join')
-  @UseGuards(JwtAuthGuard)
-  joinRoom(@Request() req, @Param('id') id: string) {
-    return this.roomService.addParticipant(id, req.user.id);
+  @Post(':idOrSlug/join')
+  joinRoom(@Request() req, @Param('idOrSlug') idOrSlug: string) {
+    return this.roomService.addParticipant(idOrSlug, req.user.id);
   }
 
-  @Post(':id/leave')
-  @UseGuards(JwtAuthGuard)
-  leaveRoom(@Request() req, @Param('id') id: string) {
-    return this.roomService.removeParticipant(id, req.user.id);
+  @Post(':idOrSlug/leave')
+  leaveRoom(@Request() req, @Param('idOrSlug') idOrSlug: string) {
+    return this.roomService.removeParticipant(idOrSlug, req.user.id);
   }
 
-  @Post(':id/stream-info')
-  @UseGuards(JwtAuthGuard)
+  @Post(':idOrSlug/stream-info')
   updateStreamInfo(
-    @Param('id') id: string,
+    @Param('idOrSlug') idOrSlug: string,
     @Body() body: { streamKey: string; streamUrl: string },
   ) {
     return this.roomService.updateStreamInfo(
-      id,
+      idOrSlug,
       body.streamKey,
       body.streamUrl,
     );
-  }
-
-  @Post(':id/end')
-  @UseGuards(JwtAuthGuard)
-  async endRoom(@Param('id') id: string) {
-    return this.roomService.endRoom(id);
-  }
-
-  @Patch(':id/speakers')
-  @UseGuards(JwtAuthGuard)
-  async updateSpeakers(
-    @Param('id') id: string,
-    @Body('speakers') speakers: string[],
-  ) {
-    try {
-      return await this.roomService.updateSpeakers(id, speakers);
-    } catch (error) {
-      throw new BadRequestException('Failed to update speakers');
-    }
-  }
-
-  @Patch(':id/moderators')
-  @UseGuards(JwtAuthGuard)
-  async updateModerators(
-    @Param('id') id: string,
-    @Body('moderators') moderators: string[],
-  ) {
-    try {
-      return await this.roomService.updateModerators(id, moderators);
-    } catch (error) {
-      throw new BadRequestException('Failed to update moderators');
-    }
   }
 }

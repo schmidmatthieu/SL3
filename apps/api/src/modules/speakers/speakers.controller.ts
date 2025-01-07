@@ -2,7 +2,7 @@ import {
   Controller,
   Get,
   Post,
-  Put,
+  Patch,
   Delete,
   Body,
   Param,
@@ -22,7 +22,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Speaker } from './schemas/speaker.schema';
 import { ConfigService } from '@nestjs/config';
 
-@Controller('events/:eventId/speakers')
+@Controller('events/:eventIdOrSlug/speakers')
 @UseGuards(JwtAuthGuard)
 export class SpeakersController {
   private readonly logger = new Logger(SpeakersController.name);
@@ -34,55 +34,53 @@ export class SpeakersController {
 
   @Post()
   async create(
-    @Param('eventId') eventId: string,
+    @Param('eventIdOrSlug') eventIdOrSlug: string,
     @Body() createSpeakerDto: CreateSpeakerDto,
   ): Promise<Speaker> {
-    this.logger.log(`Creating speaker for event: ${eventId}`);
-    return this.speakersService.create({ ...createSpeakerDto, eventId });
+    this.logger.log(`Creating speaker for event: ${eventIdOrSlug}`);
+    return this.speakersService.create({ ...createSpeakerDto, eventId: eventIdOrSlug });
   }
 
   @Get()
-  async findAll(@Param('eventId') eventId: string): Promise<Speaker[]> {
-    this.logger.log(`Finding all speakers for event: ${eventId}`);
-    return this.speakersService.findAll(eventId);
+  async findAll(@Param('eventIdOrSlug') eventIdOrSlug: string): Promise<Speaker[]> {
+    this.logger.log(`Finding all speakers for event: ${eventIdOrSlug}`);
+    return this.speakersService.findAll(eventIdOrSlug);
   }
 
   @Get(':id')
   async findOne(
-    @Param('eventId') eventId: string,
+    @Param('eventIdOrSlug') eventIdOrSlug: string,
     @Param('id') id: string,
   ): Promise<Speaker> {
-    this.logger.log(`Finding speaker by id: ${id} for event: ${eventId}`);
+    this.logger.log(`Finding speaker by id: ${id} for event: ${eventIdOrSlug}`);
     return this.speakersService.findOne(id);
   }
 
-  @Put(':id')
+  @Patch(':id')
   async update(
-    @Param('eventId') eventId: string,
+    @Param('eventIdOrSlug') eventIdOrSlug: string,
     @Param('id') id: string,
     @Body() updateSpeakerDto: UpdateSpeakerDto,
   ): Promise<Speaker> {
-    this.logger.log(`Updating speaker ${id} for event: ${eventId}`);
+    this.logger.log(`Updating speaker ${id} for event: ${eventIdOrSlug}`);
     return this.speakersService.update(id, updateSpeakerDto);
   }
 
   @Delete(':id')
   async remove(
-    @Param('eventId') eventId: string,
+    @Param('eventIdOrSlug') eventIdOrSlug: string,
     @Param('id') id: string,
   ): Promise<Speaker> {
-    this.logger.log(`Removing speaker ${id} from event: ${eventId}`);
+    this.logger.log(`Removing speaker ${id} from event: ${eventIdOrSlug}`);
     return this.speakersService.remove(id);
   }
 
   @Get('room/:roomId')
   async findByRoom(
-    @Param('eventId') eventId: string,
+    @Param('eventIdOrSlug') eventIdOrSlug: string,
     @Param('roomId') roomId: string,
   ): Promise<Speaker[]> {
-    this.logger.log(
-      `Finding speakers for room: ${roomId} in event: ${eventId}`,
-    );
+    this.logger.log(`Finding speakers for room ${roomId} in event: ${eventIdOrSlug}`);
     return this.speakersService.findByRoom(roomId);
   }
 
@@ -106,11 +104,11 @@ export class SpeakersController {
     }),
   )
   async uploadImage(
-    @Param('eventId') eventId: string,
+    @Param('eventIdOrSlug') eventIdOrSlug: string,
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<Speaker> {
-    this.logger.log(`Uploading image for speaker ${id} in event ${eventId}`);
+    this.logger.log(`Uploading image for speaker ${id} in event ${eventIdOrSlug}`);
     const baseUrl = this.configService.get('API_URL') || 'http://localhost:3001';
     const imageUrl = `${baseUrl}/uploads/${file.filename}`;
     return this.speakersService.updateImage(id, imageUrl);

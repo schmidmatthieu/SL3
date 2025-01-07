@@ -32,7 +32,7 @@ export class EventsService {
   async create(userId: string, createEventDto: CreateEventDto): Promise<Event> {
     this.logger.log('Creating event:', createEventDto);
 
-    const { startDateTime, endDateTime } = createEventDto;
+    const { startDateTime, endDateTime, title } = createEventDto;
 
     if (startDateTime && endDateTime) {
       const startDate = new Date(startDateTime);
@@ -47,13 +47,25 @@ export class EventsService {
       }
     }
 
+    // Générer le slug à partir du titre
+    const baseSlug = title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+    let slug = baseSlug;
+    let counter = 1;
+
+    // Vérifier si le slug existe déjà
+    while (await this.eventModel.findOne({ slug }).exec()) {
+      slug = `${baseSlug}-${counter}`;
+      counter++;
+    }
+
     const event = await this.eventModel.create({
       ...createEventDto,
+      slug,
       createdBy: userId,
-      rooms: [], // Initialize with empty rooms array
+      rooms: [],
     });
 
-    this.logger.log('Event created:', event);
+    this.logger.log('Event created with slug:', event.slug);
     return event;
   }
 
@@ -113,14 +125,15 @@ export class EventsService {
     return events.map(event => ({
       id: event._id.toString(),
       title: event.title,
+      slug: event.slug,
       description: event.description,
-      startDateTime: event.startDateTime,
-      endDateTime: event.endDateTime,
+      startDateTime: event.startDateTime.toISOString(),
+      endDateTime: event.endDateTime.toISOString(),
       imageUrl: event.imageUrl,
       status: event.status,
       featured: event.featured,
       rooms: event.rooms?.map(room => room.toString()) || [],
-      createdBy: event.createdBy?.toString() || '', // Valeur par défaut pour les tests
+      createdBy: event.createdBy?.toString() || '',
       createdAt: event.createdAt,
       updatedAt: event.updatedAt,
     }));
@@ -144,9 +157,10 @@ export class EventsService {
     const response: EventResponseDto = {
       id: event._id.toString(),
       title: event.title,
+      slug: event.slug,
       description: event.description,
-      startDateTime: event.startDateTime,
-      endDateTime: event.endDateTime,
+      startDateTime: event.startDateTime.toISOString(),
+      endDateTime: event.endDateTime.toISOString(),
       imageUrl: event.imageUrl,
       status: event.status,
       featured: event.featured,
@@ -168,6 +182,8 @@ export class EventsService {
       throw new NotFoundException('Event not found');
     }
 
+    this.logger.log('Current event state:', event);
+
     // Validate dates if they are provided
     const { startDateTime, endDateTime } = updateEventDto;
     if (startDateTime && endDateTime) {
@@ -183,10 +199,13 @@ export class EventsService {
       }
     }
 
+    this.logger.log('UpdateEventDto before assign:', updateEventDto);
     Object.assign(event, updateEventDto);
-    const updatedEvent = await event.save();
+    this.logger.log('Event after assign:', event);
 
-    this.logger.log('Event updated:', updatedEvent);
+    const updatedEvent = await event.save();
+    this.logger.log('Event after save:', updatedEvent);
+    
     return updatedEvent;
   }
 
@@ -283,5 +302,51 @@ export class EventsService {
 
     this.logger.log('Event status updated:', event);
     return event;
+  }
+
+  async findBySlug(slug: string): Promise<Event> {
+    const event = await this.eventModel.findOne({ slug }).exec();
+    if (!event) {
+      throw new NotFoundException(`Event with slug "${slug}" not found`);
+    }
+    return event;
+  }
+
+  async findByIdOrSlug(idOrSlug: string): Promise<Event> {
+    let event;
+    
+    this.logger.log(`Finding event by ID or slug: ${idOrSlug}`);
+
+    if (Types.ObjectId.isValid(idOrSlug)) {
+      event = await this.eventModel.findById(idOrSlug).exec();
+      this.logger.log(`Searched by ID, found:`, event);
+    }
+
+    if (!event) {
+      event = await this.eventModel.findOne({ slug: idOrSlug }).exec();
+      this.logger.log(`Searched by slug, found:`, event);
+    }
+
+    if (!event) {
+      this.logger.error(`Event not found with ID or slug: ${idOrSlug}`);
+      throw new NotFoundException(`Event not found`);
+    }
+
+    // S'assurer que l'événement a un slug
+    if (!event.slug) {
+      event.slug = event.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
+      await event.save();
+      this.logger.log(`Generated and saved slug for event: ${event.slug}`);
+    }
+
+    // Récupérer les rooms associées en utilisant l'ID de l'événement
+    const rooms = await this.roomService.findAll(event._id.toString());
+    
+    // Retourner l'événement avec ses rooms
+    return {
+      ...event.toObject(),
+      id: event._id,  // S'assurer que l'ID est toujours présent
+      rooms
+    };
   }
 }

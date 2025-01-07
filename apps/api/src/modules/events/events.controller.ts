@@ -10,6 +10,7 @@ import {
   Query,
   Request,
   Logger,
+  BadRequestException,
 } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
@@ -39,19 +40,44 @@ export class EventsController {
     return this.eventsService.findByUser(req.user.id);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string): Promise<EventResponseDto> {
-    return this.eventsService.findOne(id);
+  @Get(':idOrSlug')
+  async findOne(@Param('idOrSlug') idOrSlug: string) {
+    return this.eventsService.findByIdOrSlug(idOrSlug);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto) {
-    return this.eventsService.update(id, updateEventDto);
+  @Patch(':idOrSlug')
+  async update(
+    @Param('idOrSlug') idOrSlug: string,
+    @Body() updateEventDto: UpdateEventDto,
+  ) {
+    this.logger.log('Updating event:', { idOrSlug, updateEventDto });
+    
+    try {
+      const event = await this.eventsService.findByIdOrSlug(idOrSlug);
+      
+      // Si les données sont envoyées en JSON dans un champ 'data'
+      if (updateEventDto.data) {
+        try {
+          const jsonData = JSON.parse(updateEventDto.data);
+          return this.eventsService.update(event.id, jsonData);
+        } catch (error) {
+          this.logger.error('Error parsing JSON data:', error);
+          throw new BadRequestException('Invalid JSON data');
+        }
+      }
+      
+      // Sinon, utiliser directement le DTO
+      return this.eventsService.update(event.id, updateEventDto);
+    } catch (error) {
+      this.logger.error('Error updating event:', error);
+      throw error;
+    }
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.eventsService.remove(id);
+  @Delete(':idOrSlug')
+  async remove(@Param('idOrSlug') idOrSlug: string) {
+    const event = await this.eventsService.findByIdOrSlug(idOrSlug);
+    return this.eventsService.remove(event.id);
   }
 
   @Post(':id/rooms/:roomId')

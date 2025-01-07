@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Document, Schema as MongooseSchema, Types } from 'mongoose';
 import { Room } from '../../rooms/room.schema';
+import { slugify } from '../../../utils/slugify';
 
 export enum EventStatus {
   ACTIVE = 'active',
@@ -11,6 +12,10 @@ export enum EventStatus {
 
 export type EventDocument = Event & Document;
 
+interface EventDocumentWithId extends EventDocument {
+  _id: Types.ObjectId;
+}
+
 @Schema({
   timestamps: true,
   collection: 'events',
@@ -18,6 +23,13 @@ export type EventDocument = Event & Document;
     virtuals: true,
     transform: (doc, ret) => {
       ret.id = ret._id;
+      // Convertir les dates en chaînes ISO
+      if (ret.startDateTime) {
+        ret.startDateTime = ret.startDateTime.toISOString();
+      }
+      if (ret.endDateTime) {
+        ret.endDateTime = ret.endDateTime.toISOString();
+      }
       delete ret._id;
       delete ret.__v;
       return ret;
@@ -59,11 +71,39 @@ export class Event extends Document {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: true })
   createdBy: string;
 
+  @Prop({ required: true, type: String, unique: true })
+  slug: string;
+
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Event);
+
+// Middleware to generate slug before saving
+EventSchema.pre('save', function(next) {
+  if (this.isModified('title')) {
+    this.slug = slugify(this.title);
+  }
+  next();
+});
+
+// Ensure unique slug
+EventSchema.pre('save', async function(next) {
+  if (this.isModified('slug')) {
+    const slugRegEx = new RegExp(`^${this.slug}(-[0-9]*)?$`, 'i');
+    const eventsWithSlug = await (this.model('Event') as any).find({ slug: slugRegEx });
+    if (eventsWithSlug.length > 0) {
+      this.slug = `${this.slug}-${eventsWithSlug.length + 1}`;
+    }
+  }
+  next();
+});
+
+// Virtual pour l'id
+EventSchema.virtual('id').get(function(this: EventDocumentWithId) {
+  return this._id.toHexString();
+});
 
 // Indexes
 EventSchema.index({ createdBy: 1 });

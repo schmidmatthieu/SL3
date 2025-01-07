@@ -3,14 +3,15 @@ import { EventStatus } from '../schemas/event.schema';
 export class EventResponseDto {
   id: string;
   title: string;
-  description?: string;
-  startDateTime?: Date;
-  endDateTime?: Date;
-  status?: EventStatus;
-  featured?: boolean;
+  slug: string;
+  description: string;
+  startDateTime: string;
+  endDateTime: string;
   imageUrl?: string;
-  rooms: string[];
+  status: string;
+  featured?: boolean;
+  rooms?: string[];
   createdBy: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }

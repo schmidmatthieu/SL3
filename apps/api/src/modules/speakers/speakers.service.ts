@@ -6,6 +6,7 @@ import { CreateSpeakerDto } from './dto/create-speaker.dto';
 import { UpdateSpeakerDto } from './dto/update-speaker.dto';
 import { MediaService } from '../media/media.service';
 import { RoomService } from '../rooms/room.service';
+import { EventsService } from '../events/events.service';
 
 @Injectable()
 export class SpeakersService {
@@ -16,6 +17,8 @@ export class SpeakersService {
     private readonly mediaService: MediaService,
     @Inject(forwardRef(() => RoomService))
     private readonly roomService: RoomService,
+    @Inject(forwardRef(() => EventsService))
+    private readonly eventService: EventsService,
   ) {}
 
   async create(createSpeakerDto: CreateSpeakerDto): Promise<Speaker> {
@@ -43,10 +46,21 @@ export class SpeakersService {
     return savedSpeaker;
   }
 
-  async findAll(eventId?: string): Promise<Speaker[]> {
+  async findAll(eventIdOrSlug?: string): Promise<Speaker[]> {
     this.logger.log(
-      `Finding all speakers${eventId ? ` for event: ${eventId}` : ''}`,
+      `Finding all speakers${eventIdOrSlug ? ` for event: ${eventIdOrSlug}` : ''}`,
     );
+
+    let eventId = eventIdOrSlug;
+
+    if (eventIdOrSlug && !Types.ObjectId.isValid(eventIdOrSlug)) {
+      // Si ce n'est pas un ID valide, c'est peut-être un slug
+      const event = await this.eventService.findBySlug(eventIdOrSlug);
+      if (!event) {
+        throw new NotFoundException(`Event with slug "${eventIdOrSlug}" not found`);
+      }
+      eventId = event._id.toString();
+    }
 
     const query = eventId ? { eventId } : {};
     const speakers = await this.speakerModel
@@ -211,8 +225,19 @@ export class SpeakersService {
     return deletedSpeaker;
   }
 
-  async findByEvent(eventId: string): Promise<Speaker[]> {
-    this.logger.log(`Finding speakers for event: ${eventId}`);
+  async findByEvent(eventIdOrSlug: string): Promise<Speaker[]> {
+    this.logger.log(`Finding speakers for event: ${eventIdOrSlug}`);
+
+    let eventId = eventIdOrSlug;
+
+    if (eventIdOrSlug && !Types.ObjectId.isValid(eventIdOrSlug)) {
+      // Si ce n'est pas un ID valide, c'est peut-être un slug
+      const event = await this.eventService.findBySlug(eventIdOrSlug);
+      if (!event) {
+        throw new NotFoundException(`Event with slug "${eventIdOrSlug}" not found`);
+      }
+      eventId = event._id.toString();
+    }
 
     const speakers = await this.speakerModel
       .find({ eventId })

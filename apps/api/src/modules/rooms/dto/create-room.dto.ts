@@ -5,8 +5,13 @@ import {
   ValidateNested,
   IsBoolean,
   IsNumber,
+  MinLength,
+  MaxLength,
+  IsNotEmpty,
+  IsArray,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { RoomStatus } from '../room.schema';
 
 export class RoomSettingsDto {
@@ -40,34 +45,56 @@ export class RoomSettingsDto {
 }
 
 export class CreateRoomDto {
+  @ApiProperty()
   @IsString()
+  @IsNotEmpty()
   name: string;
 
+  @ApiPropertyOptional()
   @IsString()
-  eventId: string;
+  @IsOptional()
+  eventId?: string;
 
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  eventSlug?: string;
+
+  @ApiPropertyOptional()
   @IsString()
   @IsOptional()
   description?: string;
 
+  @ApiPropertyOptional()
   @IsString()
   @IsOptional()
   thumbnail?: string;
 
+  @ApiPropertyOptional()
+  @IsString()
+  @MinLength(3)
+  @MaxLength(100)
+  slug?: string;
+
+  @ApiPropertyOptional()
   @IsEnum(RoomStatus)
   @IsOptional()
   status?: RoomStatus;
 
+  @ApiProperty()
   @IsString()
   startTime: string;
 
+  @ApiProperty()
   @IsString()
   endTime: string;
 
+  @ApiPropertyOptional()
   @IsString()
   @IsOptional()
   streamKey?: string;
 
+  @ApiPropertyOptional()
   @IsString()
   @IsOptional()
   streamUrl?: string;
@@ -77,15 +104,18 @@ export class CreateRoomDto {
   @IsOptional()
   settings?: RoomSettingsDto;
 
-  @IsString({ each: true })
+  @ApiPropertyOptional()
+  @IsArray()
   @IsOptional()
   speakers?: string[];
 
-  @IsString({ each: true })
+  @ApiPropertyOptional()
+  @IsArray()
   @IsOptional()
   moderators?: string[];
 
-  @IsString({ each: true })
+  @ApiPropertyOptional()
+  @IsArray()
   @IsOptional()
   participants?: string[];
 }
