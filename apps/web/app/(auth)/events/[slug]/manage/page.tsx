@@ -12,22 +12,22 @@ import { EventDashboard } from '@/components/features/events-global/management/e
 export default function ManageEventPage() {
   const router = useRouter();
   const params = useParams();
-  const eventId = params.eventId as string;
+  const slug = params.slug as string;
   const { currentEvent, fetchEvent, isLoading, error } = useEventStore();
   const { user, profile } = useAuthStore();
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   useEffect(() => {
     const loadEvent = async () => {
-      if (!eventId) {
-        console.error('ManageEventPage - No event ID provided');
+      if (!slug) {
+        console.error('ManageEventPage - No event slug provided');
         router.push('/events');
         return;
       }
 
       try {
-        console.log('ManageEventPage - Fetching event with ID:', eventId);
-        await fetchEvent(eventId);
+        console.log('ManageEventPage - Fetching event with slug:', slug);
+        await fetchEvent(slug);
       } catch (error) {
         console.error('ManageEventPage - Error fetching event:', error);
       } finally {
@@ -36,7 +36,7 @@ export default function ManageEventPage() {
     };
 
     loadEvent();
-  }, [eventId, fetchEvent, router]);
+  }, [slug, fetchEvent, router]);
 
   // Handle authentication and authorization
   useEffect(() => {
@@ -99,5 +99,5 @@ export default function ManageEventPage() {
     );
   }
 
-  return <EventDashboard event={currentEvent} eventId={eventId} />;
+  return <EventDashboard event={currentEvent} slug={slug} />;
 }

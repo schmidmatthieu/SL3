@@ -6,19 +6,19 @@ interface EventLayoutProps {
   children: React.ReactNode;
   modal: React.ReactNode;
   params: Promise<{
-    eventId: string;
+    slug: string;
   }>;
 }
 
 export default function EventLayout({ children, modal, params }: EventLayoutProps) {
-  const { eventId } = use(params);
+  const { slug } = use(params);
 
-  if (!eventId || eventId === 'undefined') {
-    console.error('EventLayout: Invalid eventId:', eventId);
+  if (!slug || slug === 'undefined') {
+    console.error('EventLayout: Invalid slug:', slug);
   }
 
   return (
-    <div className="relative" data-event-id={eventId}>
+    <div className="relative" data-event-slug={slug}>
       {children}
       {modal}
     </div>

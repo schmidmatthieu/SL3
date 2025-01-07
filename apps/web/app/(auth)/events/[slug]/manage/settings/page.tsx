@@ -64,7 +64,7 @@ const EventHeader = ({ event }: { event: Event }): JSX.Element => {
 
 export default function SettingsPage(): JSX.Element {
   const params = useParams();
-  const eventId = params.eventId as string;
+  const slug = params.slug as string;
   const { currentEvent, fetchEvent, isLoading, error } = useEvents(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const { t } = useTranslation('management/settings/event-settings');
@@ -72,8 +72,8 @@ export default function SettingsPage(): JSX.Element {
   useEffect(() => {
     const loadEvent = async (): Promise<void> => {
       try {
-        if (eventId && eventId.length > 0) {
-          await fetchEvent(eventId);
+        if (slug && slug.length > 0) {
+          await fetchEvent(slug);
         }
       } catch (err) {
         const error = err as Error;
@@ -84,7 +84,7 @@ export default function SettingsPage(): JSX.Element {
     };
 
     void loadEvent();
-  }, [eventId, fetchEvent]);
+  }, [slug, fetchEvent]);
 
   if (isLoading || isInitialLoad) {
     return <LoadingState />;
