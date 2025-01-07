@@ -2,7 +2,7 @@
 
 ## État du Projet
 
-- **Dernière mise à jour** : 2025-01-04
+- **Dernière mise à jour** : 2025-01-07
 - **Version** : Beta
 - **État Global** : En développement actif
 
@@ -53,6 +53,10 @@
 - [x] Amélioration des badges de statut avec animations et icônes
 - [x] Uniformisation des badges de statut dans tous les composants
 - [x] Optimisation de la visibilité des badges sur les cards
+- [x] Migration vers les slugs pour les URLs d'événements et de rooms
+- [x] Amélioration de la gestion du temps dans la timeline
+- [x] Refactoring des composants de gestion des rooms
+- [x] Amélioration de l'organisation des fichiers et de la modularité
 
 ### Gestion des Intervenants (Phase 4)
 
@@ -88,6 +92,8 @@
 - [x] Animations et transitions fluides
 - [x] Feedback visuel amélioré pour les états actifs
 - [x] Cohérence visuelle entre les composants
+- [x] Amélioration des dialogues et des formulaires
+- [x] Optimisation de l'expérience mobile
 
 ## Objectifs MVP - En Cours
 
@@ -132,7 +138,6 @@
 
 #### Améliorations UX
 
-- [ ] Animations et transitions
 - [ ] Mode hors ligne basique
 - [ ] Notifications temps réel
 - [ ] Amélioration des formulaires
@@ -199,39 +204,8 @@
 - **Lighthouse Score** : 85+
 - **Core Web Vitals** : En cours d'optimisation
 
-### Qualité Code
+### Qualité du Code
 
-- **Coverage** : 
-  - Auth Module : 100%
-  - Events Module : 85%
-  - Global : 75%
-- **TypeScript** : Strict mode
-- **Lint** : 0 erreurs
-
-### Dette Technique
-
-- **Niveau** : Moyen
-- **Points d'attention** :
-  - Optimisation des requêtes MongoDB
-  - Tests E2E à implémenter pour les modules restants
-  - Documentation API à compléter
-
-## Process de Mise à Jour
-
-### Commits
-
-Format : `type(scope): description`
-Types :
-
-- feat : Nouvelle fonctionnalité
-- fix : Correction de bug
-- refactor : Refactoring
-- style : Modifications UI
-- chore : Maintenance
-- test : Ajout ou modification de tests
-
-### Review
-
-- Daily : Update des statuts
-- Sprint : Review des priorités
-- Release : Update version et changelog
+- **Coverage Tests** : 80%+
+- **Complexité Cyclomatique** : < 15
+- **Dette Technique** : < 5%
