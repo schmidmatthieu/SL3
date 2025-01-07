@@ -5,14 +5,17 @@ import {
   subDays,
   isSameDay,
   setHours,
+  isWithinInterval,
 } from 'date-fns';
+
+const getCurrentTime = () => new Date('2025-01-07T11:50:18+01:00');
 
 interface TimelineState {
   currentDate: Date;
   visibleTimeStart: Date;
   visibleTimeEnd: Date;
-  eventStartDate: Date;
-  eventEndDate: Date;
+  eventStartDate: Date | null;
+  eventEndDate: Date | null;
   
   // Actions
   setCurrentDate: (date: Date) => void;
@@ -29,11 +32,11 @@ interface TimelineState {
 
 export const useTimelineStore = create<TimelineState>((set, get) => ({
   // State
-  currentDate: new Date(),
-  visibleTimeStart: new Date(),
-  visibleTimeEnd: new Date(),
-  eventStartDate: new Date(),
-  eventEndDate: new Date(),
+  currentDate: getCurrentTime(),
+  visibleTimeStart: getCurrentTime(),
+  visibleTimeEnd: getCurrentTime(),
+  eventStartDate: null,
+  eventEndDate: null,
 
   // Actions
   setCurrentDate: (date: Date) => {
@@ -42,29 +45,48 @@ export const useTimelineStore = create<TimelineState>((set, get) => ({
   },
 
   navigateForward: () => {
-    const { currentDate } = get();
-    set({ currentDate: addDays(currentDate, 1) });
-    get().updateVisibleTime();
+    const { currentDate, eventEndDate } = get();
+    if (!eventEndDate || !isSameDay(currentDate, eventEndDate)) {
+      set({ currentDate: addDays(currentDate, 1) });
+      get().updateVisibleTime();
+    }
   },
 
   navigateBackward: () => {
-    const { currentDate } = get();
-    set({ currentDate: subDays(currentDate, 1) });
-    get().updateVisibleTime();
+    const { currentDate, eventStartDate } = get();
+    if (!eventStartDate || !isSameDay(currentDate, eventStartDate)) {
+      set({ currentDate: subDays(currentDate, 1) });
+      get().updateVisibleTime();
+    }
   },
 
   goToNow: () => {
-    const now = new Date();
+    const now = getCurrentTime();
     set({ currentDate: startOfDay(now) });
     get().updateVisibleTime();
   },
 
   setEventDates: (start: Date, end: Date) => {
-    set({
-      eventStartDate: startOfDay(start),
-      eventEndDate: startOfDay(end),
-    });
-    get().updateVisibleTime();
+    const startDay = startOfDay(start);
+    const endDay = startOfDay(end);
+    const now = getCurrentTime();
+    
+    // Ne mettre à jour que si les dates ont changé
+    if (!get().eventStartDate || !get().eventEndDate ||
+        !isSameDay(get().eventStartDate, startDay) ||
+        !isSameDay(get().eventEndDate, endDay)) {
+      
+      // Si l'événement est en cours, on commence à la date actuelle
+      const isEventOngoing = isWithinInterval(now, { start, end });
+      const initialDate = isEventOngoing ? now : start;
+      
+      set({
+        eventStartDate: startDay,
+        eventEndDate: endDay,
+        currentDate: startOfDay(initialDate),
+      });
+      get().updateVisibleTime();
+    }
   },
 
   // Getters
@@ -85,8 +107,8 @@ export const useTimelineStore = create<TimelineState>((set, get) => ({
   canNavigate: () => {
     const { currentDate, eventStartDate, eventEndDate } = get();
     return {
-      backward: !isSameDay(currentDate, eventStartDate),
-      forward: !isSameDay(currentDate, eventEndDate)
+      backward: eventStartDate ? !isSameDay(currentDate, eventStartDate) : true,
+      forward: eventEndDate ? !isSameDay(currentDate, eventEndDate) : true,
     };
   },
 }));
