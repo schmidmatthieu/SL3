@@ -1,16 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
-import { User } from '../../users/schemas/user.schema';
+import { User, UserRole } from '../../users/schemas/user.schema';
 
 export type ProfileDocument = Profile & Document;
-
-export enum UserRole {
-  ADMIN = 'admin',
-  EVENT_ADMIN = 'event_admin',
-  MODERATOR = 'moderator',
-  SPEAKER = 'speaker',
-  PARTICIPANT = 'participant',
-}
 
 @Schema({ timestamps: true })
 export class Profile {

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Profile, ProfileDocument } from './schemas/profile.schema';
@@ -6,9 +6,9 @@ import {
   Permission,
   PermissionDocument,
   PermissionType,
+  mapUserRoleToPermissionType,
 } from './schemas/permission.schema';
-import { User, UserDocument } from '../users/schemas/user.schema';
-import { Logger } from '@nestjs/common';
+import { User, UserDocument, UserRole } from '../users/schemas/user.schema';
 
 @Injectable()
 export class RolesService {
@@ -21,7 +21,7 @@ export class RolesService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
-  async getRole(userId: string): Promise<string> {
+  async getRole(userId: string): Promise<UserRole> {
     this.logger.log('Getting role for user ID:', userId);
     try {
       // First, try to get the role from the profile
@@ -39,7 +39,7 @@ export class RolesService {
       }
 
       this.logger.log('No role found, defaulting to participant');
-      return 'participant';
+      return UserRole.PARTICIPANT;
     } catch (error) {
       this.logger.error('Error getting role:', error);
       throw error;
@@ -51,43 +51,152 @@ export class RolesService {
     type: PermissionType,
     resourceId: string,
   ): Promise<boolean> {
-    const permission = await this.permissionModel
-      .findOne({
-        userId,
-        type,
-        resourceId,
-        active: true,
-        $or: [
-          { expiresAt: { $exists: false } },
-          { expiresAt: { $gt: new Date() } },
-        ],
-      })
-      .exec();
+    try {
+      // Vérifier d'abord le rôle de l'utilisateur
+      const userRole = await this.getRole(userId);
+      
+      // Les admins ont toutes les permissions
+      if (userRole === UserRole.ADMIN) {
+        return true;
+      }
 
-    return !!permission;
+      // Convertir le rôle en type de permission
+      const defaultPermission = mapUserRoleToPermissionType(userRole);
+      
+      // Si le rôle par défaut correspond au type demandé, autoriser
+      if (defaultPermission === type) {
+        return true;
+      }
+
+      // Sinon, vérifier les permissions spécifiques
+      const permission = await this.permissionModel
+        .findOne({
+          userId,
+          type,
+          resourceId,
+          active: true,
+          $or: [
+            { expiresAt: { $exists: false } },
+            { expiresAt: { $gt: new Date() } },
+          ],
+        })
+        .exec();
+
+      return !!permission;
+    } catch (error) {
+      this.logger.error('Error checking permission:', error);
+      throw error;
+    }
   }
 
   async grantPermission(
     userId: string,
     type: PermissionType,
     resourceId: string,
+    grantedBy?: string,
   ): Promise<Permission> {
-    const permission = new this.permissionModel({
-      userId,
-      type,
-      resourceId,
-    });
-    return permission.save();
+    try {
+      // Vérifier si l'utilisateur existe
+      const user = await this.userModel.findById(userId).exec();
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      // Vérifier si une permission active existe déjà
+      const existingPermission = await this.permissionModel
+        .findOne({
+          userId,
+          type,
+          resourceId,
+          active: true,
+        })
+        .exec();
+
+      if (existingPermission) {
+        return existingPermission;
+      }
+
+      // Créer une nouvelle permission
+      const permission = new this.permissionModel({
+        userId,
+        type,
+        resourceId,
+        grantedBy,
+        grantedAt: new Date(),
+      });
+
+      this.logger.log(`Granting permission ${type} for user ${userId} on resource ${resourceId}`);
+      return permission.save();
+    } catch (error) {
+      this.logger.error('Error granting permission:', error);
+      throw error;
+    }
   }
 
   async revokePermission(
     userId: string,
     type: PermissionType,
     resourceId: string,
+    revokedBy?: string,
   ): Promise<boolean> {
-    const result = await this.permissionModel
-      .updateOne({ userId, type, resourceId }, { active: false })
-      .exec();
-    return result.modifiedCount > 0;
+    try {
+      const result = await this.permissionModel
+        .updateOne(
+          { userId, type, resourceId, active: true },
+          {
+            active: false,
+            revokedBy,
+            revokedAt: new Date(),
+          },
+        )
+        .exec();
+
+      this.logger.log(
+        `Revoked permission ${type} for user ${userId} on resource ${resourceId}`,
+        result.modifiedCount > 0 ? 'Success' : 'No permission found',
+      );
+
+      return result.modifiedCount > 0;
+    } catch (error) {
+      this.logger.error('Error revoking permission:', error);
+      throw error;
+    }
+  }
+
+  async getUserPermissions(userId: string): Promise<Permission[]> {
+    try {
+      return this.permissionModel
+        .find({
+          userId,
+          active: true,
+          $or: [
+            { expiresAt: { $exists: false } },
+            { expiresAt: { $gt: new Date() } },
+          ],
+        })
+        .exec();
+    } catch (error) {
+      this.logger.error('Error getting user permissions:', error);
+      throw error;
+    }
+  }
+
+  async getResourcePermissions(resourceId: string): Promise<Permission[]> {
+    try {
+      return this.permissionModel
+        .find({
+          resourceId,
+          active: true,
+          $or: [
+            { expiresAt: { $exists: false } },
+            { expiresAt: { $gt: new Date() } },
+          ],
+        })
+        .populate('userId', 'username email')
+        .exec();
+    } catch (error) {
+      this.logger.error('Error getting resource permissions:', error);
+      throw error;
+    }
   }
 }
