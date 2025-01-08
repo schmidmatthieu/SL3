@@ -28,16 +28,16 @@ export function ChatInput({ onSendMessage, disabled }: ChatInputProps) {
 
   return (
     <div className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <form onSubmit={handleSubmit} className="p-4">
+      <form onSubmit={handleSubmit} className="p-2">
         <div className="flex items-center gap-2">
           <Button
             type="button"
             size="icon"
-            variant="ghost"
+            variant="default"
             className="shrink-0"
             disabled={disabled}
           >
-            <Smile className="h-5 w-5 text-muted-foreground" />
+            <Smile className="h-4 w-4 text-muted-foreground" />
           </Button>
           <Input
             value={message}
