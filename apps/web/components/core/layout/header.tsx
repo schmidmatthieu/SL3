@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/store/auth-store';
 import { LogOut, Settings, Shield, User, User2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +24,7 @@ import { ModeToggle } from '@/components/core/layout/mode-toggle';
 export function Header() {
   const { t } = useTranslation();
   const pathname = usePathname();
+  const router = useRouter();
   const isAdminPage = pathname?.startsWith('/admin');
   const { user, profile, signOut } = useAuthStore();
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
@@ -140,12 +141,15 @@ export function Header() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/settings">
+                  <Link href="/profil-settings">
                     <User className="mr-2 h-4 w-4" />
                     <span>{t('nav.settings')}</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={signOut}>
+                <DropdownMenuItem onClick={() => {
+                  signOut();
+                  router.push('/login');
+                }}>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>{t('nav.logout')}</span>
                 </DropdownMenuItem>
