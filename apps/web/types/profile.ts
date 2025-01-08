@@ -1,7 +1,9 @@
+import { UserRole } from './roles';
+
 export interface Profile {
   id: string;
   userId: string;
-  role: 'user' | 'admin';
+  role: UserRole;
   firstName?: string;
   lastName?: string;
   imageUrl?: string;

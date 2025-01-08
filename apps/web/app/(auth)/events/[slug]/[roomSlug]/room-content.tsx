@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useEventStore } from '@/lib/store/event.store';
+import { useRoom } from '@/hooks/useRoom';
 
 import { Button } from '@/components/core/ui/button';
 import { Skeleton } from '@/components/core/ui/skeleton';
@@ -17,41 +18,32 @@ interface RoomContentProps {
 export function RoomContent({ eventId: propsEventId, roomId: propsRoomId }: RoomContentProps) {
   const router = useRouter();
   const params = useParams();
-  const eventId = propsEventId || (params?.eventId as string);
-  const roomId = propsRoomId || (params?.roomId as string);
+  const eventSlug = params?.slug as string;
+  const roomSlug = params?.roomSlug as string;
 
-  const { currentEvent, isLoading, error, fetchEvent } = useEventStore();
+  const { currentEvent, isLoading: isEventLoading, error: eventError } = useEventStore();
+  const { currentRoom, isLoading: isRoomLoading, error: roomError } = useRoom(eventSlug, roomSlug);
+
   const [retryCount, setRetryCount] = useState(0);
   const [localError, setLocalError] = useState<string | null>(null);
 
+  const isLoading = isEventLoading || isRoomLoading;
+  const error = eventError || roomError || localError;
+
   useEffect(() => {
-    const init = async () => {
-      if (!eventId || eventId === 'undefined') {
-        const errorMessage = `ID de l'événement invalide: ${eventId}`;
-        console.error(errorMessage, { eventId, params });
-        setLocalError(errorMessage);
-        return;
-      }
+    if (!eventSlug || eventSlug === 'undefined') {
+      setLocalError('Invalid event identifier');
+      return;
+    }
 
-      if (!roomId || roomId === 'undefined') {
-        const errorMessage = `ID de la salle invalide: ${roomId}`;
-        console.error(errorMessage, { roomId, params });
-        setLocalError(errorMessage);
-        return;
-      }
+    if (!roomSlug || roomSlug === 'undefined') {
+      setLocalError('Invalid room identifier');
+      return;
+    }
 
-      try {
-        await fetchEvent(eventId);
-        setLocalError(null);
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement de la salle';
-        console.error('Erreur dans le chargement:', err);
-        setLocalError(errorMessage);
-      }
-    };
-
-    init();
-  }, [eventId, roomId, fetchEvent, retryCount, params]);
+    // Reset local error if we have valid slugs
+    setLocalError(null);
+  }, [eventSlug, roomSlug]);
 
   const handleRetry = () => {
     setRetryCount(prev => prev + 1);
@@ -70,17 +62,17 @@ export function RoomContent({ eventId: propsEventId, roomId: propsRoomId }: Room
     return (
       <div className="container py-8">
         <Alert variant="destructive" className="mb-4">
-          <AlertTitle>Erreur</AlertTitle>
+          <AlertTitle>Error</AlertTitle>
           <AlertDescription>
             {localError}
           </AlertDescription>
         </Alert>
         <div className="flex gap-4">
           <Button onClick={handleRetry} variant="default">
-            Réessayer
+            Retry
           </Button>
           <Button onClick={handleNavigateToEvents} variant="outline">
-            Retour aux événements
+            Back to events
           </Button>
         </div>
       </div>
@@ -91,17 +83,17 @@ export function RoomContent({ eventId: propsEventId, roomId: propsRoomId }: Room
     return (
       <div className="container py-8">
         <Alert variant="destructive" className="mb-4">
-          <AlertTitle>Erreur de chargement</AlertTitle>
+          <AlertTitle>Loading Error</AlertTitle>
           <AlertDescription>
             {error}
           </AlertDescription>
         </Alert>
         <div className="flex gap-4">
           <Button onClick={handleRetry} variant="default">
-            Réessayer
+            Retry
           </Button>
           <Button onClick={handleBack} variant="outline">
-            Retour
+            Back
           </Button>
         </div>
       </div>
@@ -111,36 +103,34 @@ export function RoomContent({ eventId: propsEventId, roomId: propsRoomId }: Room
   if (isLoading) {
     return (
       <div className="container py-8">
-        <div className="flex items-center gap-4 mb-8">
-          <Skeleton className="h-8 w-64" />
-        </div>
-        <div className="grid gap-8 lg:grid-cols-4">
-          <div className="lg:col-span-3">
-            <Skeleton className="aspect-video w-full" />
-          </div>
-          <div>
-            <Skeleton className="h-[400px]" />
-          </div>
+        <div className="space-y-4">
+          <Skeleton className="h-8 w-[200px]" />
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
         </div>
       </div>
     );
   }
 
-  if (!currentEvent) {
+  if (!currentRoom) {
     return (
       <div className="container py-8">
-        <Alert variant="default" className="mb-4">
-          <AlertTitle>Événement non trouvé</AlertTitle>
+        <Alert variant="destructive" className="mb-4">
+          <AlertTitle>Error</AlertTitle>
           <AlertDescription>
-            L'événement demandé n'a pas été trouvé. Veuillez vérifier l'URL ou retourner à la liste des événements.
+            Room not found
           </AlertDescription>
         </Alert>
-        <Button onClick={handleNavigateToEvents} variant="outline">
-          Retour aux événements
+        <Button onClick={handleBack} variant="outline">
+          Back
         </Button>
       </div>
     );
   }
 
-  return <RoomDetails event={currentEvent} roomId={roomId} />;
+  return (
+    <div className="container py-8">
+      <RoomDetails room={currentRoom} />
+    </div>
+  );
 }

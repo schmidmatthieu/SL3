@@ -95,13 +95,13 @@ export function RoomCard({
     if (room.status === 'cancelled') {
       return;
     }    
-    router.push(`/events/${eventSlug}/rooms/${roomId}`);
+    router.push(`/events/${eventSlug}/${room.slug}`);
   };
 
   const handleAccessClick = (e: React.MouseEvent, type: 'mod' | 'speaker') => {
     e.stopPropagation();
     if (type === 'mod' || room.status !== 'cancelled') {
-      router.push(`/events/${roomEventId}/rooms/${roomId}/${type}`);
+      router.push(`/events/${roomEventId}/${room.slug}/${type}`);
     }
   };
 
@@ -109,7 +109,7 @@ export function RoomCard({
 
   return (
     <Link
-      href={`/events/${eventSlug}/rooms/${roomId}`}
+      href={`/events/${eventSlug}/${room.slug}`}
       className="block hover:opacity-80 transition-opacity"
     >
       <Card

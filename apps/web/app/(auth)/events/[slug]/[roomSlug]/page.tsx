@@ -9,8 +9,8 @@ import { RoomContent } from './room-content';
 
 interface RoomPageProps {
   params: Promise<{
-    eventId: string;
-    roomId: string;
+    slug: string;
+    roomSlug: string;
   }>;
 }
 
@@ -20,8 +20,8 @@ export default function RoomPage({ params }: RoomPageProps) {
   const resolvedParams = use(params);
   
   // Fusionner les paramètres de la route avec les paramètres résolus
-  const eventId = (routeParams?.eventId as string) || resolvedParams.eventId;
-  const roomId = (routeParams?.roomId as string) || resolvedParams.roomId;
+  const eventId = (routeParams?.slug as string) || resolvedParams.slug;
+  const roomId = (routeParams?.roomSlug as string) || resolvedParams.roomSlug;
 
   
   return (

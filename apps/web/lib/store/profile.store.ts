@@ -1,5 +1,6 @@
 import { mediaService } from '@/lib/api/media';
 import { create } from 'zustand';
+import { UserRole } from '@/types/roles';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -27,6 +28,7 @@ interface User {
   imageUrl: string;
   preferredLanguage: 'en' | 'fr' | 'de' | 'it';
   theme: 'light' | 'dark' | 'system';
+  role: UserRole;
 }
 
 interface ProfileState {
