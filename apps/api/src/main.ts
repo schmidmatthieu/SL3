@@ -6,6 +6,8 @@ import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import * as express from 'express';
+import { RedisIoAdapter } from './modules/chat/adapters/redis.adapter';
+import { RedisClusterService } from './config/redis-cluster.config';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -70,9 +72,29 @@ async function bootstrap() {
     })(req, res, next);
   });
 
+  // Configuration de Socket.IO avec Redis Cluster
+  const redisClusterService = new RedisClusterService(app.get(ConfigService));
+  const redisIoAdapter = new RedisIoAdapter(app, app.get(ConfigService), redisClusterService);
+  await redisIoAdapter.connectToRedis();
+  app.useWebSocketAdapter(redisIoAdapter);
+
   // Start the server
   const port = configService.get<number>('PORT', 3001);
-  await app.listen(port);
+  try {
+    await app.listen(port);
+    const serverUrl = await app.getUrl();
+    console.log('=================================');
+    console.log(`🚀 Server is running on: ${serverUrl}`);
+    console.log(`📚 Swagger docs: ${serverUrl}/api/docs`);
+    console.log(`🔌 WebSocket server is enabled`);
+    console.log('=================================');
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
 }
 
-bootstrap();
+bootstrap().catch(err => {
+  console.error('Failed to bootstrap application:', err);
+  process.exit(1);
+});

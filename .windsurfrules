@@ -15,3 +15,4 @@
 15. When a file is more than 300 lines suggest to split in in multiple clean and functional files
 16. Never write my URL in the code but use my .env variables
 17. Use pnpm
+18. DOnt Use docker-compose down to avoid losing the mongodb data

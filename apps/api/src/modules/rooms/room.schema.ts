@@ -87,7 +87,7 @@ export class Room {
   @Prop({ required: true, type: Types.ObjectId })
   createdBy: Types.ObjectId;
 
-  @Prop({ required: true, type: String, unique: true })
+  @Prop({ required: true, index: { unique: true } })
   slug: string;
 
   @Prop()

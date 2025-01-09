@@ -156,4 +156,18 @@ export class AuthService {
       throw error;
     }
   }
+
+  async validateToken(token: string): Promise<any> {
+    try {
+      const payload = await this.jwtService.verifyAsync(token);
+      const user = await this.usersService.findById(payload.sub);
+      if (!user) {
+        throw new Error('User not found');
+      }
+      return user;
+    } catch (error) {
+      this.logger.error(`Token validation error: ${error.message}`);
+      return null;
+    }
+  }
 }
