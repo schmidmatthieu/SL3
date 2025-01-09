@@ -1,34 +1,168 @@
+version: '3.8'
+
 services:
   mongodb:
-    image: mongo:8.0.4
+    image: mongo:latest
     container_name: mongodb
     ports:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
-      - mongodb_config:/data/configdb
     networks:
       - sl3_network
 
-  redis:
-    image: redis:latest
-    container_name: redis
+  redis-master:
+    image: redis:7.2
+    command: redis-server --requirepass sl3_redis_password --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
     ports:
       - "6379:6379"
-    volumes:
-      - redis_data:/data
+      - "16379:16379"
     networks:
       - sl3_network
+    volumes:
+      - redis-master-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "sl3_redis_password", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
-volumes:
-  mongodb_data:
-    external: true
-    name: "8bb487d2a73611a319a292f1ed489aa95617f3e1540824ccd5ef37e5feb067eb"
-  mongodb_config:
-    external: true
-    name: "3465cf60da5edb50914449c3d2bca1c8f65956a079e59388efeaa146f9b97bbd"
-  redis_data:
+  redis-replica-1:
+    image: redis:7.2
+    command: redis-server --requirepass sl3_redis_password --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports:
+      - "6380:6379"
+      - "16380:16379"
+    networks:
+      - sl3_network
+    volumes:
+      - redis-replica-1-data:/data
+    depends_on:
+      redis-master:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "sl3_redis_password", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis-replica-2:
+    image: redis:7.2
+    command: redis-server --requirepass sl3_redis_password --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports:
+      - "6381:6379"
+      - "16381:16379"
+    networks:
+      - sl3_network
+    volumes:
+      - redis-replica-2-data:/data
+    depends_on:
+      redis-master:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "sl3_redis_password", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis-replica-3:
+    image: redis:7.2
+    command: redis-server --requirepass sl3_redis_password --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports:
+      - "6382:6379"
+      - "16382:16379"
+    networks:
+      - sl3_network
+    volumes:
+      - redis-replica-3-data:/data
+    depends_on:
+      redis-master:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "sl3_redis_password", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis-replica-4:
+    image: redis:7.2
+    command: redis-server --requirepass sl3_redis_password --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports:
+      - "6383:6379"
+      - "16383:16379"
+    networks:
+      - sl3_network
+    volumes:
+      - redis-replica-4-data:/data
+    depends_on:
+      redis-master:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "sl3_redis_password", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis-replica-5:
+    image: redis:7.2
+    command: redis-server --requirepass sl3_redis_password --port 6379 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    ports:
+      - "6384:6379"
+      - "16384:16379"
+    networks:
+      - sl3_network
+    volumes:
+      - redis-replica-5-data:/data
+    depends_on:
+      redis-master:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "sl3_redis_password", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis-cluster-init:
+    image: redis:7.2
+    command: >
+      /bin/sh -c "
+      echo 'Waiting for Redis nodes to be ready...' &&
+      sleep 10 &&
+      redis-cli -h redis-master -a sl3_redis_password --cluster create \
+        redis-master:6379 \
+        redis-replica-1:6379 \
+        redis-replica-2:6379 \
+        redis-replica-3:6379 \
+        redis-replica-4:6379 \
+        redis-replica-5:6379 \
+        --cluster-replicas 1 --cluster-yes &&
+      echo 'Redis Cluster initialized successfully'
+      "
+    networks:
+      - sl3_network
+    depends_on:
+      redis-master:
+        condition: service_healthy
+      redis-replica-1:
+        condition: service_healthy
+      redis-replica-2:
+        condition: service_healthy
+      redis-replica-3:
+        condition: service_healthy
+      redis-replica-4:
+        condition: service_healthy
+      redis-replica-5:
+        condition: service_healthy
 
 networks:
   sl3_network:
     driver: bridge
+
+volumes:
+  mongodb_data:
+  redis-master-data:
+  redis-replica-1-data:
+  redis-replica-2-data:
+  redis-replica-3-data:
+  redis-replica-4-data:
+  redis-replica-5-data:
