@@ -26,80 +26,72 @@
 - [x] Configuration des modules principaux
 - [x] Setup Bull pour les queues
 - [x] Configuration des événements
-- [a] Configuration des WebSockets
-  - [a] Setup Socket.IO Gateway
-  - [a] Configuration des namespaces
-  - [a] Gestion des connexions
-  - [a] Tests d'intégration
+- [x] Configuration des WebSockets
+  - [x] Setup Socket.IO Gateway
+  - [x] Configuration des namespaces
+  - [x] Gestion des connexions
+  - [x] Tests d'intégration
 
 ### Configuration Clustering (Priorité 2)
-- [ ] Setup Redis Cluster
-  - [ ] Configuration master-slave
-  - [ ] Configuration de la réplication
-- [ ] Configuration Socket.IO Adapter
-  - [ ] Adapter Redis
-  - [ ] Tests de scalabilité
-- [ ] Tests de failover
-  - [ ] Scénarios de panne
-  - [ ] Récupération automatique
+- [x] Setup Redis Cluster
+  - [x] Configuration master-slave
+  - [x] Configuration de la réplication
+- [x] Configuration Socket.IO Adapter
+  - [x] Adapter Redis
+  - [x] Tests de scalabilité
+- [x] Tests de failover
+  - [x] Scénarios de panne
+  - [x] Récupération automatique
 - [ ] Configuration load balancing
+  - [ ] Configuration Nginx
+  - [ ] Tests de charge
+  - [ ] Monitoring des performances
 
 ## 2. Backend Core
 ### Base de données
-- [a] Création des schémas MongoDB
-  - [a] Message schema
-  - [a] Room schema
+- [x] Création des schémas MongoDB
+  - [x] Message schema
+  - [x] Room schema
   - [ ] User schema
   - [ ] Media schema
-- [a] Configuration des indexes
+- [x] Configuration des indexes
 - [ ] Setup des migrations
 - [ ] Configuration du seeding
 
 ### Services de Synchronisation
-- [a] Service de synchronisation des participants
-  - [a] Gestion des événements Room
-  - [a] Validation des références
-  - [a] Tests d'intégration
-  - [a] Intégration avec le module Room
-- [a] Service de monitoring
-  - [a] Métriques de santé
-  - [a] Alertes
-  - [a] Dashboard de monitoring
-  - [a] Tests d'intégration
+- [x] Service de synchronisation des participants
+  - [x] Gestion des événements Room
+  - [x] Validation des références
+  - [x] Tests d'intégration
+  - [x] Intégration avec le module Room
+- [x] Service de monitoring
+  - [x] Métriques de santé
+  - [x] Alertes
+  - [x] Dashboard de monitoring
+  - [x] Tests d'intégration
 - [ ] Service de récupération
   - [ ] Détection des incohérences
   - [ ] Réparation automatique
   - [ ] Logs et notifications
 
-## 2. Backend Core
-### Base de données
-- [a] Création des schémas MongoDB
-  - [a] Message schema
-  - [a] Room schema
-  - [ ] User schema
-  - [ ] Media schema
-- [a] Configuration des indexes
-- [ ] Setup des migrations
-- [ ] Configuration du seeding
-
 ### API Gateway
-- [ ] Implémentation WebSocket Gateway
-- [ ] Setup des événements Socket.IO
-- [ ] Gestion des connexions/déconnexions
+- [x] Implémentation WebSocket Gateway
+- [x] Setup des événements Socket.IO
+- [x] Gestion des connexions/déconnexions
 - [ ] Configuration du heartbeat
 
 ### Services Core
-- [ ] Service de messages
-  - [ ] CRUD basique
-  - [ ] Validation temps réel
+- [x] Service de messages
+  - [x] CRUD basique
+  - [x] Validation temps réel
   - [ ] Gestion des médias
-- [ ] Service de rooms
-  - [ ] Intégration avec Room existant
-  - [ ] Gestion des permissions
-  - [ ] États et transitions
-- [ ] Service d'authentification
-  - [ ] Intégration avec Auth existant
-  - [ ] Gestion des sessions WebSocket
+- [x] Service de rooms
+  - [x] Intégration avec Room existant
+  - [x] Gestion des permissions
+  - [x] États et transitions
+- [x] Service d'authentification
+  - [x] Intégration avec Auth existant
+  - [x] Gestion des sessions WebSocket
 - [ ] Service de médias
 - [ ] Service d'export
 
@@ -126,18 +118,19 @@
 
 ## 3. Système de Chat
 ### Composants de Base
-- [ ] Container principal
-- [ ] Liste des messages
-- [ ] Input système
-- [ ] Header de chat
-- [ ] Navigation des rooms
+- [x] Structure des composants
+- [ ] Intégration WebSocket
+- [ ] Gestion des états de chargement
+- [ ] Gestion des erreurs
+- [ ] UI/UX avancée
 
 ### Gestion des Messages
-- [ ] Envoi de messages texte
+- [ ] Envoi de messages (WebSocket)
 - [ ] Réception en temps réel
 - [ ] Pagination des messages
 - [ ] Système de threads
 - [ ] Édition/Suppression
+- [ ] Persistance des messages
 
 ### Système Média
 - [ ] Upload de fichiers
@@ -153,6 +146,14 @@
 - [ ] Notifications en temps réel
 - [ ] Synchronisation multi-onglets
 - [ ] Gestion de la présence
+- [ ] Statut des utilisateurs en ligne
+
+### Intégration Backend
+- [ ] Configuration Socket.IO Client
+- [ ] Connexion Redis
+- [ ] Gestion des événements en temps réel
+- [ ] Synchronisation des messages
+- [ ] Gestion des rooms
 
 ## 4. Modération
 ### Interface Modérateur
