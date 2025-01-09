@@ -13,8 +13,10 @@ export interface ChatParticipant {
   mutedUntil?: Date;
   isOnline?: boolean;
   lastTypingAt?: Date;
-  // Les permissions sont dérivées du rôle de l'utilisateur
-  // et sont calculées dynamiquement en fonction du UserRole
+  isBanned?: boolean;
+  banReason?: string;
+  bannedAt?: Date;
+  leftAt?: Date;
   preferences?: {
     notifications: boolean;
     soundEnabled: boolean;

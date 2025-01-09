@@ -26,6 +26,8 @@ interface MessageAttachment {
   },
 })
 export class Message {
+  _id: Types.ObjectId;
+
   @Prop({ type: Types.ObjectId, ref: 'Room', required: true })
   roomId: Room;
 
@@ -42,7 +44,7 @@ export class Message {
   metadata: Record<string, any>;
 
   @Prop({ default: false })
-  isEdited: boolean;
+  edited: boolean;
 
   @Prop({ default: false })
   isDeleted: boolean;
@@ -50,11 +52,14 @@ export class Message {
   @Prop()
   editedAt?: Date;
 
-  @Prop()
-  deletedAt?: Date;
+  @Prop({ type: Types.ObjectId, ref: 'Message' })
+  replyTo?: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: 'Message' })
-  replyTo?: Message;
+  replyToMessage?: Message;
+
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export const MessageSchema = SchemaFactory.createForClass(Message);

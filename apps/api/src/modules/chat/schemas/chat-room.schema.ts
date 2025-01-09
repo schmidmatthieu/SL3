@@ -1,10 +1,30 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types, IndexDefinition } from 'mongoose';
 import { Room, RoomSchema } from './room.schema';
-import type { ChatParticipant } from '../interfaces/participant.interface';
-import type { ChatRoomSettings } from '../interfaces/chat-room.interface';
+import { ChatParticipant } from '../interfaces/participant.interface';
+import { ChatRoomSettings } from '../interfaces/chat-room.interface';
 
 export type ChatRoomDocument = ChatRoom & Document;
+
+const ParticipantSchema = {
+  userId: { type: Types.ObjectId, ref: 'User', required: true },
+  role: { type: String, required: true },
+  joinedAt: { type: Date, required: true },
+  lastReadAt: { type: Date },
+  isMuted: { type: Boolean, default: false },
+  mutedUntil: { type: Date },
+  isOnline: { type: Boolean, default: false },
+  lastTypingAt: { type: Date },
+  isBanned: { type: Boolean, default: false },
+  banReason: { type: String },
+  bannedAt: { type: Date },
+  leftAt: { type: Date },
+  preferences: {
+    notifications: { type: Boolean, default: true },
+    soundEnabled: { type: Boolean, default: true },
+    theme: { type: String },
+  },
+};
 
 @Schema({
   timestamps: true,
@@ -19,6 +39,12 @@ export type ChatRoomDocument = ChatRoom & Document;
   },
 })
 export class ChatRoom extends Room {
+  @Prop({
+    type: [ParticipantSchema],
+    default: [],
+  })
+  participants: ChatParticipant[];
+
   @Prop({
     type: Object,
     default: {
@@ -48,6 +74,18 @@ export class ChatRoom extends Room {
 
   @Prop({ type: Object })
   metadata?: Record<string, any>;
+
+  // Methods
+  canSendMessage(userId: Types.ObjectId | string): boolean {
+    const participant = this.participants.find(p => 
+      p.userId.equals(new Types.ObjectId(userId))
+    );
+    if (!participant) return false;
+    if (participant.isMuted && participant.mutedUntil && participant.mutedUntil > new Date()) return false;
+    if (participant.isBanned) return false;
+    if (participant.leftAt) return false;
+    return this.chatSettings.chatEnabled && !this.chatSettings.isArchived;
+  }
 }
 
 export const ChatRoomSchema = SchemaFactory.createForClass(ChatRoom);
@@ -69,11 +107,3 @@ ChatRoomSchema.virtual('lastMessage', {
   foreignField: '_id',
   justOne: true,
 });
-
-// Methods
-ChatRoomSchema.methods.canSendMessage = function(userId: Types.ObjectId | string): boolean {
-  const participant = this.getParticipant(userId);
-  if (!participant) return false;
-  if (participant.isMuted && participant.mutedUntil && participant.mutedUntil > new Date()) return false;
-  return this.chatSettings.chatEnabled && !this.chatSettings.isArchived;
-};

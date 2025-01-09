@@ -28,7 +28,7 @@ export class Room {
   @Prop({ required: true })
   description: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true, index: { unique: true } })
   slug: string;
 
   @Prop({ type: String, enum: RoomType, default: RoomType.EVENT })
@@ -89,7 +89,6 @@ export class Room {
 export const RoomSchema = SchemaFactory.createForClass(Room);
 
 // Indexes
-RoomSchema.index({ slug: 1 }, { unique: true });
 RoomSchema.index({ status: 1 });
 RoomSchema.index({ type: 1 });
 RoomSchema.index({ eventId: 1 });
