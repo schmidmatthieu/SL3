@@ -1,3 +1,5 @@
+import { Document, Types } from 'mongoose';
+
 export type MediaUsageType =
   | 'profile'
   | 'speaker'
@@ -7,9 +9,9 @@ export type MediaUsageType =
   | 'unused';
 
 export interface MediaUsage {
-  type: Exclude<MediaUsageType, 'unused'>;
+  type: MediaUsageType;
   entityId: string;
-  entityName?: string;
+  entityName: string;
   usedAt: Date;
 }
 
@@ -20,3 +22,19 @@ export interface MediaMetadata {
   seoTitle?: string;
   seoDescription?: string;
 }
+
+export interface Media {
+  _id: Types.ObjectId;
+  filename: string;
+  url: string;
+  mimeType: string;
+  size: number;
+  uploadedBy: string;
+  usages: MediaUsage[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export type MediaDocument = Document & Omit<Media, '_id'> & {
+  _id: Types.ObjectId;
+};
