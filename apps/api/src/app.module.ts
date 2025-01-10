@@ -9,6 +9,7 @@ import { SpeakersModule } from './modules/speakers/speakers.module';
 import { MediaModule } from './modules/media/media.module';
 import { RoomModule } from './modules/rooms/room.module';
 import { ChatModule } from './modules/chat/chat.module';
+import { RedisModule } from './redis';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 
 @Module({
@@ -28,6 +29,7 @@ import { LoggerMiddleware } from './middleware/logger.middleware';
       },
       inject: [ConfigService],
     }),
+    RedisModule.forRoot(),
     AuthModule,
     UsersModule,
     RolesModule,
