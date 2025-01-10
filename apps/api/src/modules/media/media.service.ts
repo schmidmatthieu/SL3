@@ -12,18 +12,29 @@ import { MediaUsage } from './types/media.types';
 import * as path from 'path';
 import { writeFile } from 'fs/promises';
 import { ConfigService } from '@nestjs/config';
+import { REDIS_PROVIDER } from '../../redis/constants/redis.constants';
+import { IRedisService } from '../../redis/interfaces/redis.interface';
+import { Inject } from '@nestjs/common';
+import * as fs from 'fs/promises';
 
 @Injectable()
 export class MediaService {
   private readonly uploadPath: string;
   private readonly apiUrl: string;
+  private readonly CACHE_TTL = 3600; // 1 hour
+  private readonly CACHE_PREFIX = 'media:';
 
   constructor(
     @InjectModel(Media.name) private mediaModel: Model<MediaDocument>,
+    @Inject(REDIS_PROVIDER) private redisService: IRedisService,
     private configService: ConfigService,
   ) {
-    this.uploadPath = path.join(process.cwd(), 'public', 'uploads');
+    this.uploadPath = this.configService.get('UPLOAD_PATH') || path.join(process.cwd(), 'public', 'uploads');
     this.apiUrl = this.configService.get('API_URL') || 'http://localhost:3001';
+  }
+
+  private getCacheKey(id: string): string {
+    return `${this.CACHE_PREFIX}${id}`;
   }
 
   async create(file: Express.Multer.File, userId: string): Promise<Media> {
@@ -36,37 +47,118 @@ export class MediaService {
     };
 
     const createdMedia = new this.mediaModel(createMediaDto);
-    return createdMedia.save();
+    const savedMedia = await createdMedia.save();
+    
+    // Cache the new media
+    await this.redisService.set(
+      this.getCacheKey(savedMedia.id),
+      JSON.stringify(savedMedia),
+      this.CACHE_TTL
+    );
+    
+    return savedMedia;
   }
 
   async findAll(query?: FilterQuery<MediaDocument>): Promise<Media[]> {
+    // For findAll, we don't use cache as it could be too large and change frequently
     return this.mediaModel.find(query).sort({ createdAt: -1 }).exec();
   }
 
   async findOne(id: string): Promise<Media> {
+    // Try to get from cache first
+    const cached = await this.redisService.get(this.getCacheKey(id));
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
     const media = await this.mediaModel.findById(id).exec();
     if (!media) {
       throw new NotFoundException(`Media with ID ${id} not found`);
     }
+
+    // Cache the result
+    await this.redisService.set(
+      this.getCacheKey(id),
+      JSON.stringify(media),
+      this.CACHE_TTL
+    );
+
+    return media;
+  }
+
+  async findByFilename(filename: string): Promise<MediaDocument | null> {
+    const cacheKey = `${this.CACHE_PREFIX}filename:${filename}`;
+    
+    // Try to get from cache first
+    const cached = await this.redisService.get(cacheKey);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
+    const media = await this.mediaModel.findOne({ filename }).exec();
+    
+    if (media) {
+      // Cache the result
+      await this.redisService.set(
+        cacheKey,
+        JSON.stringify(media),
+        this.CACHE_TTL
+      );
+    }
+
     return media;
   }
 
   async findByUsageType(type: MediaUsage['type']): Promise<Media[]> {
-    return this.mediaModel
+    const cacheKey = `${this.CACHE_PREFIX}type:${type}`;
+    
+    // Try to get from cache first
+    const cached = await this.redisService.get(cacheKey);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
+    const media = await this.mediaModel
       .find({
         'usages.type': type,
       })
       .sort({ createdAt: -1 })
       .exec();
+
+    // Cache the result
+    await this.redisService.set(
+      cacheKey,
+      JSON.stringify(media),
+      this.CACHE_TTL
+    );
+
+    return media;
   }
 
   async findUnused(): Promise<Media[]> {
-    return this.mediaModel
+    const cacheKey = `${this.CACHE_PREFIX}unused`;
+    
+    // Try to get from cache first
+    const cached = await this.redisService.get(cacheKey);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
+    const media = await this.mediaModel
       .find({
         usages: { $size: 0 },
       })
       .sort({ createdAt: -1 })
       .exec();
+
+    // Cache the result
+    await this.redisService.set(
+      cacheKey,
+      JSON.stringify(media),
+      this.CACHE_TTL
+    );
+
+    return media;
   }
 
   async update(id: string, updateMediaDto: UpdateMediaDto): Promise<Media> {
@@ -76,6 +168,14 @@ export class MediaService {
     if (!media) {
       throw new NotFoundException(`Media with ID ${id} not found`);
     }
+
+    // Update cache
+    await this.redisService.set(
+      this.getCacheKey(id),
+      JSON.stringify(media),
+      this.CACHE_TTL
+    );
+
     return media;
   }
 
@@ -94,7 +194,20 @@ export class MediaService {
       usedAt: new Date(),
     });
 
-    return media.save();
+    const savedMedia = await media.save();
+
+    // Update cache
+    await this.redisService.set(
+      this.getCacheKey(mediaId),
+      JSON.stringify(savedMedia),
+      this.CACHE_TTL
+    );
+
+    // Invalidate type-based caches
+    await this.redisService.del(`${this.CACHE_PREFIX}type:${usage.type}`);
+    await this.redisService.del(`${this.CACHE_PREFIX}unused`);
+
+    return savedMedia;
   }
 
   async removeUsage(mediaId: string, entityId: string): Promise<Media> {
@@ -103,38 +216,54 @@ export class MediaService {
       throw new NotFoundException(`Media with ID ${mediaId} not found`);
     }
 
-    media.usages = media.usages.filter((usage) => usage.entityId !== entityId);
-    return media.save();
-  }
+    const usageIndex = media.usages.findIndex(u => u.entityId === entityId);
+    if (usageIndex === -1) {
+      throw new NotFoundException(`Usage for entity ${entityId} not found`);
+    }
 
-  async updateUsageEntityName(
-    type: MediaUsage['type'],
-    entityId: string,
-    entityName: string,
-  ): Promise<void> {
-    await this.mediaModel.updateMany(
-      { 'usages.type': type, 'usages.entityId': entityId },
-      { $set: { 'usages.$[elem].entityName': entityName } },
-      { arrayFilters: [{ 'elem.type': type, 'elem.entityId': entityId }] },
+    const usageType = media.usages[usageIndex].type;
+    media.usages.splice(usageIndex, 1);
+    const savedMedia = await media.save();
+
+    // Update cache
+    await this.redisService.set(
+      this.getCacheKey(mediaId),
+      JSON.stringify(savedMedia),
+      this.CACHE_TTL
     );
-  }
 
-  async findByFilename(filename: string): Promise<MediaDocument | null> {
-    return this.mediaModel.findOne({ filename }).exec();
+    // Invalidate type-based caches
+    await this.redisService.del(`${this.CACHE_PREFIX}type:${usageType}`);
+    await this.redisService.del(`${this.CACHE_PREFIX}unused`);
+
+    return savedMedia;
   }
 
   async remove(id: string): Promise<void> {
-    const media = await this.findOne(id);
-    const filePath = path.join(this.uploadPath, media.filename);
+    const media = await this.mediaModel.findById(id);
+    if (!media) {
+      throw new NotFoundException(`Media with ID ${id} not found`);
+    }
 
+    // Delete from filesystem
     try {
-      await writeFile(filePath, '');
-      await writeFile(filePath, '', { flag: 'w' });
+      const filePath = path.join(this.uploadPath, media.filename);
+      await fs.unlink(filePath);
     } catch (error) {
       console.error(`Error deleting file: ${error.message}`);
     }
 
-    await this.mediaModel.findByIdAndDelete(id).exec();
+    // Delete from database
+    await this.mediaModel.findByIdAndDelete(id);
+
+    // Delete from cache
+    await this.redisService.del(this.getCacheKey(id));
+    
+    // Invalidate type-based caches
+    for (const usage of media.usages) {
+      await this.redisService.del(`${this.CACHE_PREFIX}type:${usage.type}`);
+    }
+    await this.redisService.del(`${this.CACHE_PREFIX}unused`);
   }
 
   async uploadFromUrl(url: string, userId: string): Promise<Media> {
