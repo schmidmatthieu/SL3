@@ -60,7 +60,8 @@ export class ChatRoom extends Room {
         enabled: true,
         profanityFilter: true,
         spamFilter: true,
-        linkFilter: false,
+        linkFilter: true,
+        autoDelete: true,
       },
     },
   })

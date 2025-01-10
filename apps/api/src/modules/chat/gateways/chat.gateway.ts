@@ -17,10 +17,13 @@ import { RoomService } from '../services/room.service';
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
     credentials: true,
   },
-  namespace: 'chat',
+  namespace: process.env.WS_NAMESPACE || 'chat',
+  path: process.env.WS_PATH || '/socket.io',
+  transports: ['websocket', 'polling'],
+  allowEIO3: true,
 })
 @UseGuards(WsAuthGuard)
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {

@@ -1,14 +1,18 @@
-export type MessageStatus = 'sending' | 'delivered';
+export type MessageStatus = 'sending' | 'sent' | 'edited' | 'deleted';
 
 export interface ChatMessage {
   id: string;
-  userId: string;
-  username: string;
-  color: string;
   content: string;
-  timestamp: number;
+  user: ChatUser;
+  roomId: string;
+  threadId?: string;
+  parentId?: string;
+  replyCount?: number;
   status: MessageStatus;
-  avatar?: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+  edited?: boolean;
   emotes?: {
     id: string;
     name: string;
@@ -21,4 +25,12 @@ export interface ChatUser {
   username: string;
   color: string;
   avatar?: string;
+}
+
+export interface ChatThread {
+  id: string;
+  parentMessage: ChatMessage;
+  messages: ChatMessage[];
+  participantIds: string[];
+  lastActivityAt: string;
 }

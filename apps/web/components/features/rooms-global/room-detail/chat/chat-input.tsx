@@ -1,79 +1,87 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Send, Smile } from 'lucide-react';
+import { Loader2, Send } from 'lucide-react';
 import { Button } from '@/components/core/ui/button';
-import { Input } from '@/components/core/ui/input';
+import { Textarea } from '@/components/core/ui/textarea';
 import { useDebounce } from '@/hooks/useDebounce';
 
 interface ChatInputProps {
-  onSendMessage: (content: string) => void;
+  onSend: (message: string) => void;
   onTyping: () => void;
   disabled?: boolean;
 }
 
-export function ChatInput({ onSendMessage, onTyping, disabled }: ChatInputProps) {
+export function ChatInput({ onSend, onTyping, disabled }: ChatInputProps) {
   const [message, setMessage] = useState('');
-  const lastTypingTime = useRef<number>(0);
-  const TYPING_TIMER_LENGTH = 3000;
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const debouncedTyping = useDebounce(onTyping, 1000);
 
-  const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
+  const adjustTextareaHeight = useCallback(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    textarea.style.height = 'auto';
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 150)}px`;
+  }, []);
+
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [message, adjustTextareaHeight]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
+      handleSubmit();
+    }
+  };
 
-      if (message.trim() && !disabled) {
-        onSendMessage(message.trim());
-        setMessage('');
-        lastTypingTime.current = 0;
-      }
-    },
-    [message, onSendMessage, disabled]
-  );
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
-    const currentTime = Date.now();
+    debouncedTyping();
+  };
 
-    if (currentTime - lastTypingTime.current > TYPING_TIMER_LENGTH) {
-      lastTypingTime.current = currentTime;
-      debouncedTyping();
+  const handleSubmit = async () => {
+    const trimmedMessage = message.trim();
+    if (!trimmedMessage || disabled || isSubmitting) return;
+
+    try {
+      setIsSubmitting(true);
+      await onSend(trimmedMessage);
+      setMessage('');
+      textareaRef.current?.focus();
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <form onSubmit={handleSubmit} className="p-2">
+      <div className="p-2">
         <div className="flex gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="flex-none"
-            disabled={disabled}
-          >
-            <Smile className="h-5 w-5" />
-          </Button>
-
-          <Input
-            type="text"
-            placeholder="Écrivez votre message..."
+          <Textarea
+            ref={textareaRef}
             value={message}
             onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            placeholder="Écrivez votre message..."
+            className="min-h-[40px] max-h-[150px] resize-none"
             disabled={disabled}
-            className="flex-1"
           />
-
           <Button
-            type="submit"
+            onClick={handleSubmit}
+            disabled={!message.trim() || disabled || isSubmitting}
             size="icon"
-            disabled={!message.trim() || disabled}
-            className="flex-none"
           >
-            <Send className="h-5 w-5" />
+            {isSubmitting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
           </Button>
         </div>
-      </form>
+      </div>
     </div>
   );
 }

@@ -22,28 +22,52 @@ export class SocketService {
   public connect(token: string): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
+        const WS_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+        const WS_PATH = process.env.NEXT_PUBLIC_WS_PATH || '/socket.io';
+        const WS_NAMESPACE = process.env.NEXT_PUBLIC_WS_NAMESPACE;
+        
+        if (!WS_URL) {
+          throw new Error('NEXT_PUBLIC_API_URL is not defined');
+        }
 
-        this.socket = io(SOCKET_URL, {
+        // Construire l'URL complète du WebSocket
+        const socketUrl = `${WS_URL}${WS_NAMESPACE ? `/${WS_NAMESPACE}` : ''}`;
+        console.log('Connecting to WebSocket:', socketUrl);
+
+        if (this.socket?.connected) {
+          console.log('Socket already connected');
+          resolve();
+          return;
+        }
+
+        this.socket = io(socketUrl, {
           auth: { token },
-          transports: ['websocket'],
+          path: WS_PATH,
+          transports: ['websocket', 'polling'],
           reconnection: true,
           reconnectionAttempts: this.MAX_RECONNECT_ATTEMPTS,
           reconnectionDelay: 1000,
+          timeout: 20000,
+          forceNew: false,
         });
 
         this.setupEventListeners(resolve, reject);
       } catch (error) {
+        console.error('Error initializing socket:', error);
         reject(error);
       }
     });
   }
 
   private setupEventListeners(resolve: Function, reject: Function): void {
-    if (!this.socket) return;
+    if (!this.socket) {
+      console.error('Socket instance is null');
+      reject(new Error('Socket instance is null'));
+      return;
+    }
 
     this.socket.on('connect', () => {
-      console.log('Connected to WebSocket');
+      console.log('Connected to WebSocket server with ID:', this.socket?.id);
       this.reconnectAttempts = 0;
       resolve();
     });
@@ -53,8 +77,15 @@ export class SocketService {
       this.reconnectAttempts++;
       
       if (this.reconnectAttempts >= this.MAX_RECONNECT_ATTEMPTS) {
-        reject(new Error('Maximum reconnection attempts reached'));
+        const error = new Error(`Maximum reconnection attempts reached (${this.MAX_RECONNECT_ATTEMPTS})`);
+        console.error(error);
+        reject(error);
       }
+    });
+
+    this.socket.on('error', (error) => {
+      console.error('WebSocket error:', error);
+      this.notifyListeners('error', error);
     });
 
     this.socket.on('disconnect', (reason) => {
@@ -62,9 +93,25 @@ export class SocketService {
       this.notifyListeners('disconnect', reason);
     });
 
-    // Chat specific events
+    // Chat specific events with rate limiting
+    const MESSAGE_LIMIT = parseInt(process.env.NEXT_PUBLIC_CHAT_MESSAGE_LIMIT || '50', 10);
+    const RATE_LIMIT = parseInt(process.env.NEXT_PUBLIC_CHAT_RATE_LIMIT || '5', 10);
+    let messageCount = 0;
+    let lastMessageTime = Date.now();
+
     this.socket.on('chat:message', (message: ChatMessage) => {
-      this.notifyListeners('chat:message', message);
+      const now = Date.now();
+      if (now - lastMessageTime >= 1000) {
+        messageCount = 0;
+        lastMessageTime = now;
+      }
+
+      if (messageCount < RATE_LIMIT) {
+        this.notifyListeners('chat:message', message);
+        messageCount++;
+      } else {
+        console.warn('Message rate limit exceeded');
+      }
     });
 
     this.socket.on('chat:typing', (data: { userId: string; roomId: string }) => {
@@ -116,23 +163,83 @@ export class SocketService {
     return this.socket?.connected || false;
   }
 
-  public joinRoom(roomId: string): void {
-    this.emit('chat:join', { roomId });
+  public joinRoom(roomId: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.socket || !this.socket.connected) {
+        reject(new Error('Socket not connected'));
+        return;
+      }
+      this.socket.emit('chat:join', { roomId }, (response: any) => {
+        if (response?.error) {
+          reject(new Error(response.error));
+        } else {
+          resolve();
+        }
+      });
+    });
   }
 
-  public leaveRoom(roomId: string): void {
-    this.emit('chat:leave', { roomId });
+  public leaveRoom(roomId: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.socket || !this.socket.connected) {
+        reject(new Error('Socket not connected'));
+        return;
+      }
+      this.socket.emit('chat:leave', { roomId }, (response: any) => {
+        if (response?.error) {
+          reject(new Error(response.error));
+        } else {
+          resolve();
+        }
+      });
+    });
   }
 
-  public sendMessage(roomId: string, content: string): void {
-    this.emit('chat:message', { roomId, content });
+  public sendMessage(roomId: string, content: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.socket || !this.socket.connected) {
+        reject(new Error('Socket not connected'));
+        return;
+      }
+      this.socket.emit('chat:message', { roomId, content }, (response: any) => {
+        if (response?.error) {
+          reject(new Error(response.error));
+        } else {
+          resolve();
+        }
+      });
+    });
   }
 
-  public sendTyping(roomId: string, isTyping: boolean): void {
-    this.emit('chat:typing', { roomId, isTyping });
+  public sendTyping(roomId: string, isTyping: boolean): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.socket || !this.socket.connected) {
+        reject(new Error('Socket not connected'));
+        return;
+      }
+      this.socket.emit('chat:typing', { roomId, isTyping }, (response: any) => {
+        if (response?.error) {
+          reject(new Error(response.error));
+        } else {
+          resolve();
+        }
+      });
+    });
   }
 
-  public markMessageAsRead(roomId: string, messageId: string): void {
-    this.emit('chat:read', { roomId, messageId });
+  public markMessageAsRead(roomId: string, messageId: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.socket || !this.socket.connected) {
+        reject(new Error('Socket not connected'));
+        return;
+      }
+      this.socket.emit('chat:read', { roomId, messageId }, (response: any) => {
+        if (response?.error) {
+          reject(new Error(response.error));
+        } else {
+          resolve();
+        }
+      });
+    });
   }
 }

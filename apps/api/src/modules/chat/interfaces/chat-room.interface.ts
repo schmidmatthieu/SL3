@@ -15,5 +15,6 @@ export interface ChatRoomSettings {
     profanityFilter: boolean;
     spamFilter: boolean;
     linkFilter: boolean;
+    autoDelete: boolean;
   };
 }

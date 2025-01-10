@@ -55,26 +55,6 @@ export function useSocket(options: UseSocketOptions = {}) {
     socketService.current.emit(event, data);
   };
 
-  const joinRoom = (roomId: string) => {
-    socketService.current.joinRoom(roomId);
-  };
-
-  const leaveRoom = (roomId: string) => {
-    socketService.current.leaveRoom(roomId);
-  };
-
-  const sendMessage = (roomId: string, content: string) => {
-    socketService.current.sendMessage(roomId, content);
-  };
-
-  const sendTyping = (roomId: string, isTyping: boolean) => {
-    socketService.current.sendTyping(roomId, isTyping);
-  };
-
-  const markMessageAsRead = (roomId: string, messageId: string) => {
-    socketService.current.markMessageAsRead(roomId, messageId);
-  };
-
   return {
     isConnected,
     error,
@@ -83,10 +63,45 @@ export function useSocket(options: UseSocketOptions = {}) {
     on,
     off,
     emit,
-    joinRoom,
-    leaveRoom,
-    sendMessage,
-    sendTyping,
-    markMessageAsRead,
+    joinRoom: async (roomId: string) => {
+      try {
+        await socketService.current.joinRoom(roomId);
+      } catch (err) {
+        console.error('Failed to join room:', err);
+        throw err;
+      }
+    },
+    leaveRoom: async (roomId: string) => {
+      try {
+        await socketService.current.leaveRoom(roomId);
+      } catch (err) {
+        console.error('Failed to leave room:', err);
+        throw err;
+      }
+    },
+    sendMessage: async (roomId: string, content: string) => {
+      try {
+        await socketService.current.sendMessage(roomId, content);
+      } catch (err) {
+        console.error('Failed to send message:', err);
+        throw err;
+      }
+    },
+    sendTyping: async (roomId: string, isTyping: boolean) => {
+      try {
+        await socketService.current.sendTyping(roomId, isTyping);
+      } catch (err) {
+        console.error('Failed to send typing status:', err);
+        throw err;
+      }
+    },
+    markMessageAsRead: async (roomId: string, messageId: string) => {
+      try {
+        await socketService.current.markMessageAsRead(roomId, messageId);
+      } catch (err) {
+        console.error('Failed to mark message as read:', err);
+        throw err;
+      }
+    }
   };
 }
